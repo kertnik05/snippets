@@ -1,0 +1,9 @@
+admin/config/development/maintenance - maintenance settings
+admin/config/system/cron - Cron 
+admin/config/development/performance - cache
+/admin/reports/status - Site Status report
+/admin/reports/status/rebuild - 
+/admin/content/media - add media
+​We need to ask acquia how about issues related to rebuilding permission.
+
+producyion - to staging - 

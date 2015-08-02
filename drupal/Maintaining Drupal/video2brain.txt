@@ -1,0 +1,42 @@
+Important URLs
+admin/config/development/performance
+- Turn on Caching in Production
+- Turn on Bandwidth Optimization
+
+Speedy Module
+
+Admin/config/development/logging
+- Turn off in production
+
+Admin/config/search/settings
+- make sure search indexed is 100%
+
+Make sure update manager is turned on
+
+
+Backup and Migrate Modules & Backup and Migrate files Modules
+Admin/config/backup_migrate/destination 
+Private File System Path (This is the path where you want to save database backup)
+../private - this is a folder outside public_html
+
+
+Updating Drupal
+1. Backup Database and Files
+2. Put the Site into maintenance mode
+3. Download the Latest drupal
+4. Copy Everything from the new drupal except the sites directory into the old drupal 
+- Note: Make sure the .htaccess .gitignore is not overriden
+5. Run update.php - if no access use user 1
+6. Run the update
+7. Take out the site in maintenance mode
+
+Backing Up using drush
+drush sql-dump
+drush upc - updates the drupal core files and create a backup
+drush updb - update.php
+
+Module Update
+- Make Sure to read the release notes
+- Make backup of files and database
+- Replace the old module with the new module
+- Run update.php
