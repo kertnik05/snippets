@@ -10,6 +10,7 @@
 # dvm – Similar to dpm but uses var_dump instead of print_r.
 
 Links: 
+Drupal: https://github.com/mikecrittenden/drupal-7-deconstructed
 Top Ten Hooks: http://www.webomelette.com/top-10-drupal-hooks-contrib
 Coding Standards: https://www.drupal.org/node/172169
 Data Sanitazation: https://api.drupal.org/api/drupal/includes!common.inc/group/sanitization/7
