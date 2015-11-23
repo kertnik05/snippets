@@ -33,3 +33,4 @@ var mondeo = new Car("Ford Mondeo", 2010, 5000);
 
 //Uses the Car.prototype.toString 
 console.log(civic.toString());
+
