@@ -89,7 +89,82 @@ sayMessage("Hello!"); // outputs "Hello!"
 var person = {
 	name: "Nicholas",
 	sayName: function() {
-			alert(person.name);
+			alert(this.name);
 		}
 	};
 person.sayName(); // outputs "Nicholas"
+
+
+
+
+
+function sayNameForAll() {
+	alert(this.name);
+}
+var person1 = {
+	name: "Nicholas",
+	sayName: sayNameForAll
+};
+var person2 = {
+	name: "Greg",
+	sayName: sayNameForAll
+};
+name = "Michael";
+person1.sayName(); // outputs "Nicholas"
+person2.sayName(); // outputs "Greg"
+sayNameForAll(); // outputs "Michael"
+
+//call method
+function sayNameForAll(label) {
+	alert(label + ":" + this.name);
+}
+var person1 = {
+	name: "Nicholas"
+};
+var person2 = {
+	name: "Greg"
+};
+name = "Michael";
+//call([thisObj[, arg1[, arg2[,  [, argN]]]]])
+sayNameForAll.call(this, "global"); // outputs "global:Michael"
+sayNameForAll.call(person1, "person1"); // outputs "person1:Nicholas"
+sayNameForAll.call(person2, "person2"); // outputs "person2:Greg"
+
+
+//apply method -->apply() method works exactly the same as call() except that it accepts only two parameters
+function sayNameForAll(label) {
+	alert(label + ":" + this.name);
+}
+var person1 = {
+	name: "Nicholas"
+};
+var person2 = {
+	name: "Greg"
+};
+name = "Michael";
+sayNameForAll.apply(this, ["global"]); // outputs "global:Michael"
+sayNameForAll.apply(person1, ["person1"]); // outputs "person1:Nicholas"
+sayNameForAll.apply(person2, ["person2"]); // outputs "person2:Greg"
+
+
+//Bind method 
+function sayNameForAll(label) {
+  alert(label + ":" + this.name);
+}
+var person1 = {
+  name: "Nicholas"
+};
+var person2 = {
+  name: "Greg"
+};
+
+//fun.bind(thisArg[, arg1[, arg2[, ...]]])
+// create a function just for person1
+var sayNameForPerson1 = sayNameForAll.bind(person1);
+sayNameForPerson1("person1"); // outputs "person1:Nicholas"
+// create a function just for person2
+var sayNameForPerson2 = sayNameForAll.bind(person2, "person2");
+sayNameForPerson2(); // outputs "person2:Greg"
+// attaching a method to an object doesn't change 'this'
+person2.sayName = sayNameForPerson1;
+person2.sayName("person2"); // outputs "person2:Nicholas"
