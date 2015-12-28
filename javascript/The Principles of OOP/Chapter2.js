@@ -34,7 +34,13 @@ numbers.sort(function(first, second) {
 });
 alert(numbers); // "[1, 2, 4, 5, 6, 7, 8, 10]"
 
-
+function sayMessage(message) {
+	alert(message);
+}
+function sayMessage() {
+	alert("Default message");
+}
+sayMessage("Hello!"); // multiple functions with the same name, the one that appears last in your code wins
 /****************** Parameters **************************/
 //Function as sum
 function sum() {
@@ -70,14 +76,6 @@ alert(reflect("Hi!", 25)); // "Hi!"--> drops 25 because there's no placeholder
 alert(reflect.length); // 0 --> Because there's no paramerter 
 
 /****************** Overloading **************************/
-function sayMessage(message) {
-	alert(message);
-}
-function sayMessage() {
-	alert("Default message");
-}
-sayMessage("Hello!"); // multiple functions with the same name, the one that appears last in your code wins
-
 
 function sayMessage(message) {
 	if (arguments.length === 0) {
@@ -86,3 +84,12 @@ function sayMessage(message) {
 	alert(message);
 }
 sayMessage("Hello!"); // outputs "Hello!"
+
+/****************** Object Methods **************************/
+var person = {
+	name: "Nicholas",
+	sayName: function() {
+			alert(person.name);
+		}
+	};
+person.sayName(); // outputs "Nicholas"
