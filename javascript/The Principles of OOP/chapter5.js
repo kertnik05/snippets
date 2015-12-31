@@ -211,9 +211,10 @@ Rectangle.prototype.toString = function() {
 };
 // inherits from Rectangle
 function Square(size) {
-  Rectangle.call(this, size, size);
+  Rectangle.call(this, size, size); //Constructor Stealing
   // optional: add new properties or override existing ones here
 }
+//You can add new properties or override existing ones after applying the super type constructor.
 Square.prototype = Object.create(Rectangle.prototype, {
   constructor: {
     configurable: true,
@@ -229,8 +230,37 @@ var square = new Square(6);
 alert(square.length); // 6
 alert(square.width); // 6
 alert(square.getArea()); // 36
-//See page 76
 
+/****************** Accessing Supertype Methods **************************/
+function Rectangle(length, width) {
+	this.length = length;
+	this.width = width;
+}
+Rectangle.prototype.getArea = function() {
+	return this.length * this.width;
+};
+Rectangle.prototype.toString = function() {
+	return "[Rectangle " + this.length + "x" + this.height + "]";
+};
+// inherits from Rectangle
+function Square(size) {
+	Rectangle.call(this, size, size);
+}
+
+Square.prototype = Object.create(Rectangle.prototype, {
+  constructor: {
+    configurable: true,
+    enumerable: true,
+    value: Square,
+    writable: true
+  }
+});
+// call the supertype method
+//Square.prototype.toString() calls Rectangle.prototype.toString() by using call().
+Square.prototype.toString = function() {
+	var text = Rectangle.prototype.toString.call(this);
+	return text.replace("Rectangle", "Square");
+};
 
 
 
