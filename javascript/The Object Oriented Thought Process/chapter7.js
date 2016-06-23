@@ -18,6 +18,7 @@ employee.prototype = new person();
 
 //assign person constructor to employee.prototype
 employee.prototype.contstructor = person;
+
 alert(employee.prototype.contstructor === person);
 
 //Initialize  employee.prototype constructor
