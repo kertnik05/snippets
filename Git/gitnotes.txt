@@ -10,6 +10,20 @@ git add <filename>	- Add one or more files to staging (index):
 git commit -m "Commit message" - Commit changes to head (but not yet to the remote repository):	
 git commit -a - Commit any files you've added with git add, and also commit any files you've changed since then:	
 
+Note: Message should be lessthan 50 Char, complete description, add ticket number (optional), buttlet points (optional), short hand notation per company standard (Ie. js, css)
+
+Head - last commit of what branch that you are on
+Cat HEAD- to see where the head
+Navigate to the Head and use Cat branchname
+
+
+git log - to view lates commit, it contains commit id, author, date
+git help log
+git log -n 2 - returns 2 commit
+git log --since="2012-06-05"
+git log --until="2012-06-05"
+git log --author="john"
+
 git push origin master - Send changes to the master branch of your remote repository:	
 
 git status- 	Status	List the files you've changed and those you still need to add or commit:	
@@ -40,7 +54,7 @@ View the conflicts against the base file:
 Preview changes, before merging:
 
 git diff
-
+git diff --staged
 git diff --base <filename>
 
 git diff <sourcebranch> <targetbranch>
@@ -69,3 +83,115 @@ Search
 
 Search the working directory for foo():	git grep "foo()"
 Contact GitHub API Training Shop Blog About
+
+VIM Environment
+i - to get into insert mode; Then write your message
+esc - to get back into normal mode
+:x or :wq - to quit and save and go back to git
+
+git status - to check status and to know what branch you are in
+git add . - add everyfiles
+git add *.html - add only html files
+
+
+
+git stash - when you are not ready to commit
+git stash apply - to continue editing your repositories
+
+
+Deleting files
+- right click delete the file
+- git status
+- git rm <filename>
+- git status
+- git commit -m "Delete file"
+
+or git rm <filename> - directly
+
+Moving renaming file
+- right click change the filename
+- git add <filename>
+- git rm <oldfilename>
+- git commit -m "rename file"
+or
+git mv <oldfilename> <newfilename>
+git mv <oldfilename> <newfoldernocation/newfilename>
+- git commit -m "moved the files"
+
+
+Undoing Changes
+git checkout -- index.html - make the index.html same as from the repository
+git reset HEAD resources.html - reset the resources.html the same from the respository's HEAD
+git commit --amend -m "ammend message" -  change the message of your last commit buut it creates a new commit
+git checkout <commitnumber> -- resources.html - replaces current resources.html with the commit number that you indicated
+git revert <commitnumber> - reverts to whatever commit you made
+git reset - specify where the head pointer
+git reset --soft <commit number> - all it does is that it moves the head pointer
+git reset --mixed <commit number> - (default), changes are not gone and ready to re-staged
+git reset --hard <commit number> - move back to specific point in time, but it is still movaeable
+git reset HEAD <filename> - unstages changes 
+git clean -n - tells the file to remove
+git clean -f - deletes untract files
+cat .git/HEAD 
+
+Ignoring files
+- create .gitignore file - using nano .gitignore
+inside .gitignore: 
+<filename> - ignore file that you enter
+*.log - this ignores all the files with .log extension
+!index.php - track this file
+foldername/folder/ - ignore all files in that directory
+
+Ignore files in all repositories or user specific
+git config --global core.excludesfile <folderlocation>/.gitignore_global
+nano folderlocation/.gitignoreglobal
+cat <folderlocation/.gitconfig
+
+Ignore track files
+add the files to the ignore
+git rm --cached <filename> - removed from staging 
+git add .gitignore
+git commit - m "remove file"
+
+Tracking Empty Directories
+touch <folderlocation/foldertokeep>/.gitkeep
+
+
+Navigate repository commit tree
+
+Commit number
+Head
+Branch
+Tag
+
+- Parent Commit
+-HEAD^, <commitnum>^, <branch>^
+-HEAD~1, HEAD~
+Grand Parent Commit
+-HEAD^^, <commitnum>^^, <branch>^^
+-HEAD~2
+Great Grand Parent Commit
+-HEAD^^^, <commitnum>^^^, <branch>^^^
+-HEAD~3
+
+git help ls-tree
+git ls-tree <branchname>
+git ls-tree <branchname> <folderloc>
+git ls-tree <commitnum>
+
+git log --oneline - gives one list of your log 
+git log --oneline -3 - shows last 3 commits
+git log --since="2012-06-20"
+git log --until="2012-06-20"
+
+git log --since="2 weeks ago" --until="3 days ago"
+git log --since="2.weeks" --until="3.days
+git log --author="kevin"
+git log --grep="temp"
+git log <fromcommitnum..tocommitnum> --oneline
+git log <fromcommitnum..> <filename> - check what happen to that file in that particular commit
+git log -p - shows a diff of each changes
+git log -p <commitnum> 
+git log --stat --summary
+
+
