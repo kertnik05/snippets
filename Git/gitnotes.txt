@@ -2,8 +2,45 @@ https://confluence.atlassian.com/display/STASH/Basic+Git+commands
 
 git init - Create a new local repository
 
+
+Remote Repositories
+1. Go into the folder that you want to push remotely
+2. git remote - to see if there's any remote repositories locally
+3. git remote add <alias> <url> - to upload your files in github. Github should give you a detailed instructions
+   git remote add origin https://github.com/...
+   git remove -v - to see what url to fetch and pull git
+   git push -u origin master - to push to master
+4. cat .git/config
+   ls -la .git/refs/remotes/origin
+   git branch -r - to see remote branch
+   git branch -a - to see both remote and local branch
+   
 git clone /path/to/repository - Check out a local repository
 git clone username@host:/path/to/repository - Check out a remote repository
+
+Tracking Remote Branch
+cat .git/config
+git config branch.<nontrackingbranchname>.remote origin
+git config branch.<nontrackingbranchname>.merge refs/heads/master
+git branch --set-upstream <nontractingbranchname> origin/<nontractingbranchname>
+
+Pushing Changes to a Remote Repository
+1. Make sure all your commits are committed locally
+	git log --oneline - to see local repo log
+	git log --oneline origin/master - to see remote repo log
+	git diff origin/master..master - to compare local branch to remote branch
+2. git push origin master
+
+
+Fetch Changes from remote Repo
+git fetch origin - to get the changes from the remote repositories
+git merge <branchnametomerge> 
+git pull - git fetch + git merge
+git log --oneline -5 origin/master - to see the log of remote repo
+git log --oneline -5 master - to see the log of local repo
+
+git branch <newlocalbranchname> origin/<branchname> - creates a tracting branch
+git branch --branch <newlocalbranchname> origin/<branchname>   - creates a tracting branch and gets commited right away
 
 git add <filename>	- Add one or more files to staging (index):	
 
@@ -193,5 +230,79 @@ git log <fromcommitnum..> <filename> - check what happen to that file in that pa
 git log -p - shows a diff of each changes
 git log -p <commitnum> 
 git log --stat --summary
+git log --graph --oneline --all --decorate
+
+viewing commits
+git show <commitnum>
+git show --format==oneline <commitnum/tree/blob>
+git diff --staged <commitnum>
+git diff --cached <commitnum>
+git diff  <commitnum> <filename>
+git diff  <commitnum> <filename>
+git diff  <previouscommitnum..previouscommitnum> or <branchname..otherbranchname> or <branchname..otherbranchname^>
+git diff  <previouscommitnum..previouscommitnum> <filename>
+git diff --stat --summary  <previouscommitnum..nextcommitnum> 
+git diff --ignore-space-change  <previouscommitnum..nextcommitnum> 
+git diff --color-words  <previouscommitnum..nextcommitnum> 
+git diff -b  <previouscommitnum..nextcommitnum> 
+git diff -w  <previouscommitnum..nextcommitnum> 
+
+
+Branching
+cat .git/HEAD
+ls -la .git/refs/heads - list the branches
+cat .git/refs/heads/master
+git branch - to see what branch you are on
+git branch <branchname> - to create a new branch
+git checkout  <branchname> - to switch to the branch you need to work on
+git checkout -b <branchname> - created the branch and switch at the same time
+git log --graph --oneline --decorate --all - to see all branches commitnum
+git branch --merged - to see if your current branch is  updated with the master
+git branch -m <oldbranchname> <newbranchname> - to rename the branch, make sure you are outside the branch that you tried to rename
+git branch --delete <branchtodelete> - you can't delete the branch that you are on
+__git_ps1 - to get out cd..
+echo $PS1
+
+
+Merge
+git merge <branchname> - make sure your are in the receiving branch
+git merge --no-ff <branchname>
+git merge --ff-only <branchname>
+git commit -am "Commit Message""
+
+Abort the Merge
+git merge --abort
+
+git status - to find which file has a conflict
+To fix the conflict
+1. Make sure you are in the branch you are trying to merge to
+2. Open the file and look at the conflict
+3. Edit the file and remove git embeded syntax
+4. Save and close the file
+5. git add <filename>
+6. git commit
+
+To avoid Conflicts
+- keep line short
+- keep commits small and focused
+- merge often
+- track changes to master (means make sure your banch is nsync with the master)
+
+Stash
+git status - Tells you when to use stash
+git stash save "your comment" - create a stash
+git log --oneline -3
+git stash list - to see the list of stash, you can apply stash on any branch
+git stash show <stashid> - to see the details
+git stash show -p <stashid> - to see the details
+git stash pop <stashid> - pulls the stash but leaves a copy in the stash
+git stash apply - added your stash into your branch
+git stash drop <stashid> - delete the stash
+ 
+
+
+
+
+
 
 
