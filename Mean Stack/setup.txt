@@ -1,0 +1,2 @@
+1. Download and Install Node JS - https://nodejs.org/en/
+In command prompt, type node -v
