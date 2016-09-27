@@ -4,6 +4,9 @@ admin/config/development/performance - cache
 /admin/reports/status - Site Status report
 /admin/reports/status/rebuild - 
 /admin/content/media - add media
+admin/config/user-interface/shortcut - shortcut
+admin/config/system/site-information - Theming site-information
+admin/appearance/settings - logo
 ​We need to ask acquia how about issues related to rebuilding permission.
 
 producyion - to staging - 

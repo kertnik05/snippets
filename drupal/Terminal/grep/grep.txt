@@ -1,5 +1,5 @@
 Search for Strings inside file and folder
-john-paul-macbook:context leemahi$ grep -nr yourstring* .
+john-paul-macbook:context leemahi$ grep -nr <yourstring> .
 
 Search for the given string in a single file
 grep "literal_string" filename
