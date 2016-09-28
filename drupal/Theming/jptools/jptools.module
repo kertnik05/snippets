@@ -50,7 +50,15 @@ function jptools_preprocess_node(&$variables) {
 					kpr($node); 
 				}
 			*/
-		
+
+		 /**
+			$node = $variables['node'];
+			kpr($node->status); 
+		*/
+         /**
+		$node = $variables['node'];
+		kpr($node); 
+		*/
 }
 
 /**

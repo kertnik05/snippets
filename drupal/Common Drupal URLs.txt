@@ -1,12 +1,21 @@
 admin/config/development/maintenance - maintenance settings
 admin/config/system/cron - Cron 
 admin/config/development/performance - cache
-/admin/reports/status - Site Status report
-/admin/reports/status/rebuild - 
-/admin/content/media - add media
+admin/reports/status - Site Status report
+admin/reports/status/rebuild - 
+admin/content/media - add media
 admin/config/user-interface/shortcut - shortcut
 admin/config/system/site-information - Theming site-information
 admin/appearance/settings - logo
-​We need to ask acquia how about issues related to rebuilding permission.
+admin/structure/contact - contact form Make sure enable the module
+admin/people/permissions  - 
+admin/structure/types -revisions,managing fields and content display
 
-producyion - to staging - 
+Creating Content
+admin/structure/types - Create Content Type
+​admin/structure/taxonomy - Create Categorizing Node Types, URL for Taxonomy
+admin/structure/types/manage/article/fields - Add fields for taxonomy
+
+Menu
+admin/structure/menu
+disable toolbar, enable admin_menu (install it first)
