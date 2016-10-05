@@ -1,0 +1,6 @@
+Installing Phyton in CLI
+1. SSH to AWS
+2. sudo apt-get install install phyton-pip
+
+Installing the CLI
+$ pip install awscli  - https://github.com/aws/aws-cli
