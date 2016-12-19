@@ -17,18 +17,74 @@ const qr = require('<modulename>');
 "main": "./app/main.js" //points the main origin of the app 
 
 
+//manually installing module
+npm install <modulename>@<versionnum> --save
+
+/****************** Example 1 *************/
 //Creating a module
 //mainapp
 //mainapp/newmodule
 //mainapp/newmodule.index.js
 'use strict';
 exports.hello = (user) =>{
-    return "hello " + user
+    return "hello " + user;
 }
 
 //mainapp/app.js
 'use strict';
 const enigma = require('./newmodule');
-console.log(enighma.hello('john'));
+console.log(enigma.hello('john'));
 
 //node app - to run the app.js
+
+/****************** Example 2 *************/
+
+//mainapp/newmodule.index.js
+'use strict';
+module.exports = function() {
+    return {
+        hello:(user) => {
+            return "hello" + user;
+        },
+        goodmorning:(user) => {
+            return "Good Morning" + user;
+        }
+    }
+}
+
+//mainapp/app.js
+'use strict';
+const Enigma = require('./newmodule');
+const eng = new Enigma();
+
+console.log(eng.hello('john'));
+console.log(eng.goodmorning('john'));
+
+/****************** Example 3 *************/
+//mainapp/newmodule.index.js
+'use strict';
+const crypto = require('crypto');
+
+module.exports = function(key) {
+    return {
+        encode:(str) => {
+            let encoder = crypto.createCipher('aes-256-ctr', this.key);
+            return encoder.update(str, 'utf8', 'hex');
+        },
+        decode:(str) => {
+            let decoder = crypto.createDecipher('aes-256-ctr', this.key);
+            return encoder.update(str, 'hex', 'utf8');
+        }
+    }
+}
+
+//mainapp/app.js
+'use strict';
+const Enigma = require('./newmodule');
+const eng = new Enigma('magrathea');
+
+let encodestring = eng.encode("dont panic!");
+console.log(encodestring);
+
+let decodestring = eng.decode(encodestring);
+console.log(decodestring);
