@@ -1,0 +1,347 @@
+Theme Folder Installation Location
+/Theme
+
+Theme Installation Instruction
+INSTALL.txt or README.txt
+
+URL for Theme Manangement
+/admin/appearance
+
+sites/default - 0777
+
+During Development 
+
+//Uncomment inside sites/default/settings.php if this causes an error try url/rebuild.php
+if (file_exists(__DIR__ . '/settings.local.php')) {
+  include __DIR__ . '/settings.local.php';
+}
+
+
+//Settings.local.php - copied from sites/example.settings.local.php into sites/default/settings.local.php
+/**
+ * Disable CSS and JS aggregation.
+ */
+$config['system.performance']['css']['preprocess'] = TRUE;
+$config['system.performance']['js']['preprocess'] = TRUE;
+
+$settings['cache']['bins']['render'] = 'cache.backend.null';
+$settings['cache']['bins']['dynamic_page_cache'] = 'cache.backend.null';
+
+$settings['extension_discovery_scan_tests'] = FALSE;
+
+
+*.info.yml
+    name (required): This is the name of our theme.
+    type (required): This is the type of extension (theme, module, or profile).
+    base theme (required): This is the theme that the current theme is inheriting. In most cases, it is recommended we reference either classy or stable as our base theme. If we choose not to reference a based theme, then we will need to set the value to false (base theme: false).
+    description (required): This is the description of our theme.
+    package (optional): This is used to group similar files when creating modules.
+    version (optional): This is created by packaging script.
+    core (required): This specifies the version of Drupal that a theme is compatible with.
+
+    //adding CSS and JS libraries
+    libraries:
+  - themename(folderlocation)/rootkey-name -- see seven.libraries.html(foldername.libraries.yml) for example
+  - themename(folderlocation)/rootkey-name
+
+    libraries-override:
+    folderlocation/rootkey-name: themename(folderlocation)/rootkey-name 
+
+    Extending libraries
+    libraries-extend:
+    folderlocation/rootkey-name: 
+        - themename(folderlocation)/rootkey-name
+    
+    stylesheets-remove:
+    - foldernamelocation/filename
+
+
+    //using Twig to add the css and js
+    {{ attach_library('themename(folderlocation)/rootkey-name') }}
+
+    //Attaching CSS Specifically *.theme
+    function themename_preprocess_page(&$variables) {
+        if ($variables['is_front']) {
+            $variables['#attached']['library'][] = 'themename(folderlocation)/rootkey-name';
+        }
+    }
+
+
+*.info.yml - regions
+  regions:
+  machinenameofregion: 'Human Readable Region Name'
+  machinenameofregion: 'Human Readable Region Name'
+
+  //to use inside twig file pag.html.twig
+   {{ page.machinenameofregion }}
+
+*.twig 
+Twig Template hierarchy https://www.drupal.org/docs/8/theming/twig/twig-template-naming-conventions
+    HTML wrapper: This contains the top-level HTML markup, including title, metadata, style sheets, and scripts, and it is commonly referred to as html.html.twig.
+    Page wrapper: This contains the content generally found between the body tags of an HTML document, and it is commonly referred to as page.html.twig.
+    Header: This is also known as a region, generally containing the header content of our web page. This can be part of the page.html.twig template or may reside in a region specified within our configuration file. This is commonly referred to as region.html.twig.
+    Content: This is also considered a region, generally containing our main content. This can consist of multiple subcontent regions, such as nodes and comments. Nodes and comments each have their own respective templates referred to as node.html.twig and comment.html.twig.
+    Sidebar: This is also considered a region. This can contain blocks of content. Blocks are either created by the end user or by Drupal itself. The content within these blocks generally resides within block.html.twig.
+    Footer: This is another region containing HTML content as well as blocks of content.
+
+Core Templates Location
+core/modules/system/templates: This contains the core templates 
+core/modules/node/templates: This contains the templates for nodes
+core/modules/comment/templates: This contains the comment templates
+core/modules/block/templates: This contains the templates for blocks
+
+
+Enable Tiwg Debug
+sites/development.services.yml
+Add the following lines to the bottom of the file: (This enable Twig Debugging in the console)
+parameters:
+  twig.config:
+    debug : true
+    auto_reload: true
+    cache: false
+
+This gives:
+FILE NAME SUGGESTIONS
+OUTPUT - where the code template is generated from
+
+Twig Fundamentals
+{# ... #} - comment tag - replaces <!-- This is a comment -->
+{{ ... }} - print tag
+{% ... %} -  statement tag
+
+Place inside page.html.twig
+    {# Setting a variable #}
+    {% set name = 'Drupal' %}
+
+    {# Gettting variables #}
+    <pre>{{ dump(name, is_front) }}</pre>
+
+    {# Filter a variable #}
+    <pre>{{ name|upper}} Rocks</pre> 
+
+    {# Filter a variable and elements#}
+    {% filter upper %}
+        <p>{{ name }} is the best cms around.</p>
+    {% endfilter %}
+
+    {# Conditional logic #}
+    {% set offline = true %}
+    {% if offline == true %}
+        <p>Website is in maintenance mode.</p>
+    {% endif %}
+
+    {# Looping #}
+    {% for i in 0 ..10 %}
+    {{ i }}
+    {% endfor %}
+
+
+Each Twig templage has list of variables written at the top of the file
+It can be displayed as such: {{ variablename }} 
+
+themename.theme
+    Intercept and Override variables
+    {# overriding  html.html.twig #} 
+    function themename_preprocess_html(&$variables) {
+        $variables['attributes']['class'][] = 'twig';
+    }
+    function themename_preprocess_block(&$variables){
+        dpm($variables);
+    }
+        //sample code after finding variables
+        function themename_preprocess_block(&$variables){
+            // Add layout class to Featured Blocks
+            $featured = array('block-tweet-customblockone','block-tweet-customblocktwo','block-tweet-customblockthree');
+            
+            $id = $variables['attributes']['id'];
+
+            // If block id matches list - add class
+            if(in_array($id, $featured)){
+                $variables['attributes']['class'][] = 'col-md-4';
+            }
+        }
+    function themename_preprocess_node(&$variables) {
+        $node = $variables ['elements']['#node'];
+        $id = $node->id();
+
+        // Create comment count variable for template
+        $count = _octo_comment_count($id);
+        //{{ comment_count }} to print in twig
+        $variables['comment_count'] = _octo_plural($count, 'Comment',
+        'Comments');
+    }
+        function _octo_comment_count($id) {
+            $count = db_query("SELECT comment_count FROM
+            comment_entity_statistics WHERE entity_id = :id",
+            array(':id' => $id))->fetchField();
+            
+            return empty($count) ? '0' : $count;
+        }
+        function _octo_plural($count, $singular, $plural) {
+            if ( $count == 1 )
+                return $count . ' ' . $singular;
+            else
+                return $count . ' ' . $plural;
+        }
+
+
+Creating region templates -- copy from /core/modules/system/templates *.twig a nd place this in your theme and edit
+region--regionname.html.twig
+
+//Theme Folder Structure
+css: This contains custom style sheets.
+img: This contains images used by the style sheets.
+js: This contains custom JavaScript.
+templates: This contains Twig templates.
+vendor: This contains JavaScript libraries.
+
+<!DOCTYPE html>
+<html{{ html_attributes }}>
+  <head>
+    <head-placeholder token="{{ placeholder_token|raw }}">
+    <title>{{ head_title|safe_join(' | ') }}</title>
+    <css-placeholder token="{{ placeholder_token|raw }}"> //outputs from *.libraries.yml
+    <js-placeholder token="{{ placeholder_token|raw }}">
+  </head>
+  <body{{ attributes }}>
+    <a href="#main-content" class="visually-hidden focusable">
+      {{ 'Skip to main content'|t }}
+    </a>
+    {{ page_top }}
+    {{ page }} //outputs from page.html.twig
+    {{ page_bottom }}
+    <js-bottom-placeholder token="{{ placeholder_token|raw }}">
+  </body>
+</html>
+
+Creating Block templates
+Check the block that outputs - block--system-branding-block-html-twig
+Navigate to core/modules/system/templates and copy the block--system-branding-block.html.twig template to our themes/themename/templates folder.
+
+Implementing our search form block
+Check the block that outputs - block--search-form-block.html.twig
+Navigate to core/modules/block/templates and copy the block.html.twig template to our themes/themename/templates folder.
+
+
+Creating an input element template
+Navigate to core/modules/system/templates and copy the input.html.twig template to our themes/themename/templates/input--search.html.twig.
+modify input--search.html.twig:
+{% set classes = ['form-control',] %}  {# set an array variable of classes #}
+<input{{attributes.addClass(classes).setAttribute         {# addClass - adds a class #}
+   ('placeholder','Enter your search terms...') }} />
+   {{ children }}
+
+
+Creating a menu template
+Navigate to core/modules/system/template and copy menu.html.twig to the themes/themename/templates/menu--main.html.twig
+modify menu--main.html.twig:
+<ul{{ attributes.addClass('nav nav-pills nav-main') }}>
+
+Creating System Menu block template
+Navigate to core/modules/system/template and copy block--system-menu-block.html.twig to the themes/octo/templates/block--system-menu-block.html.twig
+modify block--system-menu-block.html.twig:
+ <div class="navbar-main navbar-collapse collapse">
+     {{ content }}
+   </div>
+modify page--front.html.twig:
+<div class="header-nav container">
+    {{ page.header}}
+    {{ page.primary_menu }}
+</div>
+
+Implementing our Node template
+Navigate to core/modules/system/template and copy node.html.twig to the themes/octo/templates/block--node--post--listing.html.twig
+
+Working with content variables
+node--post--listing.html.twig
+{% set classes = ['post', 'post--listing'] %}
+<article{{ attributes.addClass(classes) }}>
+   {{ content.field_image }} {# field_image is a field machine name #} 
+   {{ content }}
+</article>
+
+Using Twig filters for dates
+node--post-listing.html.twig
+<div class="post-date">
+  <span class="day">{{ node.createdtime|date('d') }}</span>
+  <span class="month">{{ node.createdtime|date('M') }}</span>
+</div>
+
+Printing title and teaser
+node--post-listing.html.twig
+<div class="post-content">
+  {{ title_prefix }}
+  <h2{{ title_attributes }}>
+    <a href="{{ url }}" rel="bookmark">{{ label }}</a>
+  </h2>
+  {{ title_suffix }}
+  {{ content.field_teaser }}
+</div>
+{{ content|without('field_image','field_teaser') }}
+
+Creating our post metadata
+<div class="post-meta">
+  <span class="post-meta-user">
+    <i class="fa fa-user"></i> By {{ author_name }}
+  </span>
+</div>
+
+node--post--listing.html.twig
+<span class="post-meta-tag">
+  <i class="fa fa-tag"></i> {{ content.field_tags }}
+</span>
+
+Field templates and taxonomy
+field--field-tags.html.twig
+<ul>
+  {% for item in items %}
+    <li{{ item.attributes.addClass('field-item') }}>
+         {{ item.content }}
+    </li>
+  {% endfor %}
+</ul>
+
+Adding a read more link
+node--post--listing.html.twig
+<a href="{{ url }}" class="button button--primary button--xs pull-right">Read more...</a>
+
+
+Handling comments in Drupal 8
+comments are now their own field and must be added to a content type like any other field that you want to create
+/admin/structure/comment - logic
+/admin/structure/types/manage/post/fields - template
+
+
+
+
+Creating a sticky header
+//-- Sticky Header
+   (function() {
+     var mainnav = $('.header');
+     if (mainnav.length) {
+       var elmHeight = $('.header-top').outerHeight(true);
+       $(window).scroll(function() {
+         var scrolltop = $(window).scrollTop();
+         if (scrolltop > elmHeight) {
+
+           if (!mainnav.hasClass('sticky')) {
+             mainnav.addClass('sticky');
+           }
+
+         } else {
+           mainnav.removeClass('sticky');
+         }
+        })
+       }
+     })();
+
+
+
+Adding custom JavaScript
+themename.libraries.yml - where the js libraries and custom js are referenced
+//sample jquery code
+! function($) {
+    $(document).ready(function() {
+
+    });
+}(jQuery);
