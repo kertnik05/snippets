@@ -1,0 +1,15 @@
+parameters:
+    dino.roar.use_key_value_cache: true
+
+services:
+    dino_roar.roar_generator:
+        class: Drupal\dino_roar\Jurassic\RoarGenerator
+        arguments:
+            - '@keyvalue'
+            - '%dino.roar.use_key_value_cache%'
+
+    dino_roar.dino_listener:
+        class: Drupal\dino_roar\Jurassic\DinoListener
+        arguments: ['@logger.factory'] #LoggerChannelFactoryInterface is used as an arguemnt in  __construct
+        tags:
+            - { name: event_subscriber } #event_subscriber tells drupal that this is an event

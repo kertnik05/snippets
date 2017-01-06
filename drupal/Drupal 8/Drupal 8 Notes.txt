@@ -347,3 +347,20 @@ themename.libraries.yml - where the js libraries and custom js are referenced
 }(jQuery);
 
 https://docs.drupalconsole.com/en/commands/available-commands.html
+
+Activate Debugging
+Uncomment in settings.local.php and settings.php (Makes error display in browser)
+settings.local.php
+$config['system.logging']['error_level'] = 'verbose';
+
+settings.php
+ if (file_exists(__DIR__ . '/settings.local.php')) {
+  include __DIR__ . '/settings.local.php';
+ }
+
+ Install Devel module
+  Install Web Profiler
+    - click configure
+
+
+
