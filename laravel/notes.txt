@@ -1,0 +1,15 @@
+Installing Laravel from Terminal: composer.phar create-project laravel/laravel=5.3 foldernameifany --prefer-dist
+
+To Create a MiddleWare from Terminal: php artisan make:middleware MyMiddleware
+
+composer.json
+//https://laravelcollective.com/docs/5.3/html - $  composer.phar update
+
+php artisan make:migration create_memberinfo
+php artisan migrate 
+php artisan migrate:rollback
+
+
+php artisan
+php artisan app:name NewNameofAppNamespace
+php artisan  make:model MemberInfo
