@@ -4,6 +4,8 @@ $ docker run -d -p 1433:1433 \
 > -e ACCEPT_EULA=Y \
 > microsoft/mssql-server-linux
 
+$ docker stop container_id
+
 $ docker info
 $ Docker version
 $ docker-machine ls
@@ -12,14 +14,14 @@ $ docker run repositoryname:tag echo "Download and Installed Completed"
 $ docker run repositoryname:tag ls /
 //i - interactive container t - pseudo TTY that attaches stdin and stadout (This will give you a command line access to server)
 $ docker run -i -t repositoryname:tag    
-$ docker run -d  repositoryname:tag   sleep 1000 //outputs docker container id
+$ docker run -d  repositoryname:tag   sleep 1000 //outputs docker container id, -d runs in detachmode
 $ docker ps //display the containers detials
 $docker run --rm repositoryname:tag  sleep 1 //run and remove after 1 seconds
 $ docker run --name hellow_world repositoryname:tag
 $ docker ps - a //to get the container_id
 $ docker run -d  repositoryname:tag   sleep 100
-$ docker inspect somerandomdockerid
-$ docker logs somerandomdockerid
+$ docker inspect containerid // details the ip and macaddress of the container and logpagth
+$ docker logs containerid
 $ docker history repositoryname:tag 
 
 $ docker run --name -it repositoryname:tag
