@@ -20,6 +20,16 @@ const qr = require('<modulename>');
 //manually installing module
 npm install <modulename>@<versionnum> --save
 
+npm install --save jade
+npm install --save-dev bower //installs the bower
+bower init //follow init instruction
+npm install jquery --save 
+npm install angular --save
+
+
+
+
+
 /****************** Example 1 *************/
 //Creating a module
 //mainapp
