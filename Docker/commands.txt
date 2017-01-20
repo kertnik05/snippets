@@ -83,9 +83,6 @@ $docker exec -it container_id bash
 
 
 
-
-
-
 Find Docker Quickstart Terminal
 
 Docker default machine with IP 192.168.99.100
@@ -96,6 +93,48 @@ Docker default machine with IP 192.168.99.100
 2. Run Containers in the Network 
     - $ docker run -d --net=customname_of_netowork --name containername mongo 
 
+$ brctl show <interfacename>
+$ docker run -it --name=net1 net-img
+$ docker run -it --name=net2 net-img
+$ brctl show
+$ docker attach net1
+$ ping 8.8.8.8
+$ traceroute 8.8.8.8
+$ docker inspect net2
+$ ls -l /var/lub/docker/ccontainers/<containerid> //to see the container network details in files
+    - you can see the container host and resolv.conf
+
+$ docker run --dns=8.8.4.4 --name=dnstest net-img
+$ docker inspect dnstest 
+//Exposing ports to outside world
+vim Dockerfile
+EXPOSE 80 
+$ docker build -t="apache-img" .
+$ docker run -d -p 5001:80 --name=web1 apache-img
+$ docker ps
+$ docker port web1
+$ docker run -d -p 5002:80/udp --name=web2 apache-img
+$ docker port web2
+$ docker run -d -p 192.168.56.50:5003:80 --name=web3 apache-img
+$ vim Dockerfile
+$ docker build -t="apache-img2" .
+$ docker run -d -P --name=containername apache-img
+
+//Linking Container
+SRC : 80
+RCVR : networking receives the network config of SRC
+
+$ docker run --name=sourcecontainername -d imagename
+$ docker run --name=receivingcontainer --link=sourcecontainername:sourcecontainernamealias -it <imagename> /bin/bash
+$ docker inspect receivingcontainer
+    - you should see link
+$ docker inspect sourcecontainername | grep Links
+    - you should see not link    
+$ docker attach receivingcontainer
+    # env | grep sourcecontainernamealias
+    # cat /etc/hosts
+
+docker run -d -p 1433:1433 -e SA_PASSWORD='password111!' -e ACCEPT_EULA=Y --link=apacheserver2:apacheserver microsoft/mssql-server-linux
 
 Docker Compose 
 1. docker-compose.yml
@@ -131,43 +170,195 @@ $ docker-compose stop
 $ docker-compose start
 $ docker-compose rm 
 
-/* Docker Networking */
-1. Create a Custom Bridge Network 
-    - $ docker network create --driver bridge customname_of_netowork
-2. Run Containers in the Network 
-    - $ docker run -d --net=customname_of_netowork --name containername mongo 
 
 
-Docker Compose 
-1. docker-compose.yml
-2. docker compose build
-3. docker images (services)
+/* Major Docker Components */
+Docker Engine/Daemon/runtime - Shipping Yard
+Docker Images - Manifest
+Docker Container - Shipping Containers
+
+$ docker pull -a <imagename>
+$ docker pulll <imagename>     // Load to: /var/lib/docker<storage driver>
+$ docker run -it <imagename> <application to run>  //  $ docker run -it ubuntu /bin/bash
+$ docker images // To see all images
+$ docker images <imagename>
+$ docker ps // to see what's running container
+$ docker attach <containerid>
+$ docker ps -a //To see all container
 
 
-version: '2'
-services:
-  web: //cusom name of service
-    build:
-        context: ./dir  
-        dockerfile: web.dockerfile
-        args:
-            buildno: 1
-    networks:
-     -some-network 
-    
-    mongodb:
-        image: mongo
-        networks:
-            -some-network 
-    networks:
-        some-network 
-        driver: bridge
+Registery And repository 
+hub.docker.com 
 
-$ docker-compose build
-$ docker-compose up
-$ docker-compose down
-$ docker-compose logs
-$ docker-compose ps
-$ docker-compose stop
-$ docker-compose start
-$ docker-compose rm 
+Layers / stack Images - contains a unique ID, higher layer win (union mounts)
+bootfs - starting containers
+Base Image - Operating System 
+Layer 1 - Software To Install in OS 
+Layer 2 - Updates
+R/W 
+
+$ docker images --tree
+$ ls -l /var/lib/docker<storage driver>/layersid //this will display layers inside the layer
+$ cat /var/lib/docker<storage driver>/layers/layerid //this will display layers inside the  layer
+
+$ docker imges
+$ docker run ubuntu /bin/bash -c "echo 'hello world' > /<folderloc>/<filename>"
+$ docker ps -a
+$ docker commit  <containerid> <customreponame> //creates an image from the changes that you've made previously
+$ docker history <customreponame>
+$ docker save -o /<folderdirectorylocation>/<customreponame>.tar <customreponame>
+$ ls -lh /<folderdirectorylocation>/<customreponame>.tar
+$ tar -tf /<folderdirectorylocation>/<customreponame>.tar
+$ docker load i /<folderdirectorylocation>/<customreponame>.tar
+$ docker run -it fridge /bin/bash
+# cat /<folderloc>/<filename>
+# docker run -d ubuntu /bin/bash -c "ping 8.8.8.8 -c 30"
+# docker ps
+# docker stop <containerid>
+$ docker run <reponame>:<tag>
+$ docker run --cpu-shares=256
+$ docker run memory=1g
+$ docker run --cpu memory=1g
+$ docker inspect <containerID> 
+$ docker inspect <imagesid> 
+$ docker attach <containerid>
+
+
+Starting and Stoping Container
+$ docker run -it <reponame>:<tag> /bin/bash
+$ docker stop  <containerID> 
+$ docker ps -l 
+$ docker start <containerID> 
+$ docker attach <containerID> 
+$ docker restart <containerID> 
+
+PID 1 and Containers
+init is a bit special
+
+Deleting Containers
+$ docker ps 
+$ docker info
+$ ls -l /var/lib/docker/containers | wc -l
+# docker stop <containerid>
+$ docker rm <containerid>
+$ docker rmi <containerid>
+$ docker rm -f  <containerid> //to force deletion
+
+Command Shorcuts
+$ alias dps="docker ps"
+$ dps
+
+Looking inside Containers
+$ docker top <containerid>
+$ docker attach <containerid>
+# ps -ef
+$ docker logs <containerid>
+$ docker inspect <containerid> //pulled from config.json
+    $ ls -1 /var/lib.docker/containers/<containerid>/config.json
+
+
+Running a shell
+$ docker attach // attaches to PID inside the container
+$ docker inpect <containerid> | grep Pid 
+$ nsenter -m -u -n -p -i -t <Pid> /bin/bash //nsenter allows you to enter namespaces
+$ docker-enter <containerid>'
+$ exit
+$ docker exec -it <containerid> /bin/bash //recomemded way
+
+$ docker run -v /usr/local/bin:/target <containerid>:<tag>
+
+
+Dockerfile - a text file with syntax, instructions to build image
+$ vim Dockerfile
+    # comment
+
+    FROM <Imagename>:<version>
+    MAINTAINER jpm8387@yahoo.com
+    RUN apt-get update 
+    RUN apt-get install -y nginx
+    RUN apt-get install -y golang
+    CMD ["echo", "Hellow World"]
+:wq!
+
+
+
+Docker Build Image
+$ docker build -t <imagename>:<tag> . 
+$ docker history <imageid>
+$ docker run <imagename>:<tag> 
+
+$ docker build -t="build1" .
+    - After this runs it saves a cache
+$ docker info
+    $ vim Dockerfile  // to open the Dockerfile and then edit to remove the cache
+$ docker build -t="build2" .
+$ docker history <imageid>
+//Web Server Dockerfile
+    FROM ubuntu:15.04
+    RUN apt-get update && apt-get install -y \
+        apache2  \
+        apache2-utils \
+        vim \
+        &&  apt-get clean \
+        && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    Expose 80 
+    VOLUME /<Folderloc>
+    CMD ["apache2ctl", "-d", "FOREGROUND"]
+    :wq!
+$ docker build -t="WEBSERVER" .
+$ docker run -d -p 80:80 WEBSERVER
+$ docker stop <containerID> 
+$ docker history WEBSERVER // \ makes the command run in one layer
+
+RUN - runs on build time, add layers to images, used to install apps
+CMD - runs inside the container, run time, quivalent to /bin/bash
+    Shell Form - Commands are expressed the same way as shell Commands, commands get prepended "/bin/bash -c"
+    Exec Form  - JSON array style - ["command", "arg1"]
+
+ENTRYPOINT ["ECHO"] 
+    $ docker run <imagename> hello world there!
+ENTRYPOINT ["apache2ctl"] 
+    $ docker run -d -p 80:80 web2 -D FOREGROUND
+
+Volume 
+$ docker run -it -v /<folderloc> --name=<customecontainername> <repository>:<tag> /bin/bash
+$ docker inspect <customecontainername> 
+$ docker rm -v <containerid>
+
+
+
+
+
+Read other programers dockerfile 
+
+
+
+Create A Public Repo on Docker Hub
+$ docker tag <imageid> <yourdockerhubid>/<reponame>:<tag>
+$ docker push <yourdockerhubid>/<reponame>:<tag>
+$ docker pull <yourdockerhubid>/<reponame>:<tag>
+
+Private Registries
+$ docker version
+$ docker run -d -p 5000:5000 registry // creates a registry server
+url: debian8.docker.course:5000
+$ docker tag <imageid>  debian8.docker.course:5000/priv-test //create an image inside ubuntu
+$ docker push debian8.docker.course:500/priv-test //pushing  <ubuntu image>  is pushed to private repo
+$ docker run pull debian8.docker.course:500/priv-test // pulling your image to other other os 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
