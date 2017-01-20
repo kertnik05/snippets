@@ -130,3 +130,44 @@ $ docker-compose ps
 $ docker-compose stop
 $ docker-compose start
 $ docker-compose rm 
+
+/* Docker Networking */
+1. Create a Custom Bridge Network 
+    - $ docker network create --driver bridge customname_of_netowork
+2. Run Containers in the Network 
+    - $ docker run -d --net=customname_of_netowork --name containername mongo 
+
+
+Docker Compose 
+1. docker-compose.yml
+2. docker compose build
+3. docker images (services)
+
+
+version: '2'
+services:
+  web: //cusom name of service
+    build:
+        context: ./dir  
+        dockerfile: web.dockerfile
+        args:
+            buildno: 1
+    networks:
+     -some-network 
+    
+    mongodb:
+        image: mongo
+        networks:
+            -some-network 
+    networks:
+        some-network 
+        driver: bridge
+
+$ docker-compose build
+$ docker-compose up
+$ docker-compose down
+$ docker-compose logs
+$ docker-compose ps
+$ docker-compose stop
+$ docker-compose start
+$ docker-compose rm 
