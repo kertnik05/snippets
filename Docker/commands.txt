@@ -350,6 +350,10 @@ $ docker run pull debian8.docker.course:500/priv-test // pulling your image to o
 
 
 
+//Docker Networking
+$ sudo lsof -i -P | grep -i "listen"
+$ docker ps
+
 
 
 
