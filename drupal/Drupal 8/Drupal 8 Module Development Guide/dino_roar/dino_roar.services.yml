@@ -11,5 +11,5 @@ services:
     dino_roar.dino_listener:
         class: Drupal\dino_roar\Jurassic\DinoListener
         arguments: ['@logger.factory'] #LoggerChannelFactoryInterface is used as an arguemnt in  __construct
-        tags:
+        tags: #use for registering event listener
             - { name: event_subscriber } #event_subscriber tells drupal that this is an event

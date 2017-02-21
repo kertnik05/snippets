@@ -51,3 +51,4 @@ function block_example_block_view_alter(array &$build, BlockPluginInterface $blo
 /**
  * @} End of "defgroup block_example".
  */
+

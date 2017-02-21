@@ -43,7 +43,7 @@ class RoarController extends ControllerBase
         $roar = $this->roarGenerator->getRoar($count);
         $this->loggerFactoryService->get('default')
             ->debug($roar);
-
+        #kernel.view will wrap this return in to a renderable array
         return [
             '#title' => $roar
         ];

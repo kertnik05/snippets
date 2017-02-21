@@ -2,12 +2,12 @@
 
 namespace Drupal\dino_roar\Jurassic;
 
-use Drupal\Core\Logger\LoggerChannelFactoryInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface; //drupal-8/vendor/symfony/event-dispatcher/EventSubscriberInterface.php
+use Drupal\Core\Logger\LoggerChannelFactoryInterface; 
+use Symfony\Component\EventDispatcher\EventSubscriberInterface; //Step 1: Find the Event to listen $ drupal container:debug | grep logger drupal-8/vendor/symfony/event-dispatcher/EventSubscriberInterface.php
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;  //drupal-8/vendor/symfony/http-kernel/KernelEvents.php
 
-//Step 1.
+//Step 2.
 class DinoListener implements EventSubscriberInterface
 {
     private $loggerFactory;
@@ -16,7 +16,7 @@ class DinoListener implements EventSubscriberInterface
     {
         $this->loggerFactory = $loggerFactory;
     }
-    //Step 4: $event returns GetResponseEvent
+    //Step 5: $event returns GetResponseEvent
     public function onKernelRequest(GetResponseEvent $event)
     {
         //var_dump($event); die;
@@ -30,11 +30,11 @@ class DinoListener implements EventSubscriberInterface
     }
 
 
-    //Step2. getSubscribedEvents From EventSubscriberInterface
+    //Step3. getSubscribedEvents From EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            //Step 3:Classname::ConstantName => 'functionameyouliketocall',
+            //Step 4:Classname::ConstantName => 'functionameyouliketocall - onKernelRequest()',
             KernelEvents::REQUEST => 'onKernelRequest',
         ];
     }
