@@ -1,0 +1,44 @@
+PIMPLE
+
+app.php
+require __DIR__.'/vendor/autoload.php';
+use DiDemo\Mailer\FriendHarvester; 
+
+$container = new Pimple();
+$container['database.dsn'] = 'sqlite:'.__DIR__.'/data/database.sqlite';
+$container['mailer'] = $container->share(function(){
+    return new SmtpMailer(
+        'smtp.url.com',
+        'smptuser',
+        't0psecret!',
+        465,
+    );
+});
+
+$container['pdo'] = $container->share(function(Pimple $container['database.dsn']){
+    return new PDO($container['database.dsn']);
+});
+
+$container['FriendHarvester'] = $container->share(function(Pimple $container){
+    return new FriendHarvester($container['pdo'], $container['mailer']);
+});
+
+
+
+$FriendHarvester = $container['FriendHarvester'];
+$mailer1 = $container['mailer'];
+$mailer2 = $container['mailer'];
+
+
+src/DiDemo/FriendHarvester.php
+namespace DiDemo; 
+use DiDemo\Mailer; 
+class FriendHarvester {
+    private $pdo;
+    private $mailer;
+    public function __construct(\PDO $pdo, SmtpMailer $mailer) //This is an example of dependency 
+    {
+            $this->pdo = $pdo;
+            $this->mailer = $mailer;
+    }
+}
