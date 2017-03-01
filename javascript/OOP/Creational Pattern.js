@@ -1,6 +1,6 @@
 // Each of the following options will create a new empty object:
 var newObject = {}; // or
-var newObject = Object.create(proto[propertiesObject]); // or
+var newObject = Object.create(proto[yourObj,propertiesObject]); // or
 var newObject = new Object();
 
 // ECMAScript 3 compatible approaches
