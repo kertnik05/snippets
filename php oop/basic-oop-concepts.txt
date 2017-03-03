@@ -4,7 +4,7 @@ Parent Class - also called super class or base class
 Child Class - also called sub class
 Abstract Class: A class that contains one or more abstract methods (Interface). You use the syntax, 'extends' to implement the abstract class. In UML, the abstract interface is displayed as a broken arrow.
 method - is a function that contains structured code (sequence, conditions, iterations)
-Interface - is a public method. Normally has a return. Accessor and Constructor are both interface. 
+Interface Method - is a public method. Normally has a return. Accessor and Constructor are both interface. 
     2 Types of Interface
         - Abstract Interface - more generic (Take me to Airport). More Resuable. 
         - Concrete Interface - very specific (Take taxi, turn right, turn left ...)
@@ -16,7 +16,7 @@ Interface - is a public method. Normally has a return. Accessor and Constructor 
     - It can be use by classes that are not related
     - Models Behavior
 
-Implementation - is a private method. It can be change without the knowledge of the user of the interface. 
+Implementation Method - is a private method. It can be change without the knowledge of the user of the interface. 
 Modules - Interface and Implementation can be seen organized in modular fashion
 Constructor - is a method that is the same as classname or use the word contruct method. Primary purpose is for initialization(safe state) of attributes. No return. Called during intantiation. 
     Best practice to have one constructor even if not in used. If you plan to add a contructor, then replace the default (check for bugs) or just simply add another contructor. 
@@ -24,7 +24,7 @@ Constructor - is a method that is the same as classname or use the word contruct
 
 Is a Relationship - Circle is a shape, Square is a shape
     Inheritance - Abstaction (copy a parent to create it's own)
-    - Multiple Inheritance - Class that inherets from multiple class (except Java, .net, and Objective C)
+    - Multiple Inheritance - Class that inherets from multiple class or abstract class (except Java, .net, and Objective C)
     - Polymorphism - Normally when a public abstract method  of a parent class is overriden.
         - When an Abstract class is extended, it is inheretance. And when the Interface methods is overriden that's when you can call polymorphism. 
         - For Example, Square is a child of Shape and Circle is a child of shape. When you call getArea() - each class returns different calculations.
@@ -51,8 +51,6 @@ Signature - is a method name + Parameter
 Error Handling - Throw an exception, do not ignore. Display and error and do a cleanup by asking user for error feedback. Try and cath method.
 Destructors = available on some language like C#. Purpose to prevent memory leak and code cleanup.
 
-
-
 How to Think in OOP:
  - Think in Abstract
  - Minimal Interace as possible
@@ -77,8 +75,6 @@ When Designing a Class:
         - Build system that is flexible without adding complexity
     - In Larger Systems - keeping things as simple as possible is usually the best practice
     
-
-
 Non portable code (ie native or concrete interface) - provide a wrapper. 
 
 Objects 
@@ -91,3 +87,14 @@ Framework: It's about code re-use/plug and play though API
         - Abstract Class methods that has no implementation can be used as an API after it is instantiated.
             - For example: Each Child class must use the same syntax when implementing the same interface but can have their own implementation
         - Contract - not use as in a composition
+
+Abstract Class 
+    - methods within Abstracts have one or more methods that do not have implementation
+    - It provides abstract and concrete methods
+    - Use the keyword, "extends" to use Abstract Class
+    - inheriting class must provide, it's own implentation of the interface method 
+
+Interface 
+    - methods within interface have no implementation at all
+    - It provides only abstract accessor methods
+    - Use the keyword, "implements" to use Interface Class

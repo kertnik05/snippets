@@ -1,3 +1,17 @@
+$ docker-machine ls
+$ docker-machine start <machine name>
+$ docker-machine stop <machine name>
+$ docker-machine env <machine name> //if terminal doesn't connect to your docker default
+$ docker-machine ip <machine name>
+
+$ docker pull <imagename>
+$ docker run <imagename>
+$ docker images
+$ docker ps
+
+
+
+
 $ docker pull microsoft/mssql-server-linux
 $ docker run -d -p 1433:1433 \
 > -e SA_PASSWORD='password111!' \
@@ -8,7 +22,9 @@ $ docker stop container_id
 
 $ docker info
 $ Docker version
-$ docker-machine ls
+$ docker-machine ls //list all the docker machine running
+$ docker-machine status default //default is the machine
+$ docker-machine env default //default is the machine
 $ docker images
 $ docker run repositoryname:tag echo "Download and Installed Completed"
 $ docker run repositoryname:tag ls /
@@ -322,6 +338,7 @@ ENTRYPOINT ["apache2ctl"]
 
 Volume 
 $ docker run -it -v /<folderloc> --name=<customecontainername> <repository>:<tag> /bin/bash
+    $ docker run -it -p 8080:3000 -v $(pwd<hostfolderloc>):/<containerfolderloc> --name=<customecontainername> <repository>:<tag> /bin/bash
 $ docker inspect <customecontainername> 
 $ docker rm -v <containerid>
 
@@ -356,13 +373,26 @@ $ docker ps
 
 
 
+https://hub.docker.com/r/thomasbisignani/docker-apache-php-oracle/
+$ docker pull thomasbisignani/docker-apache-php-oracle
+$ docker run -p 8080:80 -d -v $(pwd)/sample:/var/www/html thomasbisignani/docker-apache-php-oracle
+$ docker run -p 8080:80 -d -v </local/path/www>:/var/www/html thomasbisignani/docker-apache-php-oracle
+$ docker exec -it <containerid> /bin/bash
+
+https://hub.docker.com/r/sath89/oracle-12c/
+$docker pull sath89/oracle-12c
+$docker run -d -p 8080:8080 -p 1521:1521 -v /my/oracle/data:/u01/app/oracle -e DBCA_TOTAL_MEMORY=1024 sath89/oracle-12c
 
 
 
 
-
-
-
-
-
+$ docker run --name=sourcecontainername -d -p 8080:8080 -p 1521:1521 -v /my/oracle/data:/u01/app/oracle -e DBCA_TOTAL_MEMORY=1024 sath89/oracle-12c
+$ docker run --name=receivingcontainer --link=sourcecontainername:sourcecontainernamealias -it <imagename> /bin/bash
+$ docker inspect receivingcontainer
+    - you should see link
+$ docker inspect sourcecontainername | grep Links
+    - you should see not link    
+$ docker attach receivingcontainer
+    # env | grep sourcecontainernamealias
+    # cat /etc/hosts
 
