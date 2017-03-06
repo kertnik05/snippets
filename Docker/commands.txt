@@ -8,6 +8,8 @@ $ docker pull <imagename>
 $ docker run <imagename>
 $ docker images
 $ docker ps
+$ docker rm <tagname> || <CONTAINER ID>
+$ docker rmi -f <repositoryname>
 
 
 
@@ -386,13 +388,25 @@ $docker run -d -p 8080:8080 -p 1521:1521 -v /my/oracle/data:/u01/app/oracle -e D
 
 
 
-$ docker run --name=sourcecontainername -d -p 8080:8080 -p 1521:1521 -v /my/oracle/data:/u01/app/oracle -e DBCA_TOTAL_MEMORY=1024 sath89/oracle-12c
-$ docker run --name=receivingcontainer --link=sourcecontainername:sourcecontainernamealias -it <imagename> /bin/bash
+$ docker run --name=sourcecontainername -d -p 8080:8080 -p 1521:1521 -v $(pwd)/oracle:/u01/app/oracle -e DBCA_TOTAL_MEMORY=1024 sath89/oracle-12c
+$ docker run --link=sourcecontainername:sourcecontainername  -p 80:80 -d -v $(pwd)/sample:/var/www/html thomasbisignani/docker-apache-php-oracle
 $ docker inspect receivingcontainer
     - you should see link
+    - docker inspect -f "{{ .HostConfig.Links }}" <receivingcontainername>
+$ docker exec -it <containerid> /bin/bash
 $ docker inspect sourcecontainername | grep Links
     - you should see not link    
 $ docker attach receivingcontainer
     # env | grep sourcecontainernamealias
     # cat /etc/hosts
 
+$ docker ps -a
+$ docker exec -it <containerid> /bin/bash
+$ sqlplus 
+Enter Username: sys as sysdba
+Password: oracle
+
+https://aishwaryavaishno.wordpress.com/2013/05/10/how-to-reset-password-for-a-locked-oracle-sql-developer-account/
+select username,password,account_status from dba_users; //check which account is locked
+alter user USERNAME identified by password; // change user password
+alter user scott account unlock; //unlock user
