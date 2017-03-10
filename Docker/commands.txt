@@ -384,6 +384,10 @@ $ docker exec -it <containerid> /bin/bash
 https://hub.docker.com/r/sath89/oracle-12c/
 $docker pull sath89/oracle-12c
 $docker run -d -p 8080:8080 -p 1521:1521 -v /my/oracle/data:/u01/app/oracle -e DBCA_TOTAL_MEMORY=1024 sath89/oracle-12c
+$ docker ps -a
+$ docker stop <ContainerID>
+$ docker start <ContainerID>
+
 
 
 
