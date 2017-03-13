@@ -1,7 +1,18 @@
 <?php
-class Singleton
+
+class Database {
+    public function __construct()
+    {
+        /** Private */
+    }
+}
+
+class DatabaseSingleton
 {
+    private static $instance;
+
     /** Ref: http://code.tutsplus.com/tutorials/the-whens-and-whys-for-php-design-patterns--net-27862
+         * Singleton Make sure that only one object gets created
 		 * When: You need to achieve singularity and want a cross platform, 
 		 * 	lazily evaluated solution which also offers the possibility of creation through derivation.
 		 * Why: To offer a single point of access when needed.
@@ -11,14 +22,11 @@ class Singleton
      *
      * @return Singleton The *Singleton* instance.
      */
-    public static function getInstance()
-    {
-        static $instance = null;
-        if (null === $instance) {
-            $instance = new static();
+    public static function getInstance() {
+        if(!isset(DatabaseSingleton::$instance)){  //Check if the $instance did not get instantiated
+            DatabaseSingleton::$instance = new Database(); //Association
         }
-
-        return $instance;
+        return DatabaseSingleton::$instance;
     }
 
     /**
@@ -27,6 +35,7 @@ class Singleton
      */
     protected function __construct()
     {
+        /** Private */
     }
 
     /**
@@ -50,14 +59,18 @@ class Singleton
     }
 }
 
-class SingletonChild extends Singleton
+class DatabaseSingletonChild extends DatabaseSingleton
 {
 }
 
-$obj = Singleton::getInstance();
-var_dump($obj === Singleton::getInstance());             // bool(true)
+$obj = DatabaseSingleton::getInstance();
+var_dump($obj === DatabaseSingleton::getInstance());             // bool(true)
 
-$anotherObj = SingletonChild::getInstance();
-var_dump($anotherObj === Singleton::getInstance());      // bool(false)
+$anotherObj = DatabaseSingletonChild::getInstance();
+var_dump($anotherObj === DatabaseSingleton::getInstance());      // bool(false)
 
-var_dump($anotherObj === SingletonChild::getInstance()); // bool(true)
+var_dump($anotherObj === DatabaseSingletonChild::getInstance()); // bool(true)
+
+var_dump($obj);
+var_dump($anotherObj);
+/********************************************************************/
