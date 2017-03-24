@@ -396,7 +396,10 @@ $ docker run --name=sourcecontainername -d -p 8080:8080 -p 1521:1521 -v $(pwd)/o
 $ docker run --link=sourcecontainername:sourcecontainername  -p 80:80 -d -v $(pwd)/sample:/var/www/html thomasbisignani/docker-apache-php-oracle
 $ docker inspect receivingcontainer
     - you should see link
-    - docker inspect -f "{{ .HostConfig.Links }}" <receivingcontainername>
+    - docker inspect -f "{{ .HostConfig.Links }}" <receivingcontainername> 
+    - docker network inspect bridge
+
+    docker inspect -f "{{ .HostConfig.Links }}"  dreamy_mccarthy
 $ docker exec -it <containerid> /bin/bash
 $ docker inspect sourcecontainername | grep Links
     - you should see not link    

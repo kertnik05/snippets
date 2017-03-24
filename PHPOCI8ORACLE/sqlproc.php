@@ -8,7 +8,7 @@ $query = 'SELECT EMPLOYEE_ID, FIRST_NAME, LAST_NAME, JOB_ID, PHP OCI8 extensionS
     FROM EMPLOYEES 
     WHERE department_id = :deptid';
 
-$stmt = oci_parse($conn, $query); //Step 1 oci_parse returns the statement identifier 
+$stmt = oci_parse($conn, $query); //Step 2 oci_parse returns the statement identifier 
 $deptno = '60';
 oci_bind_by_name($stmt, ':deptid', $deptno); //Step 2 Optional:  Binds a PHP variable to an Oracle placeholder; associate the $deptno PHP script variable with the deptid:
 

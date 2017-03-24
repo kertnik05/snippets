@@ -581,3 +581,11 @@ Comments
 /*Select all the columns       
 of all the records
 in the Customers table:*/
+
+
+/****************
+OTHERS
+*****************/
+
+SELECT owner, table_name
+  FROM dba_tables
