@@ -1,3 +1,272 @@
+Docker Images
+$ docker history <REPOSITORY>
+
+Building a Docker Image
+- commit changes made in a docker container: https://hub.docker.com/_/debian/
+    - spin up a container from a base image : $ docker run -it <reponame>:<tag> 
+    - Install git package in the container: #  apt-get update && apt-get install -y git
+    - Commit changes made in the container: $ docker commit <container_id> <reponame>:<tag> 
+    - Check for the new image: $ docker images 
+    - Run the image: $ docker run -it <reponame>:<tag> 
+- Dockerfile
+    - write a docker file
+        $ touch Dockerfile
+        $ vi Dockerfile
+                FROM <reponame>:<tag> 
+                RUN apt-get update
+                RUN apt-get install -y git
+                RUN apt-get install -y vim
+        :wq!
+    - Run a Dockerfile
+    path_of_dockerfile$ docker build -t <reponame> . 
+
+    - CHAIN RUN Instructions - to reduce number of image layers it creates
+        $ touch Dockerfile
+        $ vi Dockerfile
+                FROM <reponame>:<tag> 
+                RUN apt-get update && apt-get install -y \
+                    git \
+                    vim
+        :wq!
+        $ docker build -t <reponame> . 
+    - CMD Instructions - if CMS instruction is not explicity specified in dockerfile, it will use the default bash 
+        $ touch Dockerfile
+        $ vi Dockerfile
+                FROM <reponame>:<tag> 
+                RUN apt-get update && apt-get install -y \
+                    git \
+                    phyton \
+                    vim
+                CMD ["echo", "hello world"]
+        :wq!
+        $ docker build -t <reponame> .  
+        $ docker run <container_ID> echo "hello docker" //overwrites your dockerfile echo command
+    - Docker cache
+        - Each time docker executes an instruction it builds a new image layer
+        - The next time, if the instruction doesn't change, docker will simply reuse the existing layer
+            - Rewrite dockerfile to avoid agressive Caching
+                - $ vi Dockerfile
+                    FROM <reponame>:<tag> 
+                    RUN apt-get update && apt-get install -y \
+                        phyton \
+                        git \
+                        vim
+                    CMD ["echo", "hello world"]
+            :wq!
+            - --no-ache to avoid agressive Caching
+                - $ docker build -t <reponame> . --no-cache=true
+    - Copy Instructions
+        - the copy instruction copies new files or directories from build context and adds them to the file system of the container
+        - $ touch abc.txt
+        - $ touch Dockerfile
+        - $ vi Dockerfile
+                    FROM <reponame>:<tag> 
+                    RUN apt-get update && apt-get install -y \
+                        phyton \
+                        git \
+                        vim
+                    COPY abc.txt /src/abc.txt    //  COPY /src_yourcomputer/abc.txt /to_src_docker_filesystem/abc.txt   
+            :wq!
+        - $ docker build -t <reponame> .
+    - ADD Instructions
+        - The Add instruction copies file and allow you to download a file from internet and copy to the container
+        - Add also has the ability to autonatically unpack compresed files
+        - The rule is: use COPY for the sake for transparency, unless you're absolutely sure you need to ADD
+- Push Image to Docker Hub
+    - create a docker hub account
+    - docker_hub_id/repository_name
+    - $ docker images
+    - $ docker tag <image_ID> <repositoryname>:<tag>
+    - $ docker login --username=jmariano
+    ~ $ docker push <reponame>:<tag>
+
+
+
+/* Docker Networking */
+- when container is running it uses bridge(docker 0) to host to internet
+- Network Types
+    - Closed Network / None Network
+    - Bridge Network
+    - Host Network
+    - Overlay Network
+- $ docker network ls
+    - none network - no access to outside world
+        - $ docker run -d --net none busybox sleep 100
+        - $ docker exec -it <containerId> /bin/ash
+        - # ping 8.8.8.8 //cannot connect to google
+        - # ifconfig
+            - contains only the loopback address 127.0.0.1
+
+    - bridge network 
+        - $ docker network inspect bridge
+            - contains ip in range: 172.17.0.0 - 172.17.255.255
+            - $ docker run -d --name <customconatinername1> busybox sleep 1000
+            - $ docker exec -it <customconatinername1>  ifconfig
+                - it should contain a loopback address and a private address
+                - private address - can be use to connect other containers in the same bridge network
+                    - $ docker run -d --name <customconatinername2> busybox sleep 1000
+                        - $docker exec -it  <customconatinername2> ifconfig
+                    - $ docker exec -it <customconatinername1> ping <customconatinername2_ipaddress> //should be able to connect to internet <customconatinername2>
+                    - $ docker exec -it <customconatinername1> ping 8.8.8.8 //should be able to connect to internet
+
+        - $ docker network create --driver bridge <custom_bridge_netowrk_name>
+            - $ docker network ls
+            - $ docker network inspect <custom_bridge_netowrk_name>
+                -  "Subnet": "172.18.0.0/16" or contains ip in range: 172.18.0.0 - 172.18.255.255
+            - $ docker run -d --name <customconatinername3> --net <custom_bridge_netowrk_name> busybox sleep 1000
+                - $ docker exec -it <customconatinername3>  ifconfig
+                - $ docker inpect <customconatinername1> 
+                - $ docker exec -it <customconatinername3>  ping <customconatinername1_ipaddress>  //should not be able to connect
+                - $ docker network connect bridge <customconatinername3>  //this will add a new network to  <customconatinername3> 
+                        - $ docker exec -it <customconatinername3>  ifconfig 
+                    - $ docker exec -it  <customconatinername3> ping <customconatinername1_ipaddress>
+                    - $ docker network disconnect bridge <customconatinername3>   //this will remove  network to  <customconatinername3> 
+                        - $ docker exec -it <customconatinername3>  ifconfig
+    - Host Network - containers network connected to host network
+        -$ docker run -d --name <customconatinername4>  --net host busybox sleep 1000
+            - $ docker exec -it <customconatinername3>  ifconfig
+        - higher performance than bridge(docker 0)
+    - Overlay Network
+        - multihost network
+        - Preriquisite: 
+            - Docker need to run in swarm mode 
+            - A ke value store such as consul
+
+Define Container Networks with Docker Compose
+- $ touch docker-compose.yml
+- $ vi docker-compose.yml
+   ******* Example 1 *******
+    version: '2'
+    services:
+        dockerapp:
+            build: .
+            ports:
+                - "5000:5000"
+            volumes:
+                - ./app:/app
+            networks:
+                - my_net
+        redis:
+            image: redis.3.2.0
+            networks:
+                - my_net
+        networks:
+        my_net:
+            driver: bridge
+    ******* End Example 1*******
+    ******* Example 2 *******
+    version: '2'
+    services:
+        proxy:
+            build: ./proxy
+            networks:
+            - front
+        app:
+            build: ./app
+            networks:
+                - front
+                - back 
+        db:
+            image: postgres
+            networks: 
+                - back
+    networks:
+        front: 
+            driver: custom-driver-1
+        back: 
+            driver: custom-driver-2
+            driver_opts:
+                foo: "1"
+                bar: "2"
+    ******* End Example 2 *******
+- $ docker-compose up -d 
+    - $ docker network ls 
+        - This creates <current_dir_name>_default
+        - $ docker-compose down //stops all container running in the <current_dir_name>_default and removes <current_dir_name>_default from network ls
+
+Unit testing
+- Python unit testing sample
+- test.py 
+    import unittest
+    import app
+
+    class TestDockerapp(unittest.TestCase):
+
+        def setUp(self):
+            self.app = app.app.test_client()
+
+        def test_save_value(self):
+            response = self.app.post('/', data=dict(submit='save', key='2', cache_value='two'))
+            assert response.status_code == 200
+            assert b'2' in response.data
+            assert b'two' in response.data
+
+        def test_load_value(self):
+            self.app.post('/', data=dict(submit='save', key='2', cache_value='two'))
+            response = self.app.post('/', data=dict(submit='load', key='2'))
+            assert response.status_code == 200
+            assert b'2' in response.data
+            assert b'two' in response.data
+
+    if __name__=='__main__':
+        unittest.main()
+- $ docker-compose run <servicename> phyton test.py //servicename is from services in docker-compse.yml
+
+
+
+
+Continous Integration - rapid feedback testing
+- Github and Circle CI (https://circleci.com)
+- Fork the dockerapp repository from Github //https://github.com/jleetutorial/dockerapp
+- Set up ssh keys for github account
+    Checking for existing SSH keys:
+    https://help.github.com/articles/checking-for-existing-ssh-keys/
+    Generating a new SSH key and adding it to the ssh-agent:
+    https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/
+    Adding a new SSH key to your GitHub account:
+    https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/
+
+- Link Circle CI with github
+    - $ git clone <github repo> //download repository
+    - circle.yml
+        machine:
+            pre:
+                - curl -sSL https://s3.amazonaws.com/circle-downloads/install-circleci-docker.sh | bash -s -- 1.10.0 //virtual machine in circle ci
+            services:
+                - docker
+
+            dependencies:
+            pre:
+                - sudo pip install docker-compose //depencies to install
+
+            test:                      // how to run the test
+            override:
+                - docker-compose up -d
+                - docker-compose run dockerapp python test.py
+
+            deployment:
+            hub:
+                branch: /.*/
+                commands:
+                - docker login -e $DOCKER_HUB_EMAIL -u $DOCKER_HUB_USER_ID -p $DOCKER_HUB_PWD
+                - docker tag dockerapp_dockerapp $DOCKER_HUB_USER_ID/dockerapp:$CIRCLE_SHA1
+                - docker tag dockerapp_dockerapp $DOCKER_HUB_USER_ID/dockerapp:latest
+                - docker push $DOCKER_HUB_USER_ID/dockerapp:$CIRCLE_SHA1
+                - docker push $DOCKER_HUB_USER_ID/dockerapp:latest
+    - Connect Circle ci with github
+        - Click at project 
+        - Choose your os and click build project // this runs circle.yml inside circle ci
+        
+
+    
+        
+
+1. Create a Custom Bridge Network 
+    - $ docker network create --driver bridge customname_of_netowork
+2. Run Containers in the Network 
+    - $ docker run -d --net=customname_of_netowork --name containername mongo 
+
+
 $ docker-machine ls
 $ docker-machine start <machine name>
 $ docker-machine stop <machine name>
