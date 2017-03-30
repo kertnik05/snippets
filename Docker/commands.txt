@@ -256,10 +256,36 @@ Continous Integration - rapid feedback testing
     - Connect Circle ci with github
         - Click at project 
         - Choose your os and click build project // this runs circle.yml inside circle ci
-        
+
 
     
-        
+ -----------------------------
+Docker Compose
+1. Install Docker Compose
+https://docs.docker.com/compose/install/
+curl -L "https://github.com/docker/compose/releases/download/1.11.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+$ chmod +x /usr/local/bin/docker-compose
+
+2. docker-compose.yml
+version: '2'
+services:
+  web:
+    build: .
+    ports:
+     - "5000:5000"
+    volumes:
+     - .:/code
+  redis:
+    image: "redis:alpine"
+
+
+
+
+
+
+
+
+ -----------------       
 
 1. Create a Custom Bridge Network 
     - $ docker network create --driver bridge customname_of_netowork
@@ -686,3 +712,31 @@ https://aishwaryavaishno.wordpress.com/2013/05/10/how-to-reset-password-for-a-lo
 select username,password,account_status from dba_users; //check which account is locked
 alter user USERNAME identified by password; // change user password
 alter user scott account unlock; //unlock user
+
+ 
+$ docker run --name=sourcecontainername11g -d -p 8080:8080 -p 1521:1521 -v $(pwd)/oracle11g:/u01/app/oracle -e DBCA_TOTAL_MEMORY=1024 sath89/oracle-xe-11g
+https://hub.docker.com/r/sath89/oracle-xe-11g/
+$ cd docker-php7-oci8-apache-master
+$ docker-compose up -d
+
+
+
+https://hub.docker.com/r/sath89/oracle-xe-11g/
+---------------------------------------------
+PHP 7 with mysql
+$ git clone https://github.com/hamptonpaulk/php7-dockerized.git 
+$ cd php7-dockerized 
+$ docker-compose build 
+$ docker-compose up -d 
+$ docker exec php /bin/bash 
+# php -v # exit 
+$ docker exec -it 2 <container_id> bash 
+# mysql -u root -p 
+# password 
+mysql > show databases; 
+mysql > exit 
+# exit 
+$
+
+- you can use workbench to connect
+----------------------------
