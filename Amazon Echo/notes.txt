@@ -1,0 +1,76 @@
+Amazon Echo 
+    - connected to alexas cloud based voice service
+    - You can ask questions
+    - IFTTT (Ex. Trigger find my phone)
+    - Alarm
+    - News
+    - Restaurant
+    - Smart home
+
+First skill - Greetings Skill using AWS Lambda function 
+Step 1:
+
+Goal: Wishing our guest
+App Name: Greeter
+Invocation:
+    Name: "greeter"
+    Open/launch/talk to/begin greeter
+    tell/ask greeter to/for/about <some request>
+
+Request/Sample Utterances: Alexa, ask "greeter" to "say hello to <guest>"
+    - ex. Alexa ask greeter to say hello John
+    - ex. Alexa ask greeter to wish our guest  John
+    - ex. Alexa ask greeter to wish John
+Response: Hello <guest>, Good Morning/Afternoon/evening 
+    - Ex: Hello John, Good Morning
+
+
+Step 2
+https://developer.amazon.com/home.html
+https://developer.amazon.com/edw/home.html#/
+https://developer.amazon.com/edw/home.html#/skills
+https://developer.amazon.com/edw/home.html#/skill/create/
+
+Skills Information:
+    Name: <Enter Appname>
+    Invocation Name /Trigger: <Enter Envocation name>
+
+Interaction Model:
+    Intent Schema
+    {
+    "intents": [
+        {
+        "intent": "HelloIntent",
+        "slots": [
+            {
+            "name": "FIrstName",
+            "type": "GUEST_NAMES" //https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/built-in-intent-ref/slot-type-reference
+            }
+        ]
+        }
+    ]
+    }
+
+    Sample Utterances: */https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/alexa-skills-kit-interaction-model-reference#h3_intentref_rules */
+    HelloIntent say hello to {FIrstName}
+    HelloIntent wish our guest {FIrstName}
+    HelloIntent wish {FIrstName}
+
+    Custom Slot Type (Optional)
+    Enter Type:  GUEST_NAMES
+    Enter Values:
+        John Paul
+        Gretchen
+
+  /*Slot Value(hard coded value)	Spoken Form(Request)	Slot Value Output (Response) */
+
+Configuration:
+    Endpoint: <select AWS Lambda ARN (Amazon Resource Name) >
+        <select North America>
+
+
+
+
+
+$ cd tutorial_begin
+tutorial_begin $ 
