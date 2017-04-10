@@ -3,7 +3,10 @@ Step 1: Write the code below
 Step 2: Paste this in aws.amazon.com AWS Lambda Code 
 Step 3: Click Actions Configure Test Event and paste event.json
 Step 4: Copy ARN:  - arn:aws:lambda:us-east-1:920006450451:function:GreetingSkill
-Step 5: https://developer.amazon.com/
+Step 5: https://developer.amazon.com/ in configuration: select lambda and north america
+Step 6: Paste the ARN in North america and hit save
+Step 7: In Test, Service Simulator paste: say hello to John 
+Step 8: Test it with your amazon Echo
 
 */
 'use strict';
