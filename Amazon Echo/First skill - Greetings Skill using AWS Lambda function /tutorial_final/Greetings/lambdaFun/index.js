@@ -1,7 +1,16 @@
+/*
+Step 1: Write the code below
+Step 2: Paste this in aws.amazon.com AWS Lambda Code 
+Step 3: Click Actions Configure Test Event and paste event.json
+Step 4: Copy ARN:  - arn:aws:lambda:us-east-1:920006450451:function:GreetingSkill
+Step 5: https://developer.amazon.com/
+
+*/
 'use strict';
 
 var http = require('http');
 
+//Step 1. Get the Event
 exports.handler = function(event,context) {
 
   try {
@@ -19,12 +28,23 @@ exports.handler = function(event,context) {
       event.session.attributes = {};
     }
 
-    /*
+    /* 
+      tutorial_final/Greetings/lambdaFun/event.json "type"
       i)   LaunchRequest       Ex: "Open greeter"
       ii)  IntentRequest       Ex: "Say hello to John" or "ask greeter to say hello to John"
       iii) SessionEndedRequest Ex: "exit" or error or timeout
     */
-
+  /*  Step 2:
+    if (request.type === "LaunchRequest") {
+        Step 3: Return a Response
+    } else if (request.type === "IntentRequest") {
+        Step 3:
+    } else if (request.type === "SessionEndedRequest") {
+        Step 3:
+    } else {
+      throw "Unknown intent type";
+    }
+*/
     if (request.type === "LaunchRequest") {
       handleLaunchRequest(context);
 
@@ -109,7 +129,7 @@ function buildResponse(options) {
   if(process.env.NODE_DEBUG_EN) {
     console.log("buildResponse options:\n"+JSON.stringify(options,null,2));
   }
-
+  //tutorial_final/Greetings/lambdaFun/response.json
   var response = {
     version: "1.0",
     response: {
@@ -163,11 +183,13 @@ function buildResponse(options) {
   return response;
 }
 
+//Step 3: A
 function handleLaunchRequest(context) {
   let options = {};
   options.speechText =  "Welcome to Greetings skill. Using our skill you can greet your guests. Whom you want to greet? ";
   options.repromptText = "You can say for example, say hello to John. ";
   options.endSession = false;
+  //Step 3: B
   context.succeed(buildResponse(options));
 }
 
