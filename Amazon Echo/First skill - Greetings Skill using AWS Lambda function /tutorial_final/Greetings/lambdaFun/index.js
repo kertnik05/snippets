@@ -1,4 +1,5 @@
 /*
+Creating Lambda Code
 Step 1: Write the code below
 Step 2: Paste this in aws.amazon.com AWS Lambda Code 
 Step 3: Click Actions Configure Test Event and paste event.json
@@ -8,11 +9,39 @@ Step 6: Paste the ARN in North america and hit save
 Step 7: In Test, Service Simulator paste: say hello to John 
 Step 8: Test it with your amazon Echo
 
+Testing Event.json Locally
+1) Node install procedure for macOS/linux (reference https://github.com/creationix/nvm)
+  >> curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.0/install.sh | bash
+  >> source ~/.bash_profile
+  >> nvm install v4.3.2
+
+  For windows, please download node.js from https://nodejs.org/en/download
+
+2) Lambda local setup (https://github.com/ashiina/lambda-local)
+  >> npm install -g lambda-local
+
+3) Local testing command
+   >> lambda-local -l index.js -h handler -e event.json
+
+
+Uploading Code From Command Line
+1) AWS CLI setup
+  >> $ pip install awscli //if it doesn't work Intall python and run this: $ sudo easy_install pip
+  >> Create a user and give permissions at IAM Management console
+    >> add existing policy - AWSLambdaFullAcess
+  >> $ aws configure //paste the Access key ID from IAM to here. if aws command not found. $ brew install awscli 
+
+
+2) Create publish.sh file and paste the code below
+      zip -r lambda_upload.zip index.js
+      //https://console.aws.amazon.com/lambda/home?region=us-east-1#/functions/GreetingSkill
+      aws lambda update-function-code --function-name GreetingSkill --zip-file fileb://lambda_upload.zip
+   $ source publish.sh
 */
 'use strict';
 
 var http = require('http');
-
+//Accepting the Event
 //Step 1. Get the Event
 exports.handler = function(event,context) {
 
@@ -137,6 +166,7 @@ function buildResponse(options) {
     version: "1.0",
     response: {
       outputSpeech: {
+        //https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/speech-synthesis-markup-language-ssml-reference
         type: "SSML",
         ssml: "<speak>"+options.speechText+"</speak>"
       },
@@ -199,6 +229,8 @@ function handleLaunchRequest(context) {
 function handleHelloIntent(request,context) {
   let options = {};
   let name = request.intent.slots.FirstName.value;
+  //https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/speech-synthesis-markup-language-ssml-reference
+  //https://developer.amazon.com/edw/home.html#/skill/amzn1.ask.skill.7d968601-863a-448d-afe1-6f041e2db679/en_US/testing
   options.speechText = `Hello <say-as interpret-as="spell-out">${name}</say-as> ${name}. `;
   options.speechText += getWish();
 

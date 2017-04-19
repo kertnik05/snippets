@@ -76,13 +76,17 @@
    >> lambda-local -l index.js -h handler -e event.json
 
 7) AWS CLI setup
-  >> pip install awscli
+  >> $ pip install awscli //if it doesn't work Intall python and run this: $ sudo easy_install pip
   >> Create a user and give permissions at IAM Management console
-  >> aws configure
+    >> add existing policy - AWSLambdaFullAcess
+  >> $ aws configure //paste the Access key ID from IAM to here. if aws command not found. $ brew install awscli 
 
-8)
-  >> zip -r lambda_upload.zip index.js
-  >> aws lambda update-function-code --function-name Greetings --zip-file fileb://lambda_upload.zip
+
+8) Create publish.sh file and paste the code below
+      zip -r lambda_upload.zip index.js
+      //https://console.aws.amazon.com/lambda/home?region=us-east-1#/functions/GreetingSkill
+      aws lambda update-function-code --function-name GreetingSkill --zip-file fileb://lambda_upload.zip
+   $ source publish.sh
 
 9) SSML (Reference https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/speech-synthesis-markup-language-ssml-reference)
    a) audio - lets you provide URL for mp3 file. Can't be more than 90 secs.
