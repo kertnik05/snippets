@@ -40,3 +40,12 @@ Module Update
 - Make backup of files and database
 - Replace the old module with the new module
 - Run update.php
+
+
+Drupal 7 File And Folder Structure 
+http://www.elated.com/articles/understanding-permissions/
+Main Folder - 644 Recursive 
+Sites - 755 Recursive
+settings.php - 444 
+Notes: When moving the site to dev desktop set the file and folder settings first and delete settings.php 
+Additional note: Keep an eye for prefix
