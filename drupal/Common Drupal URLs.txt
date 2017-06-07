@@ -2,6 +2,7 @@ admin/config/development/maintenance - maintenance settings
 admin/config/system/cron - Cron 
 admin/config/development/performance - cache
 admin/reports/status - Site Status report
+admin/reports/updates - Check for core and module updates
 admin/reports/status/rebuild - 
 admin/content/media - add media
 admin/config/user-interface/shortcut - shortcut
