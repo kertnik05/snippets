@@ -96,3 +96,5 @@ var singletonTest = SingletonTester.getInstance({
 pointX: 5
 });
 console.log(singletonTest.pointX); // outputs 5
+
+

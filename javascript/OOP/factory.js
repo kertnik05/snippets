@@ -47,3 +47,100 @@ var person2 = peopleFactory("kim", 27, "SC");
 
 person1.printPerson();
 person2.printPerson();
+
+/*****************/
+//Simple Factory Pattern
+var RedCircle = function(){
+		this.item = $('<div class="circle"></div>');
+	},
+	BlueCircle = function(){
+		this.item = $('<div class="circle" style="background:blue"></div>');
+	}, CircleFactory = function(){
+			this.create = function(color){
+				if(color === 'blue') {
+					return new BlueCircle();
+				}else{
+					return new RedCircle();
+				}
+			}
+	};
+
+var cf = new CircleFactory();
+cf.create('blue').item;
+
+
+/*****************/
+//Abstract Factory Pattern
+// Polyfill -- Only necessary for browsers which don't support Object.create. Check this ES5 compatibility table:
+// http://kangax.github.com/es5-compat-table/
+if (!Object.create) {
+    Object.create = function (o) {
+        if (arguments.length > 1) {
+            throw new Error('Object.create implementation only accepts the first parameter.');
+        }
+        function F() {}
+        F.prototype = o;
+        return new F();
+    };
+}
+
+
+// Credit to Yehuda Katz for `fromPrototype` function
+// http://yehudakatz.com/2011/08/12/understanding-prototypes-in-javascript/
+var fromPrototype = function(prototype, object) {
+    var newObject = Object.create(prototype);
+    for (var prop in object) {
+        if (object.hasOwnProperty(prop)) {
+            newObject[prop] = object[prop];
+        }
+    }
+  return newObject;
+};
+
+
+// Define our `Ingredients` base object
+//This is the Abstract Factory
+var pageElements = {
+    header: function() {
+        return '<header></header>';
+    },
+    body: function() {
+        return '<content></content>';
+    },
+    footer: function() {
+        return '<footer></footer>';
+    }
+};
+
+// Extend `Ingredients` with concrete implementations
+pageElements.template1 = function() {
+    return fromPrototype(pageElements, {
+        header: function() {
+            return '<header><h1>template 1</h1></header>';
+        },
+        body: function() {
+            return '<content><p>template body 1</p></content>';
+        },
+        footer: function() {
+            return '<footer><p>template footer 1</p></footer>';
+        }
+    });
+};
+
+pageElements.template2 = function() {
+    return fromPrototype(pageElements, {
+        header: function() {
+            return '<header><h1>template 2</h1></header>';
+        },
+        body: function() {
+            return  '<content><p>template body 2</p></content>';
+        },
+        footer: function() {
+            return '<footer><p>template footer 2</p></footer>';
+        }
+    });
+};
+
+// Try it out!
+var mypage = pageElements.template1();
+alert(mypage.header());
