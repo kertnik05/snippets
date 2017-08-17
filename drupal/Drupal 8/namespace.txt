@@ -37,7 +37,7 @@ or this
 some-other-file.php
     namespace Acme\Tools;
     require 'Foo.php';
-    use \Acme\Tools\Foo as SomeFooClass;
+    use \Acme\Tools\Foo as SomeFooClass; //Use give a class nickname
     use \DateTime;
     $foo = new SomeFooClass();
     $dt = new DateTime();

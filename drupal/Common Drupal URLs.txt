@@ -20,3 +20,6 @@ admin/structure/types/manage/article/fields - Add fields for taxonomy
 Menu
 admin/structure/menu
 disable toolbar, enable admin_menu (install it first)
+
+Exporting Users
+admin/structure/views
