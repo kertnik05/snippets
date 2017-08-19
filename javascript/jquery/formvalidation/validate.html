@@ -83,13 +83,73 @@
             $.validator.setDefaults({
                 errorClass: 'form_error',
                 errorElement: 'div'
-            })
+            });
+            
+
             // bind validation to the personalInfo form
+            //More Example: https://github.com/jmariano13/pro-jquery/blob/master/Part%20III/Listing%2016-09.html
             function init(){
+             /*
+               var rulesList = new Object();
+                for (var i = 0; i < data.length; i++) {
+                    rulesList[data[i].product] = {
+                    min: 0,
+                    max: data[i].stocklevel,
+                }
+               }
+
+               var customMessages = new Object();
+                for (var i = 0; i < data.length; i++) {
+                    customMessages[data[i].product] = {
+                    max: "We only have " + data[i].stocklevel + " in stock"
+                }
+                }
+                //Creating a Custom Check - you can add this now to the rules
+                //https://stackoverflow.com/questions/241145/jquery-validate-plugin-how-to-create-a-simple-custom-rule
+                $.validator.addMethod(
+                    "stock", //name
+                    function(value, elem, args) { //function to check
+                    return Number(value) < Number(args); 
+                }, "We don't have that many in stock"); //message
+
+               */
                 var v = $('#personalInfo').validate({
-                    //onKeyup : true,
+                    /*onKeyup : true,
+                    //Formatting the Validation Error Display
+                    highlight: function(element, errorClass) { //Setting the Highlighting for Invalid Elements
+                    $(element).add($(element).parent()).addClass("invalidElem");
+                    },
+                    unhighlight: function(element, errorClass) { //Setting the Unhighlighting for Invalid Elements
+                    $(element).add($(element).parent()).removeClass("invalidElem");
+                    },
+                    errorElement: "div",
+                    errorClass: "errorMsg", 
+                    
+                    //<style type="text/css">
+                    //div.errorMsg {color: red} 
+                    //.invalidElem {border: medium solid red} 
+                    //</style>
+
+                    rules: rulesList, 
+                    messages: customMessages */
                     rules: {
                         title: {
+                            /*
+                            creditcard: true //The value must contain a credit card number.
+                            date: true //The value must be a valid JavaScript date.
+                            digits: true //The value must contain only digits.
+                            email: true //The value must be a valid e-mail address.
+                            max: maxVal //The value must be at least as large as maxVal.
+                            maxlength: //length The value must contain no more than length characters.
+                            min: minVal //The value must be at least as large as minVal.
+                            minlength: length; //The value must contain at least length characters.
+                            number: true //The value must be a decimal number.
+                            range: [minVal, //maxVal] The value must be between minVal and maxVal.
+                            rangelength: [minLen, maxLen] //The value must contain at least minLen and no more than maxLen
+                            characters.
+                            required: true; //A value is required.
+                            url: true //The value must be a URL.
+                            stock: true //custom rules*/
                             required: true
                         },
                         firstName: {
@@ -153,8 +213,56 @@
                 //$(this).removeData();
                 //alert('test');
                 
-            });*/
+            });
 
+            $.validator.addClassRules({ //define a set of rules and associate them with a class, and when the form is validated, the rules are applied to any form element that is a member of the specified class
+                    flowerValidation: { 
+                        min: 0 //rule is that the value should be equal to or greater than 0
+                        digits: true,
+                        max: 100,
+                        required: true
+
+                }
+            });
+            
+            $('input').addClass("flowerValidation").change(function(e) {
+                $('form').validate().element($(e.target)); //change event to explicitly validate the element whose value has changed
+            });
+            //Specifying Rules for Per-Element Validation
+            $('#row1 input').each(function(index, elem) {
+                $(elem).rules("add", { //Add rules to specific element
+                    min: 10,
+                    max: 20
+                });
+            });
+
+            $('input').each(function(index, elem) {
+            var rules = {
+                required: true,
+                min: 0,
+                max: data[index].stocklevel,
+                digits: true
+            }
+            if (Number(data[index].price) > 3.00) {
+                rules.max--;
+            }
+            $(elem).rules("add", rules); //A more flexible way to add rules
+            });
+            //Specifying Messages for Per-Element Validation
+            $('input').each(function(index, elem) {
+                $(elem).rules("add", {
+                    min: 10,
+                    max: 20,
+                    messages: {
+                    max: "You only have " + data[index].stocklevel + " in stock"
+                }
+                })
+                }).change(function(e) {
+                $('form').validate().element($(e.target));
+            });
+            
+            
+            */
             $('#personalInfo').submit(function(){
                 //$(this).removeData();
                 //alert('test');
