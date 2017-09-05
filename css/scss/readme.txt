@@ -20,3 +20,6 @@ http://sass-lang.com/install
 sudo gem install sass
 sass --watch sassfolder/sass:outputfolder/stylesheets
 Press Ctrl-C to stop
+
+Installing SASS using visual studio code
+//Live Sass Compiler
