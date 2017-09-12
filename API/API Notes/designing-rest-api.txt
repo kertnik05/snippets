@@ -1,0 +1,86 @@
+API Value Chain - The most important link so people will use your api are the Developers
+
+Best Practices:
+    https://api.website.com/v1/resourcename 
+1. avoid using www.websitename.com
+2. Keep your base url simple
+3. Use subdomain or a Separate subdomain
+
+Resource Name 
+1. Should be noun and plural - https://api.website.com/v1/items/{id}
+2. Verbs is ok. (API Operation != Crud)
+    - https://api.website.com/v1/estimates/price/{}
+    - https://api.website.com/v1/search?query
+3. Actions
+    Post /vacation/{id}/book
+    Post /book/vacation
+    Get  /vacations/search?
+4. Associations - try to avoid deep nesting, use the query if not avoiadable
+    facebook /me/phptos
+    walmart  items/{id}/reviews
+    twitter musts/users/list
+    get - /vacation/{id}/reviews
+    Get pud delete - /vacation/{id}/reviews/{review-id}
+
+
+Rest API CRUD 
+    - Mapping CRUD to HTTP Methods
+        - Post = Create
+        - Get = Read or Retrive
+        - Put, Patch = Update
+        - Delete = Delete
+    - Use of HTTP status code 3 digit
+        - 1** = informational = continue
+        - 2** = success = ok
+        - 3** = redirect = Temporary redirect
+        - 4** = client error = Not Found
+        - 5** = server error = Internal Server Error
+    - Support Multiple resource formats
+
+Uniform Interface Constraint
+    - contract for communicationm between client and server
+    - HTTP Methods
+    - HTTP status codes
+    - Representation formats
+
+Post Request Handling 
+    - Post = Create = /vacations or /vacations/{id}/reviews
+        - when sucess, return code=201 
+            - May return a link to a new resource in location header
+                - http://api.example.com/vacations/121/reviews/2
+            - May return the new object
+    - Failure 404 - Bad Request - 400 missing required field
+    - Failure 500 - server error
+    - Get = Read or Retrive /vacations or /vacations/{id}
+        -  when sucess, return code 200 ok 
+            - server sends back in requested formats
+            - http://api.acme.com/vacations/121
+        - Failure 4** Bad request - ex resource not Found
+        - Failure 5** Server Error - ex 500 internal server error
+    - Put, Patch = Update - (Put Use when updating all the attributes, Patch when updating specific attribute)
+        - PUt can create if client provide an ID. (Not suggested)
+        - Patch http://api.acme.com/vacations/121/?fieldname=value 
+        - success: return 200, 204 (no content), and 201 (created)
+            - resource in body of response - Optional
+            - No need to send the link - optional
+    - Delete = Delete
+        - URL: /vacation  - deletes all vacation
+            - /vacation/{id} - deletes specific vacation
+        - Success: 200, or 204(No returned content) - May return deleted resource in the response body
+        - Failure 4** -  Bad Request - ex 404 resouce not Found
+        - Failure 5** - Issue in processing - ex 503 database unreachable
+
+Resource Representation (Support: json, xml, csv)
+    - Query Parameters
+        - search?key=value&format=xml, search?key=value&format=json, search?key=value&format=csv
+    - HTTP header Accepts - Accepts: application/json, Accepts: application/xml
+    - Resource Format Suffix - /programmes/schedules/fm/today.json, /programmes/schedules/fm/today.xml
+    - Whats Common:
+        - HTTP Accept header is not so Common
+        - Most Providers set the default fomat = json 
+    - Respose:
+        - Must include a Content-Type in the header
+        - Return HTTP status code
+        - Documentation:
+            - list supported formats
+            - How requestor specifies
