@@ -31,10 +31,36 @@ Rest API CRUD
         - Delete = Delete
     - Use of HTTP status code 3 digit
         - 1** = informational = continue
-        - 2** = success = ok
+        - 2** = success = (200 = ok, 201 = created)
         - 3** = redirect = Temporary redirect
-        - 4** = client error = Not Found
-        - 5** = server error = Internal Server Error
+        - 4** = client error = (400 = Bad Request, 404 = Not Found, 401 = Unauthorized, 403 = Forbidden, 415 = Unsupported Media)
+        - 5** = server error = (500 = Server Error)
+        - Limit your api to 8 status code
+        - Error Response Content-Type - Common is json
+            - Content-Type:"Application/json"
+        - Application Specific Errors
+            - 7002 = Error code - Required field missing
+        - Use a standard Error Template for the response
+            - {
+                text: 'Custom Message',
+                timestamp: new Date(),
+                method: 'Post', //Post, Get, Put, Patch, Delete
+                endpoint: 'http://api.acme.com/v1/vacations',
+                errors:  {
+                    code: Application-Specific-Error-Code,
+                    text: "Message Describing the Error",
+                    hints: ["Hints to the developer on the potential issues"],
+                    info: "link to more information"
+                },
+                payload: receivedPayload (Debug Use only)
+            }
+            - Alternate Approach (from Facebook)
+                - Always sends back HTTP status = 200 ok
+                - Response 
+                    {
+                        status: {..},
+                        payload: {..}
+                    }
     - Support Multiple resource formats
 
 Uniform Interface Constraint
