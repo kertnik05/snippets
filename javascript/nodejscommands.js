@@ -12,13 +12,19 @@ npm install //reads package.json and installs all modules
 
 //importing nodejs from your script
 'use strict';
-const qr = require('<modulename>');
+const qr = require('<modulename>'); 
+
+//complete_list of Node Default Core module https://nodejs.org/api/index.html 
+
+
 
 "main": "./app/main.js" //points the main origin of the app 
 
 
 //manually installing module
 npm install <modulename>@<versionnum> --save
+
+
 
 npm install --save jade
 npm install --save-dev bower //installs the bower
