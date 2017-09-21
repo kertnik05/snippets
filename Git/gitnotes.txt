@@ -298,7 +298,87 @@ git stash show -p <stashid> - to see the details
 git stash pop <stashid> - pulls the stash but leaves a copy in the stash
 git stash apply - added your stash into your branch
 git stash drop <stashid> - delete the stash
- 
+-----------------------------------------------------------------------------------
+Thinkful Nodejs to heroku 
+git --version
+git init - creates the .git 
+ls -a - to confirm .git is created
+git status
+    //What Not to Tracked in nodejs 
+    server.log 
+git add package.json 
+git public/
+git add server.js
+git add views/
+    //create a .gitignore 
+    node_modules/
+    server.log
+git add .gitignore 
+git commit -m 'saving nodejs' 
+
+//Create SSH Keys
+https://support.coinbase.com/customer/portal/articles/1148716-payment-methods-for-us-customers
+//Check if SSH key exits
+ls -al ~/.ssh 
+
+//If no SSH
+ssh-keygen -t rsa -b 4096 -C 'jppm***@***.com'
+    //just click enter
+    id_rsa - contains private key do not give to anyone
+    id_rsa.pub - public key that you git to github or heroku 
+eval "$(ssh-agent -s)" - start ssh agent program and print agent pid, if you get pid its good 
+ssh-add  ~/.ssh/id_rsa - to tell ssh where the the private key is 
+
+pbcopy < ~/.ssh/id_rsa.pub  - copies the content of the file to the clipboard
+
+Go to Github GUI
+In settings, SSH and GPG Keys add SSH key 
+Title - enter computer name or be descriptive
+paste pbcopy(clipboard) to the key textbox in github 
+
+//From Terminal
+ssh -T git@github.com 
+enter yes
+
+Create a new repository in github 
+Push your local repo to github - https://help.github.com/articles/adding-an-existing-project-to-github-using-the-command-line/
+Your code are now in github 
+
+Register to Heroku 
+Install Heroku command line tool visit toolbelt.heroku.com 
+From terminal
+$ heroku help 
+$ heroku login //login to heroku
+$ heroku keys:add //to upload rsa pub 
+$ heroku keys //to see all the keys 
+$ heroku keys:remove  <email> //to remove key
+$ ssh -v git@heroku.com //look for authentication succedded 
+
+//Edit your nodejs app server.js environment port 
+var port = process.env.PORT || 3000;
+//Edit package.json scripts start 
+"scripts": {
+    "start": "node server.js"
+},
+//To run scripts start locally 
+npm start 
+
+$ git add . //staged your files for commit 
+$ git commit -m "setup start script and heroku port"
+$ git push 
+
+$ heroku create //make sure you are inside your nodejs app
+$ git push heroku //will push your code to heroku and will give you a url 
+$ heroku open //it will open your app in the browser 
+
+
+
+
+
+
+
+
+
 
 
 

@@ -2,7 +2,7 @@ var EventEmitter = require('events');
 var util = require('util');
 
 function Greetr() {
-	EventEmitter.call(this);
+	EventEmitter.call(this);//Makes sure that Event Emitter properties this gets added to gretter
 	this.greeting = 'Hello world!';
 }
 

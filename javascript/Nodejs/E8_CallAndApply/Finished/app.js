@@ -6,5 +6,5 @@ var obj = {
 }
 
 obj.greet();
-obj.greet.call({ name: 'Jane Doe'});
-obj.greet.apply({ name: 'Jane Doe'});
+obj.greet.call({ name: 'Jane Doe'}); //overrides the this.name property call({ name: 'Jane Doe'}, param,param) 
+obj.greet.apply({ name: 'Jane Doe'}); //overrides the this.name property all({ name: 'Jane Doe'}, [param,param])  
