@@ -303,6 +303,7 @@ Thinkful Nodejs to heroku
 git --version
 git init - creates the .git 
 ls -a - to confirm .git is created
+rm -rf .git - deletes the .git
 git status
     //What Not to Tracked in nodejs 
     server.log 
@@ -319,7 +320,8 @@ git commit -m 'saving nodejs'
 //Create SSH Keys
 https://support.coinbase.com/customer/portal/articles/1148716-payment-methods-for-us-customers
 //Check if SSH key exits
-ls -al ~/.ssh 
+ls -al ~/.ssh //If no .ssh, create one -  mkdir ~/.ssh
+
 
 //If no SSH
 ssh-keygen -t rsa -b 4096 -C 'jppm***@***.com'
@@ -371,18 +373,7 @@ $ heroku create //make sure you are inside your nodejs app
 $ git push heroku //will push your code to heroku and will give you a url 
 $ heroku open //it will open your app in the browser 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+for app in $(heroku apps); do heroku apps:destroy --app $app --confirm $app; done
+git remote -v //to see all remote heroku app
+git remote rm heroku //Delete all app from heroku
 

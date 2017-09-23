@@ -86,7 +86,7 @@ Monitoring load average and memory usage
 heroku labs:enable log-runtime-metrics - install the log-runtime-metrics
 heroku restart - restart dynos after installation
 heroku logs - dynos' resource usage will be printed to our logs
-
+--------------------------------------------------------------------------- 
 Chapter 3. Setting Up a Staging Environment
 Duplicating an existing application
 heroku fork <new-applications-name> - need to be within local heroku folder, and fork the existing project 
@@ -132,9 +132,275 @@ $ git add .travis.yml
 $ git commit -m 'Adding Travis configuration
  file'
 $ git push origin master
-
+--------------------------------------------------------------------------- 
 Chapter 4. Production-ready with Heroku
 Managing domains from the command line
 heroku domains - to see  list our application's existing domains
 heroku domains:add example-domain.com - to add a custom domain to our application
 heroku domains:add testing.example-domain.com - add subdomains using the same command
+heroku domains:add *.example-domain.com - add subdomains using wildcard
+heroku domains:remove example-domain.com - Removing an existing domain
+heroku domains:clear - remove all domains 
+
+Enabling preboot for seamless deploys
+heroku features:enable preboot - to enable preboot for our application
+git push heroku master 
+
+Enabling custom maintenance and error pages
+heroku config:set ERROR_PAGE_URL=http://example.com/my_error_page.html  - To set up the error page
+heroku config:set MAINTENANCE_PAGE_URL=http://example.com/my_maintenance_page.html - to set MAINTENANCE_PAGE_URL to the location of our maintenance page
+heroku maintenance:on - turn on maintenance mode
+heroku maintenance:off - turn off maintenance mode 
+
+Setting up a status page
+heroku addons:add statuspage - install the add-on statuspage 
+heroku addons:open statuspage - open the StatusPage dashboard to configure it. Note: As StatusPage integrates with Heroku, if there are any Heroku service interruptions, our page will update automatically
+    To report incidents. 
+        - We have two options;
+            - we can either create an incident manually through the Incidents tab on the StatusPage dashboard
+            - we can use the StatusPage API. - going to Manage Account and look for API key and status page ID 
+            https://gist.github.com/mscoutermarsh/1bdd27b11b3a037dce5a
+            $ curl https://api.statuspage.io/v1/pages/<page ID goes here>/incidents.json \
+                -H "Authorization: OAuth <API token goes here>" \
+                -X POST \
+                -d "incident[name]=Database outage" \
+                -d "incident[status]=identified" \
+                -d "incident[wants_twitter_update]=f" \
+                -d "incident[message]=We've had a hardware failure. Currently investigating."
+        - Learn More: http://doers.statuspage.io/api/v1/
+        - alternative to StatusPage: https://elements.heroku.com/addons/statushub
+
+Setting up log draining with LogEntries
+heroku addons:add logentries - install the Logentries
+heroku addons:open logentries - set up a log drain that will automatically stream our logs to Logentries
+    - Logentries will automatically send us alerts when there are errors in our application. 
+        We can configure these by clicking on Tags & Alerts on the top navigation bar. 
+        The add-on has prepopulated most of the alerts for us.
+--------------------------------------------------------------------------- 
+Chapter 5. 
+Error Monitoring and Logging Tools
+heroku status - to get a quick look at Heroku's status or https://status.heroku.com/
+heroku config:set LOG_LEVEL=debug - to set our logging level to debug
+    - We can set our log level to debug, info, warn, error, fatal, or unknown.
+heroku logs --tail - restart our app, and we can watch our logs to see the more verbose debugging output
+heroku config:set LOG_LEVEL=error - changing our logging level again
+heroku logs --tail 
+
+Storing historical logs with PaperTrail
+heroku addons:add papertrail - add PaperTrail to our application 
+heroku addons:open papertrail - open it from the command line to take a look at the dashboard
+    - configure GUI
+    - In GUI search
+        - status=404 OR status=500 - to monitor 404 or 500 error
+        - "app/postgres" duration - to create a new search for slow queries 
+            - Enter slow Queries 
+
+Monitoring uptime with Pingdom
+    - Register
+        - https://www.pingdom.com/free
+        - https://www.idera.com/infrastructure-monitoring-as-a-service
+
+Logging errors with Rollbar
+heroku addons:add rollbar - enable the Rollbar add-on
+    - gem 'rollbar' - open Gem fiel and add 
+        -$ bundle install
+        -$ rails generate rollbar 
+To complete installation, we'll need to commit our changes to Git and redeploy our application
+    $ git add Gemfile
+    $ git add Gemfile.lock
+    $ git add config/initializers/rollbar.rb
+    $ git commit -m 'Adding Rollbar error logging'
+    $ git push heroku master
+heroku run rake rollbar:test - a testing rake task to our project to simulate an error
+heroku addons:open rollbar - open up the Rollbar dashboard
+heroku config - to see rollbar settings
+To learn more: https://rollbar.com/vs/?v=a
+Alternative to Rollbar: https://www.bugsnag.com/
+
+--------------------------------------------------------------------------- 
+Chapter 6. Load Testing a Heroku Application
+Monitoring dyno performance with Librato
+heroku labs:enable log-runtime-metrics - to enable log runtime metrics
+heroku restart - restart in order for changes to take effect
+heroku addons:add librato - enable Librato and make it start collecting data for us
+heroku addons:open librato - aunch the Librato dashboard and take a look at our metrics
+
+Monitoring application performance with New Relic
+heroku addons:add newrelic:stark - to install the New Relic add-on. Let's start out with New Relic on the free plan (stark)
+gem 'newrelic_rpm' - add to the Gem file
+bundle install - to run the gem file
+Now, we can commit the changes to Git and push them to Heroku
+    $ git add Gemfile
+    $ git add Gemfile.lock
+    $ git commit -m 'adding new relic'
+    $ git push heroku master
+We can configure some New Relic settings through environment variables. For starters, let's set our application's name and enable parameter capture:
+    $ heroku config:set NEW_RELIC_APP_NAME='Application Name'
+    $ heroku config:set NEW_RELIC_CAPTURE_PARAMS=TRUE
+open up our application and use it; this will get some data into New Relic by giving it a few requests to record
+    $ heroku open
+$ heroku addons:open newrelic - launch the New Relic dashboard and take a look at our application's data
+
+Learning to load test with Siege (Siege is an open source application that simulates a massive burst in traffic)
+$ curl -O http://download.joedog.org/siege/siege-3.0.7.tar.gz - download siege
+Unpack Siege
+    $ tar xzvf siege-3.0.7.tar.gz
+    $ cd siege-3.0.7
+run the following commands to complete the installation:
+    $ ./configure
+    $ make
+    $ make install
+$ siege - to run seige 
+$ siege http://your-app-name.herokuapp.com 
+$ siege -C -  stores its configuration settings
+Two ways Set Siege time 
+    - Let's set the runtime of our next test to 1 minute. We can do this by opening /usr/local/etc/siegerc and adding the following code:
+        - time = 1m
+    -  siege http://your-app-name.herokuapp.com -t 1m
+$ siege http://your-app-name.herokuapp.com - siege should now run for 1 minute 
+$ siege http://your-app-name.herokuapp.com -c 25 - siege the server with 25 concurrent users 
+$ siege http://your-app-name.herokuapp.com -c 600 -t 1m
+Learn More - http://www.joedog.org/siege-home/
+Siege FAQ - http://www.joedog.org/siege-faq/ 
+
+Configuring complex load tests with Siege
+$ siege -C 
+    - look for the url file and add your site page or pages url
+        http://your-app-name.herokuapp.com/
+        http://your-app-name.herokuapp.com/posts
+        http://your-app-name.herokuapp.com/pages/about
+        http://your-app-name.herokuapp.com/posts/new POST firstname=Aaron content=Test 
+$ siege -c 100 -t 30s
+$ siege -i -c 100 -t 30s - randomaize siege attack 
+
+Load testing from the cloud with Blitz.io
+$ heroku addons:add blitz - install blitz 
+$ heroku addons:open blitz - to launch the Blitz dashboard.
+- Follow GUI Instructions
+
+Testing real-user scenarios with Load Impact (a load-testing tool that will allow us to mimic real-world traffic by creating and testing different user scenarios.)
+https://loadimpact.com/
+https://chrome.google.com/webstore/detail/load-impact-user-scenario/comniomddgkfgfaebhidfgcjgoecbbda
+- Steps
+    - Start recording
+    - Now, we can start using our application, and the Chrome extension will record everything we do in the browser. 
+        Load Impact will repeat these steps later during our load test. 
+        Once we're done with the recording, we'll need to open the extension again and click on Stop
+    - Once the recording is finished, we'll be brought to a page that shows our actions translated into code. 
+        Let's give a descriptive name to our scenario and save it:
+    - Let's navigate to the Load Impact dashboard (https://loadimpact.com/test/list); go to Test configurations and click on Create test configuration.
+    - We will need to fill in our application's URL and then click on Load test execution plan. 
+        Here, we will select the length of our test and the maximum number of virtual users (VUs) that Load Impact will use to run through our scenarios.
+    - Next, we'll need to select the scenarios we want our test to use. We will be able to pick from any of the scenarios we generated earlier with the Chrome extension. 
+        We can also specify the percentage of users for each scenario as well as the geographical origin of the traffic.
+    - Finally, we can start our test by scrolling to the bottom of the page and clicking on Create test configuration and start test. 
+        Our test will start running, and we'll immediately see results populating the screen.
+--------------------------------------------------------------------------- 
+Chapter 9 Using and Administrating Heroku Postgres
+
+Creating and sizing a new database
+- Heroku has four database tiers: hobby, standard, premium, and enterprise
+    - standard - minimum for production
+    - hobby - meant for testing and basic development
+    - Premium tier databases have a stand-by database ready and waiting for automatic failover if something ever goes wrong.
+
+Determining data size
+- $ heroku pg:info -  determine its data size
+    - \l+ - data size of Postgres
+- If our data size is 350 MB, then a plan with 1 GB of RAM will be a good fit. 
+    - As our application grows, we can always upgrade to a larger database instance as needed.
+
+Connection limits
+- $ heroku pg:info
+    === HEROKU_POSTGRESQL_GRAY_URL (DATABASE_URL)
+    Plan:        Hobby-dev
+    Status:      Available
+    Connections: 4
+    PG Version:  9.3.3
+    Created:     2014-07-27 21:01 UTC
+- If we are running three workers on each dyno and have five dynos, our application needs a minimum of 15 available connections to run.
+- account for any connections that our worker processes will be using and should give ourselves plenty of room for growth
+- Selecting and creating the database
+    - Create our database
+        - https://elements.heroku.com/addons/heroku-postgresql
+    - Select more RAM
+        - to give more cache hit rate of as close to 100 percent as possible
+    - http://www.craigkerstiens.com/2012/10/01/understanding-postgres-performance/
+
+Promoting a Heroku database
+- Steps 
+    $ heroku config
+        DATABASE_URL: postgres://user:password@ec2-54-221-206-165.compute-1.amazonaws.com:5432/d8hg98vjvtisu4
+        HEROKU_POSTGRESQL_GRAY_URL: postgres://user:password@ec2-54-235-69-186.compute-1.amazonaws.com:5792/d75vuqlr37fe
+        HEROKU_POSTGRESQL_ORANGE_URL: postgres://user:password@ec2-54-221-206-165.compute-1.amazonaws.com:5432/d8hg98vjvtisu4
+    $ heroku pg:promote HEROKU_POSTGRESQL_GRAY 
+        Promoting HEROKU_POSTGRESQL_GRAY_URL (DATABASE_URL) to DATABASE_URL... done
+    $ heroku restart
+
+Connecting to Heroku Postgres from Navicat
+- Two versions
+    - Navicat for Postgres
+        - Dowload Installation - https://www.navicat.com/en/products/navicat-for-postgresql
+    - Navicat Essentials - The essentials version is a less-expensive edition of Navicat with a limited feature set aimed at more basic database administration tasks.
+        - Downaload Installation - https://www.navicat.com/en/products/navicat-essentials
+- Set up a connection to our Heroku Postgres database
+    - Steps
+        - $ heroku config:get DATABASE_URL  
+            postgres://username:password@ec2-55-221-206-165.compute-1.amazonaws.com:5432/dXhg98vjvtisu4
+            - get the username and password
+        - Connection GUI
+            - Enter database Information (postgres://username:password@ec2-55-221-206-165.compute-1.amazonaws.com:5432/dXhg98vjvtisu4)
+                - Connection Name: We will add our application name as Heroku Postgres
+                - Host Name/IP Address: This will be ec2-55-221-206-165.compute-1.amazonaws.com
+                - Port: The port number will be 5432
+                - Default Database: This will be dXhg98vjvtisu4
+                - User Name: The username has to be entered in this field
+                - Password: The password has to be entered in this field
+        - Next, we'll need to click on the SSL button and make sure Use SSL is checked. Once checked, we can test our connection by clicking on Test Connection:
+- Alternative to -  http://www.jetbrains.com/datagrip/
+- For MySQL databases, take a look at SequelPro - http://www.sequelpro.com/
+
+Connecting to Heroku Postgres from psql
+$ heroku pg:psql
+    - This will connect to what the DATABASE_URL is set to
+    - To exit the psql session, type \q and hit Enter or press Ctrl + D.
+$ heroku pg:psql ORANGE
+    - to connect to specific database 
+$ PGPASSWORD=pass psql -U user -h host.com -p 5432 -d database-name 
+    - This is using plain sql to connect to the database 
+    - Remember, the DATABASE_URL variable is formatted as postgres:://username:password@host:port/database_name
+$ touch ~/.pgpass && chmod 0600 ~/.pgpass 
+    - hostname:port:database:username:password
+    - Although this is rare, your Heroku Postgres credentials can change at any time. 
+        If your database host fails and Heroku needs to move your database, the credentials you have saved will no longer be valid. 
+        Heroku will always keep your DATABASE_URL variable up to date with the latest credentials.
+
+Creating a database backup
+$ heroku addons:add pgbackups:auto-month -install addons 
+$ heroku pgbackups:capture
+    HEROKU_POSTGRESQL_GRAY_URL (DATABASE_URL)  ----backup--->  b001
+    Capturing... done
+    Storing... done
+$ heroku pgbackups
+    ID    Backup Time
+    ----  ------------------------- 
+    b001  2014/08/24 14:56.26 +0000  
+    b002  2014/08/24 15:03.59 +0000
+$ heroku pgbackups:url b002
+$ curl -o dbbackup.dump `heroku pgbackups:url b002`
+    - this is Postgres's version of pgbackups, https://www.postgresql.org/docs/9.3/static/app-pgdump.html
+
+Restoring from a backup
+$ heroku pgbackups:restore
+$ heroku pgbackups:restore HEROKU_POSTGRESQL_GRAY_URL b001 - to backup specific database
+$ heroku pgbackups:restore HEROKU_POSTGRESQL_GRAY_URL 'https://s3.amazonaws.com/example-url/backup.dump' - restoring from a file 
+    - https://www.postgresql.org/docs/9.3/static/app-pgrestore.html
+
+Creating a read-only follower (Follower databases can be used to create redundancy, scaling, or upgrading your existing database)
+https://postgres.heroku.com/databases
+$ heroku pg:wait
+    Waiting for database HEROKU_POSTGRESQL_ORANGE_URL... \ preparing (37% completed)
+
+
+
+
