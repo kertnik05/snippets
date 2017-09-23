@@ -1,0 +1,1120 @@
+Chapter 1: Introducing Data Modeling 1
+	The relationship between MongoDB and NoSQL 1
+	Introducing NoSQL (Not Only SQL) 3
+		NoSQL databases types 5
+			• Key-value stores:  It has a Big Hash Table of keys & values {Example- Riak, Amazon S3 (Dynamo), Redis}
+			• Wide-column stores: stores columns of data instead of rows. Examples of wide-column stores are Google BigTable, Cassandra, and HBase
+			• Document databases: Documents are complex structures that store data as key-values, and can contain many key-value pairs,
+								  key-array pairs, or even nested documents. Examples of document
+								  databases are MongoDB, Apache CouchDB, and Amazon SimpleDB.
+			• Graph databases: data whose relationships are best represented as graphs, such as network topologies and social networks. Nodes, edges,
+							   and properties are the structure of stored data. Examples of graph databases are Neo4J and HyperGraphDB.
+		Dynamic schema, scalability, and redundancy 6
+			• NoSQL databases have no predefined schema: changes simpler when inserting new data, and more cost-effective
+			• NoSQL databases use auto-sharding: Auto-sharding allows users to automatically spread data and traffic across a number of servers
+			• NoSQL databases also support replication natively
+	Database design and data modeling 6
+		The ANSI-SPARC architecture 8
+			• The external level 8 - describes how a database is structured for different user views
+			• The conceptual level 8 - a logical layer between the user view and the database implementation
+			• The internal level 9 - defines physical storage structures such as indexes, data fields, and representations
+		Data modeling 9
+			• The conceptual model 11 - ERD (Crow's foot notation)
+			• The logical model 12 - cardinality and nullability of relationship attributes with data types and constraints
+			• The physical model 12 - implemented database
+	Summary 13
+Chapter 2: Data Modeling with MongoDB 15
+	Introducing documents and collections 16 
+			• Unlike the relational model, where you must declare a table structure, 
+			  a collection doesn't enforce a certain structure for a document
+			• represented by documents
+				• Define what data can be read, written, and/or updated in queries
+				• Define which fields will be updated
+				• Create indexes 
+				• Configure replication
+				• Query the information from the database
+		JSON 18
+			• Two standards: ECMA-404 and RFC 7159
+			• Specification are based on two data structures
+				• A set or group of key/value pairs
+					{
+						"key" : "value"
+					}
+					- value
+						• A string delimited with ""
+						• A number, with or without a sign, on a decimal base (base 10). 
+						  This number can have a fractional part, delimited by a period (.), 
+						  or an exponential part followed by e or E
+						• Boolean values (true or false)
+						• A null value
+						• Another object
+						• Another value ordered array
+						• Object, Array, Number, String, Bool, Null
+						
+				• A value ordered list
+					["value1", "value2", "value3"]
+		BSON 19
+			• binary-encoded serialization for JSON documents
+			• String UTF-8 (string)
+			• Integer 32-bit (int32)
+			• Integer 64-bit (int64)
+			• Floating point (double)
+			• Document (document)
+			• Array (document)
+			• Binary data (binary)
+			• Boolean false (\x00 or byte 0000 0000)
+			• Boolean true (\x01 or byte 0000 0001)
+			• UTC datetime (int64)—the int64 is UTC milliseconds since the Unix epoch
+			• Timestamp (int64)—this is the special internal type used by MongoDB replication and sharding; the first 4 bytes are an increment, and the last
+				4 are a timestamp
+			• Null value ()
+			• Regular expression (cstring)
+			• JavaScript code (string)
+			• JavaScript code w/scope (code_w_s)
+			• Min key()—the special type that compares a lower value than all other possible BSON element values
+			• Max key()—the special type that compares a higher value than all other possible BSON element values
+			• ObjectId (byte*12)
+	Characteristics of documents 21
+		The document size 21
+			• maximum length for a BSON document is 16 MB
+			    - document can exceed the 16 MB length by using GridFS
+			
+		Names and values for a field in a document 21
+			•  restrictions on field names
+				•  _id field is reserved for a primary key
+				•  cannot start the name using the character $
+				•  The name cannot have a null character, or (.)
+				• indexes field maximum size of 1,024 bytes
+		The document primary key 21
+			•  the _id field is reserved for the primary key
+				- MongoDB moves it to the first position during insertion
+				- Can have any value except Array
+				- must be unique
+				- automatically creates an _id field
+					• Support collections 22
+						- keep the last used value in the sequence
+						- query the last used value
+						- operator $inc to increment the value
+						system.js
+						db.counters.insert(
+						  {
+							_id: "userid",
+							seq: 0
+						  }
+						)
+						function getNextSequence(name) {
+							var ret = db.counters.findAndModify(
+							  {
+								query: { _id: name },
+								update: { $inc: { seq: 1 } },
+								new: true
+							  }
+							);
+							return ret.seq;
+						}
+						db.users.insert(
+							{
+								_id: getNextSequence("userid"),
+								name: "Sarah C."
+							}
+						)
+					• The optimistic loop 23
+					    - Searches in targetCollection for the maximum value for _id.
+						- Settles the next value for _id.
+						- Sets the value on the document to be inserted.
+						- Inserts the document.
+						- In the case of errors due to duplicated _id fields, the loop repeats itself,
+						  or else the iteration ends
+						- Not scallable - Try avoid using this
+						function insertDocument(doc, targetCollection) {
+							while (1) {
+								var cursor = targetCollection.find( {},
+								{ _id: 1 } ).sort( { _id: -1 } ).limit(1);
+								var seq = cursor.hasNext() ? cursor.next()._id + 1 : 1;
+								doc._id = seq;
+								var results = targetCollection.insert(doc);
+								if( results.hasWriteError() ) {
+									if( results.writeError.code == 11000 /* dup key */ )
+										continue;
+									else
+										print( "unexpected error inserting data: " +
+										tojson( results ) );
+								}
+								break;
+							}
+						}
+	Designing a document 23
+		• Working with embedded documents 24
+			- to embed data in one document
+				• to get a better read performance
+				• a single query, we have all the data we need to present to the user
+				• The same applies to updates: with just one query, we can modify the content of this document
+				• There is no rule when embedding data in MongoDB
+					- one-to-one relationship between documents
+					- Whether we have a one-to-many relationship between documents, and whether the "many" part of the relationship is very dependent of the "one" part. This means, for instance, that every time we present the "one" part,
+					  we will also present the "many" part of the relationship
+				{
+					id: 1,
+					title: "MongoDB Data Modeling Blog post",
+					body: "MongoDB Data Modeling....",
+					author: "Wilson da Rocha França",
+					date: ISODate("2014-11-19"),
+					comments: [
+						{
+							name: "Mike",
+							email : "mike@mike.com",
+							comment: "Mike comment...."
+						},
+						{
+							name: "Tom",
+							email : "tom@tom.com",
+							comment: "Tom comment...."
+						},
+						{
+							name: "Yuri",
+							email : "yuri@yuri.com",
+							comment: "Yuri comment...."
+						}
+					],
+					tags: ["mongodb", "modeling", "nosql"]
+				 }
+		• Working with references 25
+			• The way we have to "normalize" our model
+				- This reference will describe the relationship between documents
+			• To eliminate redundancy, documents can refer to each other
+			• MongoDB does not support joins
+			  - you must perform at least two queries to get the complete information you need
+			  {
+				_id: 1,
+				name : "Product 1",
+				description: "Product 1 description",
+				price: "$10,00",
+				supplier : {
+					name: "Supplier 1",
+					address: "St.1",
+					telephone: "+552199999999"
+				}
+			  }
+			  
+			  {
+				_id: 2,
+				name : "Product 2",
+				description: "Product 2 description",
+				price: "$10,00",
+				supplier : {
+					name: "Supplier 1",
+					address: "St.1",
+					telephone: "+552199999999"
+				}
+			  }
+			  {
+				_id: 3,
+				name : "Product 3",
+				description: "Product 3 description",
+				price: "$10,00",
+				supplier : {
+					name: "Supplier 1",
+					address: "St.1",
+					telephone: "+552199999999"
+				}
+			   }
+			   
+			   
+			   Insted of using preceding code, use this code to avoid repetation of the suppliers
+			   
+			   suppliers
+				{
+					_id: 1
+					name: "Supplier 1",
+					address: "St.1",
+					telephone: "+552199999999",
+					products: [1, 2, 3]
+				}
+				
+				products
+				{
+					_id: 1,
+					name : "Product 1",
+					description: "Product 1 description",
+					price: "$10,00"
+					}
+				{
+					_id: 2,
+					name : "Product 2",
+					description: "Product 2 description",
+					price: "$10,00"
+				}
+				{
+					_id: 3,
+					name : "Product 3",
+					description: "Product 3 description",
+					price: "$10,00"
+				}
+		Atomicity 29
+			• Atomic at the document level. This means that we can modify one document at a time
+			• reference data, where we require many write operations that are not atomic.
+	Common document patterns 29
+		One-to-one 29 - map this relationship with embedded documents
+			customer
+			{
+				_id: 1
+				"username" : "John Clay",
+				"email": "johnclay@crgv.com",
+				"password": "bf383e8469e98b44895d61b821748ae1"
+				"details": {
+					"firstName": "John",
+					"lastName": "Clay",
+					"gender": "male",
+					"age": 25
+				}
+			}
+			
+				- Advantage:
+					• data is always available
+		One-to-many 31 
+		- If the many side should be displayed with its parents, then we should choose to embed the data; 
+		  otherwise, we can use references on the parents
+		  customer using references
+			{
+				_id: 1
+				"username" : "John Clay",
+				"email": "johnclay@crgv.com",
+				"password": "bf383e8469e98b44895d61b821748ae1"
+				"details": {
+					"firstName": "John",
+					"lastName": "Clay",
+					"gender": "male",
+					"age": 25
+				}
+			}
+			address
+			{
+				_id: 1,
+				"street": "Address 1, 111",
+				"city": "City One",
+				"state": "State One",
+				"type": "billing",
+				"customer_id": 1
+			}
+			{
+				_id: 2,
+				"street": "Address 2, 222",
+				"city": "City Two",
+				"state": "State Two",
+				"type": "shipping",
+				"customer_id": 1
+			}
+			{
+				_id: 3,
+				"street": "Address 3, 333",
+				"city": "City Three",
+				"state": "State Three",
+				"type": "shipping",
+				"customer_id": 1
+			}
+		- If, every time you want to display a customer's address, you also need to display the customer's name, 
+		  then embedded documents are recommended
+			customer
+			{
+				_id: 1
+				"username" : "John Clay",
+				"email": "johnclay@crgv.com",
+				"password": "bf383e8469e98b44895d61b821748ae1"
+				"details": {
+					"firstName": "John",
+					"lastName": "Clay",
+					"gender": "male",
+					"age": 25
+				}
+				"billingAddress": [{
+					"street": "Address 1, 111",
+					"city": "City One",
+					"state": "State One",
+					"type": "billing",
+				}],
+				"shippingAddress": [{
+					"street": "Address 2, 222",
+					"city": "City Two",
+					"state": "State Two",
+					"type": "shipping"
+				},
+				{
+					"street": "Address 3, 333",
+					"city": "City Three",
+					"state": "State Three",
+					"type": "shipping"
+				}]
+			}
+		Many-to-many 32 - Can be representated in many ways
+		user
+		{
+			_id: "5477fdea8ed5881af6541bf1",
+			"username": "user_1",
+			"password" : "3f49044c1469c6990a665f46ec6c0a41"
+		}
+		{
+			_id: "54781c7708917e552d794c59",
+			"username": "user_2",
+			"password" : "15e1576abc700ddfd9438e6ad1c86100"
+		}
+		group
+		{
+			_id: "54781cae13a6c93f67bdcc0a",
+			"name": "group_1"
+		}
+		{
+			_id: "54781d4378573ed5c2ce6100",
+			"name": "group_2"
+		}
+		
+		Example 1: store the relationship in the User document
+		user
+		{
+		_id: "5477fdea8ed5881af6541bf1",
+		"username": "user_1",
+		"password" : "3f49044c1469c6990a665f46ec6c0a41",
+		"groups": [
+				{
+					_id: "54781cae13a6c93f67bdcc0a",
+					"name": "group_1"
+				},
+				{
+					_id: "54781d4378573ed5c2ce6100",
+					"name": "group_2"
+				}
+			]
+		}
+		{
+		_id: "54781c7708917e552d794c59",
+		"username": "user_2",
+		"password" : "15e1576abc700ddfd9438e6ad1c86100",
+		"groups": [
+			{
+				_id: "54781d4378573ed5c2ce6100",
+				"name": "group_2"
+			}
+			]
+		}
+		group
+		{
+			_id: "54781cae13a6c93f67bdcc0a",
+			"name": "group_1"
+		}
+		{
+			_id: "54781d4378573ed5c2ce6100",
+			"name": "group_2"
+		}
+		
+		Example 2: Or we can store the relationship in the group document
+		user
+		{
+			_id: "5477fdea8ed5881af6541bf1",
+			"username": "user_1",
+			"password" : "3f49044c1469c6990a665f46ec6c0a41"
+			}
+			{
+			_id: "54781c7708917e552d794c59",
+			"username": "user_2",
+			"password" : "15e1576abc700ddfd9438e6ad1c86100"
+		}
+		group
+		{
+			_id: "54781cae13a6c93f67bdcc0a",
+			"name": "group_1",
+			"users": [ 
+				{
+				_id: "54781c7708917e552d794c59",
+				"username": "user_2",
+				"password" : "15e1576abc700ddfd9438e6ad1c86100"
+				}
+			]
+		}
+		{
+			_id: "54781d4378573ed5c2ce6100",
+			"name": "group_2",
+			"users": [
+				{
+				_id: "5477fdea8ed5881af6541bf1",
+				"username": "user_1",
+				"password" : "3f49044c1469c6990a665f46ec6c0a41"
+				},
+				{
+				_id: "54781c7708917e552d794c59",
+				"username": "user_2",
+				"password" : "15e1576abc700ddfd9438e6ad1c86100"
+				}
+			]
+		}
+		
+		Example 3: store the relationship in both documents
+		user
+		{
+			_id: "5477fdea8ed5881af6541bf1",
+			"username": "user_1",
+			"password" : "3f49044c1469c6990a665f46ec6c0a41",
+			"groups": ["54781cae13a6c93f67bdcc0a",
+				"54781d4378573ed5c2ce6100"
+			]
+		}
+		{
+			_id: "54781c7708917e552d794c59",
+			"username": "user_2",
+			"password" : "15e1576abc700ddfd9438e6ad1c86100",
+			"groups": ["54781d4378573ed5c2ce6100"]
+		}
+		group
+		{
+			_id: "54781cae13a6c93f67bdcc0a",
+			"name": "group_1",
+			"users": ["5477fdea8ed5881af6541bf1"]
+			}
+		{
+			_id: "54781d4378573ed5c2ce6100",
+			"name": "group_2",
+			"users": ["5477fdea8ed5881af6541bf1",
+				"54781c7708917e552d794c59"
+			]
+		}
+Chapter 3: Querying Documents 37
+	Understanding the read operations 37
+	-	Find interface : The find interface can accept queries as criteria and projections as parameters. 
+		This will result in a cursor. Cursors have methods that can be used as modifiers of the executed query, such as limit, map, skip, and sort.
+	
+	db.customers.find({"username": "johnclay"})
+	This query returns the entire document
+	{
+		"_id" : ObjectId("54835d0ff059b08503e200d4"),
+		"username" : "johnclay",
+		"email" : "johnclay@crgv.com",
+		"password" : "bf383e8469e98b44895d61b821748ae1",
+		"details" : {
+		"firstName" : "John",
+		"lastName" : "Clay",
+		"gender" : "male",
+		"age" : 25
+	},
+	"billingAddress" : [
+		{
+		"street" : "Address 1, 111",
+		"city" : "City One",
+		"state" : "State One"
+		}
+	],
+	"shippingAddress" : [
+		{
+		"street" : "Address 2, 222",
+		"city" : "City Two",
+		"state" : "State Two"
+		},
+		{
+		"street" : "Address 3,333",
+		"city" : "City Three",
+		"state" : "State Three"
+		}
+	]
+	}
+	
+	db.collection.find(
+		{criteria},
+		{projection}
+	)
+	
+	Collection - Table
+	Criteria - Where Clause
+	Projection - Fields
+	
+	db.customers.find(
+		{"username": "johnclay"},
+		{_id: 1, username: 1, details: 1}
+	)
+		• Collection - customers
+		• Criteria - {"username": "johnclay"}
+		• Projection - {_id: 1, username: 1, details: 1}
+	
+	Result:
+	{
+		"_id" : ObjectId("54835d0ff059b08503e200d4"),
+		"username" : "johnclay",
+		"details" : {
+			"firstName" : "John",
+			"lastName" : "Clay",
+			"gender" : "male",
+			"age" : 25
+		}
+	}
+	
+	Selecting all documents 40
+	db.products.find() 
+	
+	Result:
+	
+	{
+		"_id" : ObjectId("54837b61f059b08503e200db"),
+		"name" : "Product 1",
+		"description" : "Product 1 description",
+		"price" : 10,
+		"supplier" : {
+			"name" : "Supplier 1",
+			"telephone" : "+552199998888"
+		}
+	}
+	{
+	"_id" : ObjectId("54837b65f059b08503e200dc"),
+	"name" : "Product 2",
+	"description" : "Product 2 description",
+	"price" : 20,
+		"supplier" : {
+			"name" : "Supplier 2",
+			"telephone" : "+552188887777"
+		}
+	}
+	
+		Selecting documents using criteria 41
+			- Note that in the mongo shell, the default value of returned records is 20
+			- db.products.find({name: "Product 1"});
+				{
+					"_id" : ObjectId("54837b61f059b08503e200db"),
+					"name" : "Product 1",
+					"description" : "Product 1 description",
+					"price" : 10,
+					"supplier" : {
+						"name" : "Supplier 1",
+						"telephone" : "+552199998888"
+					}
+				}
+			- query using the operator $gt: db.products.find({price: {$gt: 10}}); 
+				{
+					"_id" : ObjectId("54837b65f059b08503e200dc"),
+					"name" : "Product 2",
+					"description" : "Product 2 description",
+					"price" : 20,
+					"supplier" : {
+						"name" : "Supplier 2",
+						"telephone" : "+552188887777"
+					}
+				}
+				{
+					"_id" : ObjectId("54837b69f059b08503e200dd"),
+					"name" : "Product 3",
+					"description" : "Product 3 description",
+					"price" : 30,
+					"supplier" : {
+						"name" : "Supplier 3",
+						"telephone" : "+552177776666"
+					}
+				}
+			- Other operators such as comparison, logical, element, evaluation, geographical, and arrays
+			
+			{
+				"_id" : ObjectId("54837b61f059b08503e200db"),
+				"name" : "Product 1",
+				"description" : "Product 1 description",
+				"price" : 10,
+				"supplier" : {
+					"name" : "Supplier 1",
+					"telephone" : "+552199998888"
+				},
+				"review" : [
+					{
+						"customer" : {
+						"email" : "customer@customer.com"
+					},
+						"stars" : 5
+					},
+					{
+						"customer" : {
+						"email" : "customer2@customer.com"
+					},
+						"stars" : 6
+					}
+				]
+			}
+			{
+				"_id" : ObjectId("54837b65f059b08503e200dc"),
+				"name" : "Product 2",
+				"description" : "Product 2 description",
+				"price" : 20,
+				"supplier" : {
+					"name" : "Supplier 2",
+					"telephone" : "+552188887777"
+				},
+				"review" : [
+					{
+						"customer" : {
+						"email" : "customer@customer.com"
+					},
+						"stars" : 10
+					},
+					{
+						"customer" : {
+						"email" : "customer2@customer.com"
+					},
+						"stars" : 2
+					}
+				]
+			}
+			{
+				"_id" : ObjectId("54837b69f059b08503e200dd"),
+				"name" : "Product 3",
+				"description" : "Product 3 description",
+				"price" : 30,
+				"supplier" : {
+					"name" : "Supplier 3",
+					"telephone" : "+552177776666"
+				},
+				"review" : [
+					{
+						"customer" : {
+						"email" : "customer@customer.com"
+					},
+						"stars" : 5
+					},
+					{
+						"customer" : {
+						"email" : "customer2@customer.com"
+					},
+						"stars" : 9
+					}
+				]
+			}
+		
+		Comparison operators 45
+			• The $gte operator is responsible for searching values that are equal or greater than the value specified in the query.
+				- db.products.find({price: {$gte: 20}})
+			{
+				"_id" : ObjectId("54837b65f059b08503e200dc"),
+				"name" : "Product 2",
+				"description" : "Product 2 description",
+				"price" : 20,
+				"supplier" : {
+					"name" : "Supplier 2",
+					"telephone" : "+552188887777"
+				},
+				"review" : [
+					{
+						"customer" : {
+						"email" : "customer@customer.com"
+					},
+						"stars" : 10
+					},
+					{
+					"customer" : {
+						"email" : "customer2@customer.com"
+					},
+						"stars" : 2
+					}
+				]
+			}
+			{
+				"_id" : ObjectId("54837b69f059b08503e200dd"),
+				"name" : "Product 3",
+				"description" : "Product 3 description",
+				"price" : 30,
+				"supplier" : {
+					"name" : "Supplier 3",
+					"telephone" : "+552177776666"
+				},
+				"review" : [
+					{
+						"customer" : {
+						"email" : "customer@customer.com"
+					},
+						"stars" : 5
+					},
+					{
+						"customer" : {
+						"email" : "customer2@customer.com"
+					},
+						"stars" : 9
+					}
+				]
+			}
+			
+		  • $lt operator
+		  	- db.products.find({price: {$lt: 20}})
+		  	{
+				"_id" : ObjectId("54837b61f059b08503e200db"),
+				"name" : "Product 1",
+				"description" : "Product 1 description",
+				"price" : 10,
+				"supplier" : {
+					"name" : "Supplier 1",
+					"telephone" : "+552199998888"
+				},
+				"review" : [
+					{
+						"customer" : {
+						[ 47 ]
+						"email" : "customer@customer.com"
+						},
+						"stars" : 5
+					},
+					{
+						"customer" : {
+						"email" : "customer2@customer.com"
+						},
+						"stars" : 6
+					}
+				]
+			}
+		• $lte operator - db.products.find({price: {$lte: 20}})
+		{
+			"_id" : ObjectId("54837b61f059b08503e200db"),
+			"name" : "Product 1",
+			"description" : "Product 1 description",
+			"price" : 10,
+			"supplier" : {
+			"name" : "Supplier 1",
+			"telephone" : "+552199998888"
+			},
+			"review" : [
+			{
+			"customer" : {
+			"email" : "customer@customer.com"
+			},
+			"stars" : 5
+			},
+			{
+			"customer" : {
+			"email" : "customer2@customer.com"
+			},
+			"stars" : 6
+			}
+			]
+		}
+		{
+			"_id" : ObjectId("54837b65f059b08503e200dc"),
+			"name" : "Product 2",
+			"description" : "Product 2 description",
+			"price" : 20,
+			"supplier" : {
+				"name" : "Supplier 2",
+				"telephone" : "+552188887777"
+			},
+			"review" : [
+				{
+					"customer" : {
+					"email" : "customer@customer.com"
+				},
+					"stars" : 10
+				},
+				{
+					"customer" : {
+					"email" : "customer2@customer.com"
+				},
+					"stars" : 2
+				}
+			]
+		}
+		
+		• $in operator - db.products.find({price:{$in: [5, 10, 15]}})
+		{
+			"_id" : ObjectId("54837b61f059b08503e200db"),
+			"name" : "Product 1",
+			"description" : "Product 1 description",
+			"price" : 10,
+			"supplier" : {
+				"name" : "Supplier 1",
+				"telephone" : "+552199998888"
+			},
+			"review" : [
+				{
+					"customer" : {
+					"email" : "customer@customer.com"
+				},
+					"stars" : 5
+				},
+				{
+					"customer" : {
+					"email" : "customer2@customer.com"
+				},
+					"stars" : 6
+				}
+			]
+		}
+		
+		• $nin operator - are not included in the specified array
+		- db.products.find({price:{$in: [5, 10, 15]}})
+		{
+			"_id" : ObjectId("54837b69f059b08503e200dd"),
+			"name" : "Product 3",
+			"description" : "Product 3 description",
+			"price" : 30,
+			"supplier" : {
+				"name" : "Supplier 3",
+				"telephone" : "+552177776666"
+			},
+			"review" : [
+				{
+					"customer" : {
+					"email" : "customer@customer.com"
+				},
+					"stars" : 5
+				},
+				{
+					"customer" : {
+					"email" : "customer2@customer.com"
+				},
+					"stars" : 9
+				}
+			]
+		}
+		
+		• $ne operator - not equal to the specified value in the query
+		- db.products.find({name: {$ne: "Product 1"}})
+		{
+			"_id" : ObjectId("54837b65f059b08503e200dc"),
+			"name" : "Product 2",
+			"description" : "Product 2 description",
+			"price" : 20,
+			"supplier" : {
+				"name" : "Supplier 2",
+				"telephone" : "+552188887777"
+			},
+			"review" : [
+				{
+				"customer" : {
+				"email" : "customer@customer.com"
+				},
+				"stars" : 10
+				},
+				{
+				"customer" : {
+				"email" : "customer2@customer.com"
+				},
+				"stars" : 2
+				}
+			]
+		}
+		{
+			"_id" : ObjectId("54837b69f059b08503e200dd"),
+			"name" : "Product 3",
+			"description" : "Product 3 description",
+			"price" : 30,
+			"supplier" : {
+				"name" : "Supplier 3",
+				"telephone" : "+552177776666"
+			},
+			"review" : [
+				{
+				"customer" : {
+				"email" : "customer@customer.com"
+				},
+				"stars" : 5
+				},
+				{
+				"customer" : {
+				"email" : "customer2@customer.com"
+				},
+				"stars" : 9
+				}
+			]
+		}
+		Logical operators 51
+			• $and operator - db.products.find({$and: [{price: {$lt: 30}}, {name: "Product 2"}]})
+			{
+				"_id" : ObjectId("54837b65f059b08503e200dc"),
+				"name" : "Product 2",
+				"description" : "Product 2 description",
+				"price" : 20,
+				"supplier" : {
+					"name" : "Supplier 2",
+					"telephone" : "+552188887777"
+				},
+				"review" : [
+					{
+					"customer" : {
+					"email" : "customer@customer.com"
+					},
+					"stars" : 10
+					},
+					{
+					"customer" : {
+					"email" : "customer2@customer.com"
+					},
+					"stars" : 2
+				}
+				]
+			}
+			• $or operator - db.products.find({$or: [{price: {$gt: 50}}, {name: "Product 3"}]})
+			{
+				"_id" : ObjectId("54837b69f059b08503e200dd"),
+				"name" : "Product 3",
+				"description" : "Product 3 description",
+				"price" : 30,
+				"supplier" : {
+					"name" : "Supplier 3",
+					"telephone" : "+552177776666"
+				},
+				"review" : [
+					{
+					"customer" : {
+					"email" : "customer@customer.com"
+					},
+					"stars" : 5
+					},
+					{
+					"customer" : {
+					"email" : "customer2@customer.com"
+					},
+					"stars" : 9
+					}
+				]
+			}
+			• $nor operator - db.products.find({$nor:[{price:{$gt: 35}}, {price:{$lte: 20}}]})
+			{
+				"_id" : ObjectId("54837b69f059b08503e200dd"),
+				"name" : "Product 3",
+				"description" : "Product 3 description",
+				"price" : 30,
+				"supplier" : {
+					"name" : "Supplier 3",
+					"telephone" : "+552177776666"
+				},
+				"review" : [
+					{
+						"customer" : {
+						"email" : "customer@customer.com"
+					},
+						"stars" : 5
+					},
+					{
+						"customer" : {
+						"email" : "customer2@customer.com"
+					},
+						"stars" : 9
+					}
+				]
+			}
+			
+		Element operators 55
+			• $exists operator - db.products.find({sku: {$exists: true}})
+			
+		Evaluation operators 55
+			• $regex operator - db.products.find({name: {$regex: /2/}})
+			{
+				"_id" : ObjectId("54837b65f059b08503e200dc"),
+				"name" : "Product 2",
+				"description" : "Product 2 description",
+				"price" : 20,
+				"supplier" : {
+					"name" : "Supplier 2",
+					"telephone" : "+552188887777"
+				},
+				"review" : [
+					{
+						"customer" : {
+						"email" : "customer@customer.com"
+					},
+						"stars" : 10
+					},
+					{
+						"customer" : {
+						"email" : "customer2@customer.com"
+					},
+						"stars" : 2
+					}
+				]
+			}
+		Array operators 56
+			• $elemMatch operator 
+				- db.products.find({review: {$elemMatch: {stars: {$gt: 5}, customer: {email: "customer@customer.com"}}}})
+					* review field has documents, the stars field value is greater than 5, and customer email is customer@customer.com
+					{
+						"_id" : ObjectId("54837b65f059b08503e200dc"),
+						"name" : "Product 2",
+						"description" : "Product 2 description",
+						"price" : 20,
+						"supplier" : {
+							"name" : "Supplier 2",
+							"telephone" : "+552188887777"
+						},
+						"review" : [
+							{
+								"customer" : {
+								"email" : "customer@customer.com"
+							},
+								"stars" : 10
+							},
+							{
+								"customer" : {
+								"email" : "customer2@customer.com"
+							},
+								"stars" : 2
+							}
+						]
+					}
+				- For more: http://docs.mongodb.org/manual/reference/operator/query/
+					- Others: $mod, $text, $where, $all, $geoIntersects, $geoWithin, $nearSphere, $near, $size, and $comment
+		Projections 57 - to optimize the network overhead between MongoDB and its clients
+			• db.products.find({price: {$not: {$gt: 10}}}, {name: 1, description: 1})
+			{
+				"_id" : ObjectId("54837b61f059b08503e200db"),
+				"name" : "Product 1",
+				"description" : "Product 1 description"
+			}
+	Introducing the write operations 58
+		3 Kinds of Write Operations:
+			• Inserts 59 - db.document.insert, targeted to a specific collection and are atomic on the level of a single document
+				choosing a shard key will be decisive, depending on the key choice, recommended that you use solid state discs, or SSD for better IO
+				MongoDB uses a journaling mechanism to write operations, and this mechanism uses a journal to write the change operation before we write it in the data files.
+				BSON specification allows us to have a document with the maximum size of 16 MB. MongoDB uses a space allocation strategy for a record, or document, named "power of two sized allocation."
+				
+				db.collection.insert(
+					<document or array of documents>,
+					{
+						writeConcern: <document>,
+						ordered: <boolean>
+					}
+				)
+
+			• Updates 60 - db.document.update
+			• Remove - db.document.remove
+		Write concerns 63
+			Unacknowledged 64
+			Acknowledged 64
+			Journaled 65
+			Replica acknowledged 66
+		Bulk writing documents 68
+Chapter 4: Indexing 71
+	Indexing documents 71
+		Indexing a single field 73
+		Indexing more than one field 76
+		Indexing multikey fields 79
+		Indexing for text search 80
+	Creating special indexes 83
+		Time to live indexes 83
+		Unique indexes 85
+		Sparse indexes 85
+Chapter 5: Optimizing Queries 87
+		Understanding the query plan 87
+		Evaluating queries 89
+		Covering a query 95
+		The query optimizer 101
+		Reading from many MongoDB instances 105
+	Summary 106
+Chapter 6: Managing the Data 107
+	Operational segregation 107
+		Giving priority to read operations 108
+	Capped collections 120
+	Data self-expiration 123
+Chapter 7: Scaling 125
+	Scaling out MongoDB with sharding 126
+	Choosing the shard key 129
+	Basic concerns when choosing a shard key 135
+	Scaling a social inbox schema design 136
+	Fan out on read 137
+	Fan out on write 139
+	Fan out on write with buckets 141
+Chapter 8: Logging and Real-time Analytics with MongoDB 145
+	Log data analysis 146
+		Error logs 146
+		Access logs 146
+	What we are looking for 148
+		Measuring the traffic on the web server 149
+	Designing the schema 150
+		Capturing an event request 150
+		A one-document solution 158
+		TTL indexes 166
+		Sharding 167
+		Querying for reports 168
