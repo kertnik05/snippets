@@ -1068,14 +1068,136 @@ Chapter 3: Querying Documents 37
 					}
 				)
 
-			• Updates 60 - db.document.update
+			• Updates 60 - db.document.update, modify previous existing documents in MongoDB, or even to create new ones; 
+				An update operation will modify only one document at a time. 
+				If the criterion matches more than one document, then it is necessary to pass a document with a multi parameter with the true value to the update interface.
+				db.collection.update(
+					<query>, //where clause 
+					<update>, {  //document containing the modification to be applied   
+						upsert: <boolean>, //if true, creates a new document if the criteria does not match any document in the collection
+						multi: <boolean>, //if true, updates every document that meets the criteria
+						writeConcern: <document> //a document expressing the write concern
+				})
+
+				Using the document created in the previous session, a sample update would be:
+				db.customers.update(
+					{username: "customer1"},
+					{$set: {email: "customer1@customer1.com"}}    // $set operator allows us to update only the email  field 
+				)
+				The modifed document is:
+				{
+					"_id" : ObjectId("5487ada1db4ff374fd6ae6f5"),
+					"username" : "customer1",
+					"email" : "customer1@customer1.com",
+					"password" : "b1c5098d0c6074db325b0b9dddb068e1"
+				}
+
+				Otherwise, you may have this update:
+				db.customers.update(
+					{username: "customer1"},
+					{email: "customer1@customer1.com"}
+				)
+
+				{
+					"_id" : ObjectId("5487ada1db4ff374fd6ae6f5"),
+					"email" : "customer1@customer1.com"
+				}
+
+				• $inc increments the value of a field with the specified value: db.customers.update(
+						{username: "johnclay"},
+						{$inc: {"details.age": 1}}
+					)
+				This update will increment the field details.age by 1 in the matched documents.
+				• $rename will rename the specified field: db.customers.update(
+						{email: "customer1@customer1.com"},
+						{$rename: {username: "login"}}
+					)
+				This update will rename the field username to login in the matched documents.
+				• $unset will remove the field from the matched document:
+					db.customers.update(
+						{email: "customer1@customer1.com"},
+						{$unset: {login: ""}}
+				)
+
 			• Remove - db.document.remove
 		Write concerns 63
+			Durability in database systems is a property that tells us whether a write operation was successful, whether the transaction was committed, 
+			and whether the data was written on non-volatile memory in a durable medium, such as a hard disk.
+			write operation in NoSQL databases is determined by the client.
+
+			In MongoDB, the response of a successful write operation can have many levels of guarantee. This is what we call a write concern.
+
+			The write concern levels that MongoDB offers us are:
+				• Unacknowledged
+				• Acknowledged
+				• Journaled
+				• Replica acknowledged
+
 			Unacknowledged 64
+				- the client will not attempt to respond to a write operation
+				db.customers.insert(
+					{username: "customer1", email: "customer1@customer.com", password: hex_
+					md5("customer1paswd")},
+					{writeConcern: {w: 0}}
+				)
 			Acknowledged 64
+				- the client will have an acknowledgement of the write
+				- client can catch, among other things, network errors and duplicate keys
+				db.customers.insert(
+					{username: "customer1", email: "customer1@customer.com", password: hex_
+					md5("customer1paswd")},
+					{writeConcert: {w: 1}}
+				)
 			Journaled 65
+				- client will receive con rmation that the write operation was committed in the journal.
+				Thus, the client will have a guarantee that the data will be persisted on the disk
+				- drivers will wait MongoDB acknowledge the receipt of write operations only after committing the data to the journal
+				db.customers.insert(
+					{username: "customer1", email: "customer1@customer.com", password: hex_
+					md5("customer1paswd")},
+					{writeConcern: {w: 1, j: true}}
+				)
 			Replica acknowledged 66
+				- it is important to be sure that a write operation was successful not only in the primary node, but also that it was propagated to members of the replica set.
+				db.customers.insert(
+					{username: "customer1", email: "customer1@customer.com", password: hex_
+					md5("customer1paswd")},
+					{writeConcern: {w: 3}}
+				)
+				- to avoid that a write operation remains blocked
+				db.customers.insert(
+					{username: "customer1", email: "customer1@customer.com", password: hex_
+					md5("customer1paswd")},
+					{writeConcern: {w: 3, wtimeout: 3000}}
+				)
 		Bulk writing documents 68
+			- A bulk operation works in a single collection, and can be either ordered or unordered.
+			- As with the insert method, the behavior of an ordered bulk operation is to process records serially, and if an error occurs, MongoDB will return without processing any of the remaining operations.
+			- The behavior of an unordered operation is to process in parallel, so if an error occurs, MongoDB will still process the remaining operations.
+			
+			In the following example, we make a bulk insert using the insert method:
+				db.customers.insert(
+				[
+				{username: "customer3", email: "customer3@customer.com", password: hex_
+				md5("customer3paswd")},
+				{username: "customer2", email: "customer2@customer.com", password: hex_
+				md5("customer2paswd")},
+				{username: "customer1", email: "customer1@customer.com", password: hex_
+				md5("customer1paswd")}
+				] )
+			In the following example, we make an unordered bulk insert using the new bulk methods:
+				var bulk = db.customers.initializeUnorderedBulkOp();
+				bulk.insert({username: "customer1", email: "customer1@customer.com",
+				password: hex_md5("customer1paswd")});
+				bulk.insert({username: "customer2", email: "customer2@customer.com",
+				password: hex_md5("customer2paswd")});
+				bulk.insert({username: "customer3", email: "customer3@customer.com",
+				password: hex_md5("customer3paswd")});
+				bulk.execute({w: "majority", wtimeout: 3000});
+			
+			- MongoDB has a limit of executing a maximum of 1,000 bulk operations at a time. So, if this limit is exceeded, MongoDB will divide the operations into groups of a maximum of 1,000 bulk operations.
+			
+
 Chapter 4: Indexing 71
 	Indexing documents 71
 		Indexing a single field 73
