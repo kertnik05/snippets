@@ -23,7 +23,7 @@ const qr = require('<modulename>');
 
 //manually installing module
 npm install <modulename>@<versionnum> --save
-
+npm install <modulename>@<versionnum> --save-dev 
 
 
 npm install --save jade

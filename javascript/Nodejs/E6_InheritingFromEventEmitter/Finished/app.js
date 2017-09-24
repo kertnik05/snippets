@@ -5,12 +5,12 @@ function Greetr() {
 	this.greeting = 'Hello world!';
 }
 
-//Greetr an also have access to all properties and methods of EventEmitter
+//inherits (equals to extends in ES6) - Greetr will now inherit EventEmitter
 util.inherits(Greetr, EventEmitter);
 //Greetr have access to greet 
 Greetr.prototype.greet = function(data) {  //2
 	console.log(this.greeting + ': ' + data);
-	this.emit('greet', data);//3 
+	this.emit('greet', data);//3 because of inherits(Greetr, EventEmitter), Greetr can call the greet event 
 }
 
 var greeter1 = new Greetr();

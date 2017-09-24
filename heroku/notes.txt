@@ -397,10 +397,53 @@ $ heroku pgbackups:restore HEROKU_POSTGRESQL_GRAY_URL 'https://s3.amazonaws.com/
     - https://www.postgresql.org/docs/9.3/static/app-pgrestore.html
 
 Creating a read-only follower (Follower databases can be used to create redundancy, scaling, or upgrading your existing database)
-https://postgres.heroku.com/databases
-$ heroku pg:wait
+- create a follower: https://postgres.heroku.com/databases
+- $ heroku pg:wait
     Waiting for database HEROKU_POSTGRESQL_ORANGE_URL... \ preparing (37% completed)
+- $ heroku pg:unfollow - onvert any follower into a primary database
 
+Viewing and stopping database processes
+$ heroku pg:ps
+    pid |  state |      source    | running_for |
+    ----+--------+----------------+--------------
+    343 | active | /app/bin/rails | 00:04:23.0286
+    - SELECT * FROM pg_stat_activity where datname = 'our-heroku-db-name'; -  to see the raw data Heroku is working with
+$ heroku pg:kill 343
 
+Analyzing Heroku Postgres's performance
+$ heroku plugins:install git://github.com/heroku/heroku-pg-extras.git
+$ heroku pg:diagnose
+    GREEN: Connection Count
+    GREEN: Long Queries
+    GREEN: Idle in Transaction
+    GREEN: Indexes
+    GREEN: Bloat
+    GREEN: Hit Rate
+    GREEN: Blocking Queries
+    GREEN: Load
+$ heroku pg:cache-hit
+        name      |         ratio
+    ----------------+------------------------
+    index hit rate | 0.99922477136372828798
+    table hit rate | 0.99936977126404112551
+    (2 rows)
+$ heroku pg:index-usage
+        relname      | percent_of_times_index_used | rows_in_table
+    -------------------+-----------------------------+---------------
+    categories_posts  |                             |         44063
+    posts             | 99                          |         22012
+    authors           | 0                           |         13137
+    schema_migrations | Insufficient data           |             2
+    categories        | 99                          |             2
+    (5 rows)
+
+$ heroku pg:unused-indexes
+        table      |         index         | index_size | index_scans
+    ----------------+-----------------------+------------+------------
+    public.authors | index_authors_on_name | 784 kB     |           0
+    (1 row)
+$ heroku pg:long-running-queries
+$ heroku pg:outliers
+Learn more: https://www.postgresql.org/docs/9.3/static/monitoring-stats.html
 
 
