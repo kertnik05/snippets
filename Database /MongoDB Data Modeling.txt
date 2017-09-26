@@ -1491,7 +1491,8 @@ Chapter 4: Indexing 71
 			db.customers.createIndex({password: 1}, {sparse: true})
 
 Chapter 5: Optimizing Queries 87
-		Understanding the query plan 87
+		Understanding the query plan 87 
+			MongoDB query optimizer - query plans
 		Evaluating queries 89
 		Covering a query 95
 		The query optimizer 101
