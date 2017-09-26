@@ -1196,18 +1196,300 @@ Chapter 3: Querying Documents 37
 				bulk.execute({w: "majority", wtimeout: 3000});
 			
 			- MongoDB has a limit of executing a maximum of 1,000 bulk operations at a time. So, if this limit is exceeded, MongoDB will divide the operations into groups of a maximum of 1,000 bulk operations.
-			
+
 
 Chapter 4: Indexing 71
-	Indexing documents 71
+	Indexing documents 71 - data structures that hold part of the data from our main data source. 
+							In MongoDB, since indexes are on a collection level, these will hold part of a document. 
+							Similar to relational databases, indexes use a B-Tree data structure at implementation level.
+							Thus, when we execute a query, if there is an index that covers the query criteria, MongoDB will use the index to limit the number of documents to be scanned.
+
+							{
+								"_id" : ObjectId("54aecd26867124b88608b4c9"),
+								"username" : "customer1",
+								"email" : "customer1@customer.com",
+								"password" : "b1c5098d0c6074db325b0b9dddb068e1"
+							}
+
+							db.customers.createIndex({username: 1})
+							
+							The following query will use the previously created index:
+							
+							db.customers.find({username: "customer1"})
+
+							we can create indexes on multikey  elds or in embedded documents'  elds, for instance
+
 		Indexing a single field 73
-		Indexing more than one field 76
+			{
+				"_id" : ObjectId("54aecd26867124b88608b4c9"),
+				"username" : "customer1",
+				"email" : "customer1@customer.com",
+				"password" : "b1c5098d0c6074db325b0b9dddb068e1",
+				"age" : 25,
+				"address" : {
+					"street" : "Street 1",
+					"zipcode" : "87654321",
+					"state" : "RJ"
+				}
+			}
+
+			db.customers.createIndex({username: 1})  //Index in Asscending order
+			db.customers.createIndex({username: -1}) //Index in Descending order
+
+			create an index of a  a specific field in an embedded document.
+				db.customers.createIndex({"address.state": 1})
+				db.customers.find({"address.state": "RJ"})
+
+			create an index of the entire embedded document
+				db.customers.createIndex({address: 1})
+				db.customers.find({
+					"address" : {
+						"street" : "Street 1",
+						"zipcode" : "87654321",
+						"state" : "RJ"
+					} 
+				})
+
+			we have to match exactly the entire document, including the  field order
+			db.customers.find({
+				"address" : {
+					"state" : "RJ",
+					"street" : "Street 1",
+					"zipcode" : "87654321"
+				} 
+			})
+
+			Not Allowed:
+				db.customers.find({state: "RJ"})
+				db.customers.find({address: {zipcode: "87654321"}})
+
+
+		Indexing more than one field 76 
+		There is no big difference between a single  eld index and a compound index. The biggest difference is in the sort order.
+			{
+				"_id" : ObjectId("54aecd26867124b88608b4c9"),
+				"username" : "customer1",
+				"email" : "customer1@customer.com",
+				"password" : "b1c5098d0c6074db325b0b9dddb068e1",
+				"age" : 25,
+				"address" : {
+					"street" : "Street 1",
+					"zipcode" : "87654321",
+					"state" : "RJ"
+				} 
+			}
+			db.customers.createIndex({username: 1, password: 1})
+				Allowed Queries:
+
+				db.customers.find({
+					username: "customer1",
+					password: "b1c5098d0c6074db325b0b9dddb068e1"
+					}
+				)
+				db.customers.find({username: "customer1"})
+				db.customers.find({
+					password: "b1c5098d0c6074db325b0b9dddb068e1",
+					username: "customer1"
+				})
+
+				Not Allowed:
+				db.customers.find({password: "b1c5098d0c6074db325b0b9dddb068e1"})
+			
+			The pre x in a compound index is a subset of the indexed  elds. As its name suggests, it is the  elds that take precedence over other  elds in the index. 
+			In our example, both {"address.state":1} and {"address.state":1, "address.zipcode": 1} are index prefixes.
+			db.customers.createIndex(
+			{
+				"address.state":1,
+				"address.zipcode": 1,
+				"address.street": 1
+			})
+
+			Allowed Queries: A query that has any index prefix will use the compound index.
+				db.customers.find({
+					"address.state": "RJ",
+					"address.zipcode": "87654321 1",
+					"street" : "Street 1",
+				})
+				
+				db.customers.find({
+					"address.state": "RJ",
+					"address.zipcode": "87654321 1"
+				})
+
+				db.customers.find({
+					"address.state": "RJ",
+					"street" : "Street 1"
+				})
+				
+				db.customers.find({
+					"address.state": "RJ",
+				})
+			Not Allowed:
+				db.customers.find({
+					"address.zipcode": "87654321 1"
+				})
+				db.customers.find({
+					"street" : "Street 1"
+				})
+				db.customers.find({
+					"address.zipcode": "87654321 1"
+					"street" : "Street 1"
+				})
+
+			db.customers.createIndex({"address.state": 1, "address.street": 1})
+			db.customers.find({
+				"address.state": "RJ",
+				"address.street": "Street 1"
+			})
+
 		Indexing multikey fields 79
+			create an index of an array  field
+			It is not possible to create a compound index of two array  fields.
+		{
+			"_id" : ObjectId("54aecd26867124b88608b4c9"),
+			"username" : "customer1",
+			"email" : "customer1@customer.com",
+			"password" : "b1c5098d0c6074db325b0b9dddb068e1",
+			"age" : 25,
+				"address" : {
+					"street" : "Street 1",
+					"zipcode" : "87654321",
+					"state" : "RJ"
+				},
+				"followedSellers" : [
+					"seller1",
+					"seller2",
+					"seller3"
+				],
+				"wishList" : [
+					{
+						"sku" : 123,
+						"seller" : "seller1"
+					},
+					{
+						"sku" : 123,
+						"seller" : "seller2"
+					},
+					{
+						"sku" : 678,
+						"seller" : "seller3"
+					}
+				] 
+		}
+
+		Allowed Index:
+			db.customers.createIndex({followedSellers: 1})
+			db.customers.createIndex({wishList: 1})
+			db.customers.createIndex({"wishList.sku": 1})
+			db.customers.createIndex({"wishList.seller": 1})
+		Not Allowed Index:
+			db.customers.createIndex({followedSellers: 1, wishList: 1}
+
 		Indexing for text search 80
-	Creating special indexes 83
+			relational and NoSQL databases have full text searching natively
+		
+		{
+			"_id" : ObjectId("54837b61f059b08503e200db"),
+			"name" : "Product 1",
+			"description" :
+			"Product 1 description",
+			"price" : 10,
+			"supplier" : {
+				"name" : "Supplier 1",
+				"telephone" : "+552199998888"
+			},
+			"review" : [
+				{
+					"customer" : {
+							"email" : "customer@customer.com"
+						},
+					"stars" : 5 
+				}
+			],
+			"keywords" : [ "keyword1", "keyword2", "keyword3" ]
+		}
+
+		Allowed Index: 
+		db.products.createIndex({name: "text"})
+		db.products.createIndex({description: "text"})
+		db.products.createIndex({keywords: "text"})
+
+		we can only have one text index per collection.
+		Despite the limitation to create only one text index per collection, it is possible to create a compound text index
+			db.products.createIndex({name: "text", description: "text"})
+		A common and useful way of creating a text index of a collection:
+			db.products.createIndex({"$**","text"}) 
+		To sum up the process, we can split it into three phases:
+			• Tokenization
+			• Removal of suffix and/or prefix, or stemming
+			• Removal of stop words
+		
+		Since its 2.6 version, MongoDB supports the following languages:
+			• da or danish
+			• nl or dutch
+			• en or english
+			• fi or finnish
+			• fr or french
+			• de or german
+			• hu or hungarian
+			• it or italian
+			• nb or norwegian
+			• pt or portuguese
+			• ro or romanian
+			• ru or russian
+			• es or spanish
+			• sv or swedish
+			• tr or turkish
+		An example of an index creation with language could be:
+			db.products.createIndex({name: "text"},{ default_language: "pt"})
+		We can also opt to not use any language, by just creating the index with a none value:
+			db.products.createIndex({name: "text"},{ default_language: "none"})
+			By using the none value option, MongoDB will simply perform tokenization and stemming; it will not load any stop words list.
+		usePowerOf2Sizes. This is because text indexes are considered larger indexes.
+			Finally, we have to predict the impact that the text indexes will have on our write operations. 
+			This happens because, for each new record created in our collection, there will also be an entry created in the index referencing all the indexed value  elds.
+
+	Creating special indexes 83 
 		Time to live indexes 83
+			This index is created only in  elds that are from the Date type
+			{
+				"_id" : ObjectId("5498da405d0ffdd8a07a87ba"),
+				"username" : "customer1",
+				"email" : "customer1@customer.com",
+				"password" : "b1c5098d0c6074db325b0b9dddb068e1",
+				"accountConfirmationExpireAt" : ISODate("2015-01-11T20:27:02.138Z")
+			}
+			db.customers.createIndex(
+				{accountConfirmationExpireAt: 1}, {expireAfterSeconds: 3600}
+			)
+			This command indicates that every document that is older than the value in seconds requested in the expireAfterSeconds  eld will be deleted.
+		
 		Unique indexes 85
+			responsible for rejecting duplicated values in the indexed  field. 
+			The unique index can be created from a single or from a multikey  eld and as a compound index. 
+			When creating a unique compound index, there must be uniqueness in the values' combinations.
+			db.customers.createIndex({username: 1}, {unique: true})
+
 		Sparse indexes 85
+			Sparse indexes are indexes that will be created only when the document has a value for the  eld that will be indexed. 
+			We can create sparse indexes using only one  eld from the document or using more  elds. This last use is called a compound index. 
+			When we create compound indexes, it is mandatory that at least one of the  elds has a not-null-value.
+
+			{ 	"_id" : ObjectId("54b2e184bc471cf3f4c0a314"), 
+				"username" :"customer1", 
+				"email" : "customer1@customer.com", 
+				"password" : "b1c5098d0c6074db325b0b9dddb068e1" }
+			{ "_id" : ObjectId("54b2e618bc471cf3f4c0a316"), 
+				"username" : "customer2", 
+				"email" : "customer2@customer.com", 
+				"password" : "9f6a4a5540b8ebdd3bec8a8d23efe6bb" }
+			{ "_id" : ObjectId("54b2e629bc471cf3f4c0a317"), 
+				"username" : "customer3",
+				"email" : "customer3@customer.com" 
+			}
+
+			db.customers.createIndex({password: 1}, {sparse: true})
+
 Chapter 5: Optimizing Queries 87
 		Understanding the query plan 87
 		Evaluating queries 89
