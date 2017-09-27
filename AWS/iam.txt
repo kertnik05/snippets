@@ -19,7 +19,7 @@ Create A User
 Create a Group 
 
 Tokens To access AWS Cloud Programmatic:
-    Secret Access Key 
-    Access Key ID 
+    SAK
+    AKIs
 
 
