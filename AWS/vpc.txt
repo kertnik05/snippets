@@ -1,0 +1,36 @@
+Steps: 
+1. Create VPC : https://console.aws.amazon.com/vpc/home?region=us-east-1#vpcs:
+VPC ID: myvpc
+IPv4 CIDR: 10.0.0.0/16
+2. Create Subnets: https://console.aws.amazon.com/vpc/home?region=us-east-1#Subnets:
+//Still Private - but will connect this later to router to make it public
+Subnet ID: <10.0.1.0-us-east-1a>
+IPv4 CIDR: 10.0.1.0/24
+//Private No Internet Connection
+Subnet ID: <10.0.2.0-us-east-1b>
+IPv4 CIDR: 10.0.2.0/24
+3. Add Internet Gateway to VPC(myvpc): https://console.aws.amazon.com/vpc/home?region=us-east-1#igws:
+4. Associate Internet Gateway to Router (Create Router): https://console.aws.amazon.com/vpc/home?region=us-east-1#routetables:
+Name: mypublicrout
+Destination:0.0.0.0/0
+Target: <internet gateway id>
+5. Associate Subnet(10.0.1.0-us-east-1a) to router which is connected to internet gateway: https://console.aws.amazon.com/vpc/home?region=us-east-1#subnets:
+- Select Subnet: 10.0.1.0-us-east-1a
+- Route Table (edit): mypublicrout
+- Subnet Actions: Modify Auto Assign IP Settings (Enable): Enable auto-assign public IPv4 address
+
+Add Instance to VPC 
+//Public Instace Web Server
+Step 1: Choose an Amazon Machine Image (AMI): Amazon Linux AMI 2017.09.0 (HVM), SSD Volume Type 
+Step 2: Choose an Instance Type: t2.micro
+Step 3: Configure Instance Details: 
+Network: myvpc
+Subnet: 10.0.1.0-us-east-1a
+
+//Public Instace Web Server
+Step 1: Choose an Amazon Machine Image (AMI): Amazon Linux AMI 2017.09.0 (HVM), SSD Volume Type 
+Step 2: Choose an Instance Type: t2.micro
+Step 3: Configure Instance Details: 
+Network: myvpc
+Subnet: 10.0.2.0-us-east-1b
+
