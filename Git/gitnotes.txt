@@ -962,7 +962,7 @@ Title - enter computer name or be descriptive
 paste pbcopy(clipboard) to the key textbox in github 
 
 //From Terminal
-ssh -T git@github.com 
+ssh -T git@github.com //test if github is communicating with your computer
 enter yes
 
 Create a new repository in github 
