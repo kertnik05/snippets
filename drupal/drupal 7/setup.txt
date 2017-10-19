@@ -1,0 +1,5 @@
+- Download and Install Themes: https://www.drupal.org/project/adminimal_themes
+- https://www.drupal.org/project/bootstrap/releases/7.x-3.15
+- https://www.drupal.org/docs/7/administering-drupal-7-site/working-with-the-overlay
+http://codekarate.com/daily-dose-of-drupal/drupal-7-administration-menu-module
+https://www.youtube.com/watch?v=xt7nfsiMZh8
