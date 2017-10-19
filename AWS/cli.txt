@@ -1,6 +1,27 @@
+http://docs.aws.amazon.com/cli/latest/userguide/cli-install-macos.html
+
 Installing Phyton in CLI
 1. SSH to AWS
 2. sudo apt-get install install phyton-pip
 
+$ python --version 
+
 Installing the CLI
 $ pip install awscli  - https://github.com/aws/aws-cli
+
+
+AWS Configure
+- AWS Access Key ID
+- Secret Access Key 
+- Default Region
+- Output Format
+
+- AWS CLI Credentials 
+    - ls ~/.aws 
+    - cat config 
+        - [profile <profilename>]
+        - region=eu-west-1
+    - cat credentials 
+        - - [ <profilename>]
+        - aws_access_key_id = <yourrandomaccesskeyid>
+        - aws_secret_access_key = <yoursecretaccesskeyid> 
