@@ -1,0 +1,109 @@
+1 Domain 1.0: Monitoring and Metrics
+1.1 Demonstrate ability to monitor availability and performance
+1.2 Demonstrate ability to monitor and manage billing and cost optimization processes
+
+Service: CPU, Memory, Disk, and Network 
+In AWS Monitor: EC2, ELB, ASG, RDS, SQS 
+
+Cloudwatch and EC2 
+- Basic Monitoring
+    - 5 Minute intervals
+    - Predeined Metrics
+    - Status check of Metrics
+- Detailed Monitoring
+    - 1 Minute intervals
+    - Same Metrics as basic monitoring 
+    - Extra Costs
+    - Available on a per instance basis 
+- Additional Cloudwatch features
+    - Custom Metrics
+        - logged with Cloudwatch API 
+        - Memory gathering script provided 
+    - Logs
+        - Text Matching Capabilities
+    - Alarms 
+        - Passive - sends notifications
+        - Active - Performs actions
+    - Dashboards
+        - Graphs 
+- Cloudewatch Alarm States Change 
+    - Ok - under 70 CPU 
+        - See Thershold in details
+    - Alarm - Above 70 CPU            
+    - Insuffiecient_data - EC2 is off 
+-  Notifications
+    - SNS Message 
+    -  Auto Scaling Policy 
+    - Frequency Dependent on notification type 
+
+Cloudwatch Billing Alarm
+    - Must Enable billing alerts
+    - Data Stored in US-EAST-1 (N. Virginia) - Only available 
+    - Accound-wide spend
+    - Segmented by some AWS services
+
+    - Steps
+    - Preferences 
+        - Receive Billing alerts 
+        - Receive by email
+        - Receive by Billing reports 
+    - Create Alarm 
+        - Enter total charges
+        - SNS: enter your email 
+
+SNS - Push mesaging services
+- Topic Creation  
+    - Create Topic Name 256 charactes
+    - Display Name 10 charcacters 
+- Topic Subscription 
+    - Create Subrictions 
+        - Protocol: Email, HTTP, Etc.
+        - Endpoint: Emailaddress
+        - Go to email and confirm substrciption 
+- Topic Publication 
+    - Publish a Message
+        - Subject: your subject message 
+        - Message: Your message 
+        - Go back to emaila and see publication 
+    - This will add to cloudwatch 
+
+Create Alarm for Other services
+- Shows when you have other services running 
+
+Cloudwatch in Action 
+- In EC2, see monitoring if Cloudwatch is Enable
+    - Create a Alarm - https://www.lynda.com/Amazon-Web-Services-tutorials/Use-CloudWatch-alarm/569343/618786-4.html?srchtrk=index%3a8%0alinktypeid%3a2%0aq%3aaws%0apage%3a2%0as%3arelevance%0asa%3atrue%0aproducttypeid%3a2
+
+Extend Cloudwatch 
+    - Physical -> Hypervisor (cloudwatch can monitor) -> Virtual Machine (AWS CLI - software agent - needs permission from cloudwatch -> reports to cloudwatch)
+
+Monitor EC2 Memory 
+    - Check if IAM role is assigned in EC2 
+    - Create a IAM role 
+        - See if if attach policy has right to use cloudwatch 
+    - Use CLI, Boto, or Language SDK - to associate IAM role with cloudwatch 
+    - SSH to the Instance - to install the software agent that will report to cloudwatch 
+    - set a cron entry (for time)
+
+2 Domain 2.0: High Availability
+2.1 Implement scalability and elasticity based on scenario
+2.2 Ensure level of fault tolerance based on business needs
+3 Domain 3.0: Analysis
+3.1 Optimize the environment to ensure maximum performance
+3.2 Identify performance bottlenecks and implement remedies
+3.3 Identify potential issues on a given application deployment
+4 Domain 4.0: Deployment and Provisioning
+4.1 Demonstrate the ability to build the environment to conform with the architected design
+4.2 Demonstrate the ability to provision cloud resources and manage implementation automation
+5 Domain 5.0: Data Management
+5.1 Demonstrate ability to create backups for different services
+5.2 Demonstrate ability to enforce compliance requirements
+5.3 Manage backup and disaster recovery processes
+6 Domain 6.0: Security
+6.1 Implement and manage security policies
+6.2 Ensure data integrity and access controls when using the AWS platform
+6.3 Demonstrate understanding of the shared responsibility model
+6.4 Demonstrate ability to prepare for security assessment use of AWS
+7 Domain 7.0: Networking
+7.1 Demonstrate ability to implement networking features of AWS
+7.2 Demonstrate ability to implement connectivity features of AWS

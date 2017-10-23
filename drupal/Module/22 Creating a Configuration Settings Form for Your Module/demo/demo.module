@@ -57,7 +57,8 @@ function demo_validate_password($form, &$form_state) {
   $badpasswords = variable_get('demo_badpasswords');
   $badpasswords_array = explode(', ', $badpasswords);
   #krumo($badpasswords_array);
-
+  
+  //If what user type is in badpasswords_array
   if (in_array($form_state['values']['pass'],  $badpasswords_array)) {
     form_set_error('pass', t('Please use a more secure password.'));
   }

@@ -16,6 +16,7 @@ Creating Content
 admin/structure/types - Create Content Type
 ​admin/structure/taxonomy - Create Categorizing Node Types, URL for Taxonomy
 admin/structure/types/manage/article/fields - Add fields for taxonomy
+admin/config/search/path/patterns - Pathauto Module
 
 Menu
 admin/structure/menu

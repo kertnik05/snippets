@@ -23,9 +23,9 @@ function spy_glass_menu() {
  //let's you apply theme implementation in drupal; Documenation: hook_theme 
 function spy_glass_theme() {
   return array(
-    //spy_glass_item is going to be themable
+    //spy_glass_item is going to be template file
     'spy_glass_item' => array(
-      'arguments' => array('title' => NULL, 'data' => NULL),
+      'arguments' => array('title' => NULL, 'data' => NULL), //arguments comes from spy_glass_preprocess_spy_glass_item
       //spy-glass-item.tpl.php themable template file (Note: use this if you have more html)
       'template' => 'spy-glass-item',
     ),
@@ -57,7 +57,7 @@ function spy_glass_page($node) {
   return $content;
 }
 
-//Need to create a variable for tpl.php modulename_hookname; preprocess always use &
+//Need to create a variable for tpl.php modulename_hookname; preprocess always use &; _spy_glass_item from line 27
 function spy_glass_preprocess_spy_glass_item(&$variables) {
 	//dsm($variables);
 	//title becomes $title, data becomes $data

@@ -4,6 +4,7 @@
  * Page callback for the 'user/%/magic tab.
  */
 function menu_magic_user_tab($wildcard) {
+  //If the wildcard is numeric, user_load(1)
   if (is_numeric($wildcard) && ($account = user_load($wildcard))) {
     return array(
       '#type'   => 'markup',

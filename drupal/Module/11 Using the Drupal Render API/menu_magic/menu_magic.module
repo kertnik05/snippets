@@ -52,7 +52,8 @@ function menu_magic_basic() {
 
   // This is a very, very simple page element. It will appear on the page,
   // but other modules can't customize it and themes can't override its markup.
-  //raw_markup if the key doesn't start with a #, it is an element; If it starts with a #, it is an element
+  //raw_markup if the key doesn't start with a #, it is a new element; If it starts with a #, it is a property
+  //https://api.drupal.org/api/drupal/developer%21topics%21forms_api_reference.html/7.x
   $content['raw_markup'] = array(
     '#type' => 'markup',
     //Documentation can be found in forms API; Search for Type and then markup; 
@@ -75,6 +76,7 @@ function menu_magic_basic() {
     '#prefix' => '<div class="menu-magic-image">',
     '#suffix' => '</div>',
     //Documentation: forms_api_reference.html; #attached let's you attached css, js, or libraries
+    //https://api.drupal.org/api/drupal/developer%21topics%21forms_api_reference.html/7.x
     '#attached' => array(
       'css' => array(
         //takes 2 arguments - the type of thing you are tyring to get path to and the path of the thing (menu_magic)
@@ -85,6 +87,8 @@ function menu_magic_basic() {
 
   $content['renderable_element'] = array(
     // '#theme' => 'item_list' - uses theme_item_list($variables) function; #title and #items gets process by theme_item_list($variables) function
+    //https://api.drupal.org/api/drupal/includes%21theme.inc/function/theme/7.x
+    // https://api.drupal.org/api/drupal/includes%21theme.inc/function/theme_item_list/7.x
     '#theme' => 'item_list',
     '#title' => t('How do we know it\'s magic?'),
     '#items' => array(
@@ -94,11 +98,11 @@ function menu_magic_basic() {
       t('The current time is %time.', array('%time' => date('r'))),
     ),
     '#cache' => array(
-      'keys' => array('menu_magic', 'renderable_element'), // cachec keys - menu_magic:renderable_element
+      'keys' => array('menu_magic', 'renderable_element'), // This saves into the cache in database. cache keys - menu_magic:renderable_element
       //bin refers to the cache bin to store to, you can name it like cache_menu_magic; check the cache table database if it exist
-      'bin' => 'cache',
-      'expire' => time() + 30,
-      //Documentation: DRUPAL_CACHE_PER_PAGE - hook_block_info
+      'bin' => 'cache', //there's hsould be a cache tables in database
+      'expire' => time() + 30, //should exprire after 30 seconds
+      //Documentation: DRUPAL_CACHE_PER_PAGE - hook_block_info https://api.drupal.org/api/drupal/modules%21block%21block.api.php/function/hook_block_info/7.x
       'granularity' => DRUPAL_CACHE_PER_PAGE,
     ),
   );

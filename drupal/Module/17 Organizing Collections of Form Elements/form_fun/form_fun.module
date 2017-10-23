@@ -16,7 +16,6 @@ function form_fun_menu() {
     //Insted of directly calling the form use the drupal_get_form and use form_fun_tree as the argument
     'page callback' => 'drupal_get_form',
     'page arguments' => array('form_fun_tree'),
-    
     'access arguments' => array('access content'),
     'file' => 'form_fun.tree.inc',
     'weight' => 3,
