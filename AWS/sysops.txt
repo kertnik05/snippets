@@ -85,6 +85,124 @@ Monitor EC2 Memory
     - SSH to the Instance - to install the software agent that will report to cloudwatch 
     - set a cron entry (for time)
 
+Cloudwatch Logs
+- Immediate Application insight during failure
+- Durable log archiving 
+- Log-based alerts 
+- Log-based actions 
+
+Monitor Server Logs
+- Create IAM policy and role for cloudwatch
+- Associate IAM policy with EC2 Instance
+- Install Cloudwatch logs agent on EC2
+- Configure cloudwatch alerts 
+    - Configure custom Metrics
+    - Configure Cloudwatch alert 
+        - Default 5 minute monitoring
+    - Validate custom metric alert 
+
+AWS Config 
+- provides inventory to your AWS resources and a history configuration changes of these resources 
+- implements compliance control 
+- Records configuration changes
+- Integrates with cloudtrail 
+- Can record software changes with an agent 
+
+    Config Rules - a feature of Config 
+    - Describe desired state - example: Password Policy 
+        - Billing Code tags example - checks the tag and not the value 
+        - Change History: Cloudtrail, Configuration details, resource changes 
+    - Periodic Check 
+    - Event-driven check - Example: MFA is disabled 
+    - AWS or Customer managed 
+    - Dashboard 
+    - Note: Config Rule check policy compliance - Changes occurs, periodic bais, and depends on configuration 
+    - You dont select wheather a managed config rule executes on a schedule or on change basis 
+
+    Config Basics
+    - Simple Notification Service Notifications - is not required during setup 
+    - S3 Bucket for configuration details
+    - Not a free offering 
+    - Record on per region
+
+VPC Flow Logs 
+- Created per VPC 
+- capture all VPC network interfaces 
+- Stored in cloudwatch 
+-Require IAM role
+- Configurle by traffic type - accept or denied
+
+VPC Flow logs Contents
+- IP Address
+- Ports
+- Protocol
+- Elastic network interface
+- Packet Information
+- Traffic Action - accept or denied
+- Logging status 
+
+VPC Flow Log Limitations
+- Peered VPC only on the same account 
+- Immutable configuration 
+- Primary IP Address in the destination IP
+- AWS internal calls not permited 
+
+Cloudtrail Logs
+- Cover most AWS services 
+- Reside in S3 
+- Integrate with cloudwatch 
+
+Key Elasticsearch Features 
+- Fully Managed service 
+- Powerful analytics engine - analyze text and index text files 
+- Dashboard integration - Kibana 
+- Lambda can push Cloudwatch to Elastic search 
+    - can use kinesis firehose for data transformation 
+
+    Considerations 
+    - Cannot restric user or rules 
+    - Feature set - Data dog, sumo logic 
+    - Goals
+
+AWS X-Ray (Application Performance Management )
+- Analyze the behavior of applications by providing request tracing, exception collection and profiling capablities 
+- Helps why problem exist 
+- Native Integraion with AWS
+- SDK integration required for applications 
+- X-Ray API for almost any development language 
+- X-Ray agent for EC2 or on premises 
+
+X-Ray Concepts
+- Trace -records transaction
+- Segment - data 
+- Subsegment - Data of data
+- Annotation - Drills into traces. Adds Business context 
+- Error 
+- Sampling Rate - higher data more overhead
+- 
+Why service-oriented architechture?
+- Isolate Components
+- Improve Cycle Time 
+- Fluid Scaling 
+
+Cloudwatch Events 
+- Event 
+    - Can caputre Infastracture events 
+    - React to Time - scheduled
+    - Custom
+    - All valid EC2 states except rebooting, can be use for triggering a cloudwatch rule 
+- Target 
+    - Can reboot or stop EC2 
+- Rule - defines which target gets invoke 
+
+Lambda 
+- Let you run serverless app 
+- Can be launch within VPC - can access resources with VPC 
+
+Combines Cloudwatch and Lambda 
+- Cloudwatch events and lambda combine to automate your monitoring needs and corrective actions 
+
+
 2 Domain 2.0: High Availability
 2.1 Implement scalability and elasticity based on scenario
 2.2 Ensure level of fault tolerance based on business needs
