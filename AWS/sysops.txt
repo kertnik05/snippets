@@ -206,6 +206,241 @@ Combines Cloudwatch and Lambda
 2 Domain 2.0: High Availability
 2.1 Implement scalability and elasticity based on scenario
 2.2 Ensure level of fault tolerance based on business needs
+Fault Tolerance - The defining quality of a system that can continue to operate when a component failure occurs
+High Availability - High availability is all about how long a given system stays up over a specified period of time. This is about the number of 9. 
+
+Designing for Failure 
+    - World 
+        - Region 
+            - Two or more AZ 
+            - Edge Locations 
+        - Tools HA 
+            - Route 53 (DNS) - distribute traffic across regions 
+                - Availability - Can perform health checks in Enpoints (Ip or URL)
+                - Functional - String Matching first 5, 120 Bytes, No Pattern Matching, Global 
+                - Can create Alarms and send to SNS 
+                - Active/Passive Fail over 
+                - 3 Options for Multi Region Design 
+                    - Rout 53 Active Routing Options 
+                        - Weighted Round Robin - AWS routes traffic based on the weight assigned to a record set, divided by the sum of all weights for all record sets
+                            - In case of Failure, traffic will be pointed where most weight, and use ASG to increase the number of EC2 
+                            - With a 5 3 route policy and two regions, what is the correct traffic distribution between regions? 3/8 and 5/8 
+                        - Latency Based - DNS will compare latency 
+                            - In failure, DNS will point route the traffic to a healthy region. ASG can be use to accomdate the traffic. 
+                        - Geolocation based - GEO DNS 
+            - ELB - distribute traffic inside one region  and accros AZ 
+                - Can split inbound traffic to EC2 servers 
+                - Route 53 to Check ELB health checks 
+                - Internal/External ELB
+                - SSL Decryption 
+                - Simple Integration with AWS Certificate Manager 
+                - Integrates with IAM for granular control 
+                - Can do Health Checks on EC2 instances 
+                - Sticky sessions - handled by load balancers generated cookies 
+                - Classic Load Balancers 
+                    - Supports layer 4 and layer 7 load balancing
+                        - layer 4 (transport)
+                            - TCP
+                        - layer 7 (application) 
+                            - X-forwared-for, -Proto, and -port 
+                            - sticky session (cookie based)
+                - Application Load Balancer 
+                    - HTTP/2 - allows multiple request to be sent in a single connection
+                    - Content-based routing - target group (EC2)
+                        - Target Group - consist EC2, can include AZ and in one VPC 
+                            - Create Target Group VPC 
+                            - Add Instances to Group 
+                        - Create ALB to associate target group with it 
+
+                    - Improve Metrics - on ports 
+                    - Support web sockets
+                    - Support container  
+
+            - Elastic IP - Can be re-assign from one instance to another 
+                - Public static IP 
+                    - if release, it will return to AWS pool and cannot get it back (similar to a regular public ip) 
+                    - If an EC2 instance has a public IP address assigned by DHCP, that IP is release  while the instance is stopped
+                - Can re-associate to another EC2 in case of failure 
+                - EC2 must be in a subnet that is publicly accessible 
+                - Hourly fee when not associated with a running EC2 instance
+                - Scope limited to an individual AWS region 
+                    - can move accos VPC within a region 
+                - For Example, a legacy application server that cannot use Application Load balance. T
+                    he Cloudwatch can post to sns and invoke a lambda function. Lambda can disaasociate the EIP from a failed instance to the working instance. 
+            - ASG - to react to increase in request load - load triggers to increase the number of instance 
+                - 3 Fundamental Components 
+                    - launch configurations (Define what EC2)
+                        - similar to starting EC2 
+                        - AMI template
+                        - EC2 Instance Type 
+                        - User Data
+                        - Security Group 
+                    - ASG groups (Define the number of machine, VPC and locations) 
+                        - Launch Configuration to tell what instance to start 
+                        - Number of instances
+                        - VPC 
+                        - Subnets(s)
+                        - ASG behind Load balancer 
+                    - Scaling Policy (how to react) 
+                        - Increase/Decrease EC2 instance in ASG 
+                        - Respond to cloudwatch alarms 
+                        - Can be schedule driven 
+                    - ASG Design Considerations
+                        - subnets and availibility groups (how to distribute EC2) 
+                        - scaling policies ( to launch number of instances by threshold)
+                        - Number of server ( minimum number of servers )
+                        - Boot Time (how quickly is the boot)
+                - Use ASG with ALB 
+        - Decoupling tools 
+            - API Gateway 
+            - Lambda 
+            - SQS 
+
+
+                    
+
+Understanding Fault tolerant Components
+    - Storage Options
+        - S3 - Object Storage, accessible from anywhere 
+            - Global namespace - must be unique 
+            - 5TB maximum object size 
+            - Web accesible 
+            - Lifecyle Management 
+            - Simple storage service availability 
+                - availibility - standard 99.99%, reduced redundancy 99.99%, Infrequent Access 99.99%
+                - durability - standard 100%, reduced redundancy 99.99%, Infrequent Access 100%,
+                - Storage pricing - standard $$$, reduced redundancy $$, Infrequent Access $
+                - Request Pricing - standard $, reduced redundancy $, Infrequent Access $$
+            - CRR - S3 Cross region Replication
+                - Turn on Versioning 
+                - Turn on CRR 
+                    - When there's a objects inside prior turn on CRR, has to be sync manually
+
+        - EBS - Block storage, Hard drive to EC2 
+            - Attached storage behavior 
+            - can be encrypted 
+            - 99.999% availability
+            - attached to a single EC2 instance
+            - Scope to a single AZ on a given region 
+            - Snapshot capability 
+                - stored in s3 
+                - encrypted EBS, if Snapshot is create it also create an encrypted snapshot 
+            - Volume enryption applies 
+            - Snapshots are transportable 
+            - Lazy load to volumes 
+            - How to minimize service disruptions 
+                - Create a recurring snapshot 
+                    - If EBS fails, grab the latest EBS snapshot 
+                - When EBS volume fails, you will lose some data since the last snapshot was taken 
+        - EFS - File storage, Mulitple EC2 can point to one EFS 
+            - Fully Manage file service 
+            - Network attach storage behavior
+            - can me mounted to multiple servers 
+            - NFS protocol - not in windows 
+            - Scoped to an AWS regions 
+            - Elastic Usage
+            - Distributed by design 
+            - Create a mount target in each availability zone 
+                - In case of failure, the app server can point to another EFS mount target 
+                - You can move the app server to another AZ with the working EFS mount target 
+            -  best way to configure a new instance to mount an EFS volume - dynamically identify the endpoint in the target AZ and mount it in user data 
+    - Database Options
+        - DynamoDB(NoSql)- high availability 
+            - Fully managed by AWS 
+            - Can be installed locally for development purposes
+            - confined to a single aws region
+            - Data replicated across three independent locations 
+            - Designed to tolerate infastracture failure 
+                - You can replicate multiple DyanmoDB tables to different regions using a multiple  Streams job.
+            - Elastic Storage 
+            - Elastic throughput
+            - Continued Availability 
+        - RDS 
+            - Create a standby database 
+            - Can create Cross region read replica, but only for database that support read replica 
+            - Create a multi AZ options failover 
+                - Create RDS VPC with multi AZ
+                    - create a subnet group on each AZ
+                - Create RDS 
+                    - specify Security Group 
+                    - Create automatic backups 
+
+            - Use DNS name and not IP for database 
+            - Read Replica Considerations
+                - 5 for MySQL and PostgreSQL
+                - 15 for Aurora 
+                - Asynchronouse replication
+                - Read only sql queries 
+                - Need fresh data 
+                - create read replica to another region 
+            - RDS Limitations
+                - Operationally dependent on AWS 
+                - Inability to micropatch
+                - Inability to use some database features
+                - restricted privileges 
+            - DB parameter group and or option group - to change database engine specific items 
+        - Elasticache - In Memory Caching, can be ran in a single node or multi availability zone cluster 
+            - Redis Compatibility - Read and write capability 
+                - Use Append-only file (AOD) for data durability
+                - Use Replication groups to protect against cluster failure 
+                - Replication group failure is handled automatically 
+                - Multi AZ 
+                    - No Manula cluster promotion 
+                    - No OAF 
+                - Create Cache subnet group on all AZ 
+                    - configure primary node
+                    - If primary node fails, it point to read replica with least amount replication lags and depends on DNS 
+                    - Elastic cache - replaces the failed replica 
+            - Memcahed Compatibility - read only 
+                - Multi AZ 
+                    - Create cache subnet group on each AZ 
+            - Completely Manage by AWS 
+            - Elastic 
+            - Multi AZ capability 
+            - closely aligned with r3, because of memory optimization 
+        - Sidenote: Autodiscovery: Client can access all nodes in the cluster with reconfiguration 
+
+    - AMI - where virtual machine image is launch 
+        - Modifiying Instances on startup 
+            - Pass parameters to the AMI on launch using the user data field 
+            - shell script, cloud init package, or powershell script 
+            - Apply software patches and dowload latest software
+            - Run as the root user
+            - Only run on initial boot of the instance
+        - AWS EC2 run instances (command)
+            - --image-id 
+            - --count
+            - --instance-type
+            - --key-name 
+            - --subnet-id 
+            - --security-group-id
+            - --user-data (use for boot command) 
+            - --profile 
+        - Modify instances on initial boot 
+            - $ time sudo yum update -y 
+        - Things to consider 
+            - how are you goint to use AMIs?
+            - how frequently are you going to update your AMIs?
+            - How are you managing user data?
+            - how are you going to use AMIs in convert with automation tools?
+            - What are the implications of on boot and on reboot?
+            - How important is boot time?
+        
+
+
+    - ASG - a way to scale up/down or in/out
+    - Lambda - can scale automatically, mirco services approach, event driven to run code 
+    - API Gateway - facilitates management of API performance, regardless of the scale required.  Integrates with Lambda 
+    - Cloudwatch - monitors AWS metrics, can create custom metrics 
+        - cloudwatch cannot monitor EC2 memory 
+    - Simple Queue Service - Polling base queing; Queue can be offline and the messge will simply queu up 
+    - SNS - Push based messaging system 
+    - Elastic IP address - can be reaasigned to another EC2 
+
+
+
+
+
 3 Domain 3.0: Analysis
 3.1 Optimize the environment to ensure maximum performance
 3.2 Identify performance bottlenecks and implement remedies
