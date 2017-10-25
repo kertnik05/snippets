@@ -445,6 +445,280 @@ Understanding Fault tolerant Components
 3.1 Optimize the environment to ensure maximum performance
 3.2 Identify performance bottlenecks and implement remedies
 3.3 Identify potential issues on a given application deployment
+
+Cloudwatch EC2 Metrics 
+- CPU 
+- Network
+- Disk
+- Status 
+
+Cloudwatch: Storing Metrics
+- Default storing is 2 weeks for an instance 
+- If you need the metrics that are stored more than two weeks, then you can use third party tools or the GetMetricsStatistics API 
+- Terminated EC2 or Elastic Load Balancing (ELB) instances: 2 weeks 
+- Default Monitoring Sample time = 5 minutes 
+- Detailed Monitoring Sample time = 1 minute 
+
+EBS Overview
+- Elastic block store
+- Network block storage as a service 
+- EBS volumes can attach to any EC2 instances in the same availability zones 
+- Designed for five 9s of availability 
+- Over 2 million volumes created daily 
+
+EBS overview 
+- EBS volume types - can only be attached to 1 instance at a time 
+    - magnetic 
+        - Magnetic HDD 
+            - Good for infrequent data access 
+            - Best effors: 40-90 MB/s 
+            - Latency: 10-40 ms for reads and 2-10 ms for writes 
+    - General Purpose SSD
+        - SSDs
+        - Good for most workloads 
+        - Best efforts: 100-10,000 IOPS
+        - Throughput: 160 MB/s 
+        Latency average: 5 ms 
+    - Provisioned IOPS SSD 
+        - SSDs
+        - Good for Mission critical 
+        - IOPs: 100-20,000 
+        - Burst Bucket: up to 3,0000 IOPS (30 minutes)
+        - Throughput : 320 MBs 
+        - Latency Average: 5ms 
+
+EBS Performace Factors 
+    - Common performance Factors
+        - IOPs - Read/write 
+        - Latency - Time of request 
+        - Throughput - How much information send/receive 
+    - References: grnad and indirect 
+    - Buffer size
+    - I/O size (broken up): 128 K 
+    - Cache size 
+    - Queue size: pending size 
+    - Cloudwatch Metrics
+        - Basic - 5 minute interval 
+        - Detailed - provisioned iops 1 minute interval 
+            - Per request is added to detailed 
+    - see EBSperformanceFactor.png 
+    - Best Practice
+        - Consider: Parallelism - threads 
+        - Use -  EBS optimized 
+            - EBS - Optimized instances remove confusion (Qos)
+            - network traffic and EBS traffic are shared 
+            - optimized configuration stac that provides additional and dedicated capacity between EC2 EC2 and EBS/IO 
+            - 500 Mbps and 1,000 Mbps dedicated bandwidth 
+            - performance sensitive production databases (PIOPS)
+
+        - Use - the correct instance type 
+        - Use - the proper file systemss or stuctures 
+
+Monitoring s3 buckets 
+- Automated Monitoring tools
+    - Cloudwatch alarms 
+    - Cloudwatch trails 
+- Manual Monitoring 
+    - S3 Dashboard 
+    - Cloudwatch Homepage 
+        - S3 Storage Metrics 
+        - S3 Request Metrics 
+    - AWS Trusted Advisor
+- Monitoring 
+    - Must be opt in to receiving them
+    - Metrics are billed at a standard rate 
+    - It takes 15 munutes for cloudwatch to begin tracking request metrics 
+    and then populate graphs 
+    - Know that 1 minute cloudwatch metrics are available when enabled, which will help you identify bottlenecks quickly 
+
+RDS Monitoring 
+    - Relational Database service 
+    - Cloud scale
+    - Industry standard databaseEasy to use and set up
+    - cost efficient 
+    - Monitoring
+        - Monitor in RDS for the following metrics:
+            - CPU 
+            - Memory 
+            - Storage 
+            - Read and write IOPS 
+        - Swap usage 
+        - If you need more granularity, use cloudwatch to monitor RDS 
+            - http://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/rds-metricscollected.html
+        - Notification
+            - SNS event - Push Method 
+    - To view usage and performance statistics for a database instance with command line interface 
+        - mon-get--stats 
+
+Route 53 Monitoring 
+    - standard DNS service 
+    - Monitor Health and PErformance of specific application 
+    - Redirect services 
+    - Monitor with cloudwatch 
+    - Route 53 Health Checks 
+        - Endpoints 
+        - Cloudwatch Alarms 
+        - Other health checks - calculated health check 
+        - know Optional Health check features:
+            - https
+            - String Matching
+            - Fast interval 
+            - Latency Measurements 
+    - Route 53 status: Healthy or unhealty 
+        - Monitor up to 50 endpoints for freee 
+    - Elasticache 
+        - What is elasticache 
+            - In memory data store 
+            - Improves performance o0f web apps 
+            - Supports two memory engines 
+        - Four metrics to know 
+            - CPU utilization 
+                - Memcahced 
+                    - multithreaded open source solution
+                    - can handle loads up to 90% before nodes are added to cluster 
+                - Redis 
+                    - single threaded
+                    - Scaling  -  need to take 90% and divide by the number of cores 
+            - Evictions 
+                - Old data removed so new data can be placed in cache 
+            - Swap usage (page File)
+                - memcached 
+                    - should not exceed 50 MB 
+                    - Increase memcahced_connection_overhead
+                - redis 
+                    - no swapusage metric 
+                    - use reserved memory 
+            - concurrent cconnections
+                - Traffic spikes 
+                - No recommended setting 
+                - set up alarm to monitor concurrent connections 
+        - Scaling:
+            - Memcached 
+                - Scale up or scale out 
+            - Redis - scale up 
+
+Monitoring best practice 
+    - use 
+        - cloudwatch custom events 
+        - metrics and alarms 
+    - schedule 
+        - schedule maintenance with cloudwatch and lamnda 
+    - send
+        - send logs from AWS resources with log triggers and lamnda functions 
+    - Plan
+        - pland and document
+    - Prioritize
+        - prioritize monitoring in your environment 
+    - Automate 
+        - Automate monitoring tasks and remove manual tasks 
+
+Monitoring Elastic Beanstalk Monitoring
+    - PaaS for web apps 
+    - AWS extracts the complexity of deployments 
+    - PHP, Ruby on Rails, Python, JAVA, .Net, Go, Node.js, Docker, Apache, NGINX, and More 
+    - No Charge - Just pay for other resources used 
+    - Benefits
+        - fast simple to start 
+        - Enhances developer activity
+        - Impossible to outgrow
+        - Complete resource control 
+    - Handles the following:
+        - Elastic Load Balancing
+        - Provisioning
+        - Auto scaling
+        - Monitoring 
+        - Period: 1 Minute to 1 day 
+        - Time range: 1 hour to 2 weeks 
+    - Enhanced Health Reporting 
+        - granularity
+        - Visibility
+        - Flexibility 
+    - Logging 
+        - 100 lines of logs of the netire set of logs form each EC2 
+    - EBS performace factors 
+        - 1 min to 1 day period
+        - 1 hr to 2 weeks time range 
+    - Is manange Platform as a service 
+    - Know that enchanced health adds a status descriptor 
+    - Manage update is per application basis 
+-------------------------------------------------------
+2: Optimizing the Environment 
+Optimizing EC2 Intances 
+    - Instance Type
+        - Spot 
+            - short term needs
+            - reserved instances for long term needs 
+            - stop instances not in use 
+            - montior daily costs 
+            - pareto principle - 80% attribute to 20% of AWS resources 
+        - On Demand 
+        - Reserved 
+    - 3 payment options:
+        - all upfront 
+        - no upfront
+        - partial upfront 
+    - Best practices 
+        - EC2 right Sizing solution 
+        - Trusted Adisor checks 
+        - Cost Explorer 
+        - Audits 
+        - third party tools 
+    - Test tip:
+        - Cost Ecplorer billing tool 
+
+Optimizing Beanstalk
+    - adjustable configuration for performance 
+        - monitor in Cloudwatch 
+        - Auto Scaling 
+        - Elastic Load balancing 
+    - Time based scaling 
+        - sclae based on schedules for Auto scaling group 
+    - Test Tip: 
+        - Scale out with number of nodes: horizontal 
+        - Scale up with Amazon Machine Images (AMI): Vertical 
+    - Configuring alarms on Elastic Beanstalk
+
+Optimizing Resources: Auto scaling 
+- Functions of Auto scaling 
+    - monitor health of instances 
+    - automatically replace failed instances
+    - balance capacity accross amazon 
+- dynamically addjust EC2 instances 
+- Application autoscalling to other resources beyond EC2 
+- Monitor Auto scaling groups
+- Metrics are gourps and apps 
+- Test tip: send montioring data to S3 to use in in house tool 
+
+Trusted Advisor 
+- Online resource
+- Realtime guidance
+- Optimize your AWS environment
+- Benefits  
+    - Core checks 
+        - six core trusted advisor checks 
+        - security (limited)
+        - performance service limits 
+    - full trusted advisor 
+        - Access to full trusted advisor benefits 
+        - cost optimization
+        - notifications
+        - APIs 
+
+Elastic Load Balancer 
+- automatically distributes workload 
+- load balances network traffic to EC2 
+- enable fault tolerance 
+- 2 types: 
+    - classic load balancers 
+         - network level information
+    - Application load balancer 
+         - routes based on application information for advance routing 
+- Notifies on scaling events 
+- measures and send metrics in 60 second intervals
+- Metrics should be reviewd before exam 
+
+
+
 4 Domain 4.0: Deployment and Provisioning
 4.1 Demonstrate the ability to build the environment to conform with the architected design
 4.2 Demonstrate the ability to provision cloud resources and manage implementation automation
