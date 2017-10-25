@@ -51,7 +51,7 @@ UPDATE QUERY
 
 
 
-MERGE QUERY
+MERGE QUERY (Hybrid between Insert and Update)
 
   //In tablename, if the field = value exists, update field1 = value1 && field2 = value2 
   //UPDATE {tablename} SET column1 = value1, column2 = value2 WHERE column = value
