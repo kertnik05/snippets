@@ -576,9 +576,11 @@ Route 53 Monitoring
                 - Memcahced 
                     - multithreaded open source solution
                     - can handle loads up to 90% before nodes are added to cluster 
+                    - scale up 
                 - Redis 
                     - single threaded
                     - Scaling  -  need to take 90% and divide by the number of cores 
+                    - scale out 
             - Evictions 
                 - Old data removed so new data can be placed in cache 
             - Swap usage (page File)
@@ -711,11 +713,230 @@ Elastic Load Balancer
 - 2 types: 
     - classic load balancers 
          - network level information
+         - simple workloads 
     - Application load balancer 
          - routes based on application information for advance routing 
+         - routes traffics accross multiple ports on the same EC2 instance 
 - Notifies on scaling events 
 - measures and send metrics in 60 second intervals
-- Metrics should be reviewd before exam 
+- Metrics should be reviewed before exam 
+
+Consolidated Billing 
+- One bill per account
+- Volume discounts applied
+- easy tracking 
+
+Consolidated Billing: best practics 
+- Use a payer account for paying invoices
+- never use resources for a payer account
+- use multifactor authentication (MFA)
+- Use hard to guess passwords 
+- setup billing alerts 
+- Enable cloudtrail 
+    - per region
+    - per account basis 
+- The EC2 right sizing solution does not work with organizations 
+- By Default, 20 linked accounts permitted 
+
+AWS Billing and Alarms 
+- Billing often overlooked
+- AWS budgets - create a custom alert when AWS cost exceeds threshold 
+    - Keep costs in check and send alerts 
+    - costs exceeded 
+    - forecast cost overages
+    - set threshold 
+    - two free budgets (cost for additional) 
+    - up to 20,000 budgets can be set, and 2 is free per organization 
+- Cost Explorer - free tool to see chart of your cost and usage 
+    - Eliminates cost and usage
+    - Generate reports 
+        - Access from  billing manangement and management console
+    - detects anomalies 
+    - Run report 
+        - Cost and usage report 
+        - Reserved Instance utilization report 
+        - Reserved Instance coverage report 
+- Billing alerts and cloudwatch alarms 
+    - Alerts = AWS billing console
+    - Alarms = Cloudwatch 
+    - alert must be enabled by root account owner 
+    - Billng Alerts 
+        - Preferences
+            - PDF
+            - Billing alarm/alerts 
+            - Billing reports 
+                - saves to s3 in csv and zip format 
+- Billing Preferences - Preferences how you receive alerts and reports 
+- Test tip: Create Billing alerts before creating billing alarms 
+
+Event Driven Monitoring 
+- Lambda - serveless compute solution to create triggers 
+- SNS - facilitate messaging 
+- cludewatch and lamda combined
+- use for triggers for events 
+Test Tip: 
+Cloudwatch events 
+    - configure aws events as targets 
+    - near real time stream 
+
+Dashboard Alerts 
+- used for visualization and easy access to status of resources 
+- Options include
+    - open issues
+    - scheduled changes
+    - other notifications
+    - view all alerts 
+- AWS Service Health Dashboard 
+    - monitors AWS service health
+    - Provides upt to the minute information on AWS services
+    - Views specific regions
+    - Allow Customized dashboard views 
+- Test Tip: Open issues will show orange alert 
+
+AWS Cloudwatch 
+- Monitoring service for AWS resources and the applications you run on AWS 
+    - collect and trac metrics 
+    - Collect and monitor log files 
+    - set alarms
+    - automatically react to changes in your AWS resources 
+    - Free tier and paid tiers 
+    - Monitor most AWS resources 
+        - EC2
+        - S3
+        - DynamoDB 
+        - EBS 
+        - RDSElastic MapReduce Job flows
+        - AWS Elastic Load Balancing 
+        - Other Resources in AWS 
+    - Cloudwatch workflow 
+        - Cloudwatch Alarm
+            - throttledEvents > 2 over 5 minutes 
+        - SNS Notification  
+            - Publish to DynamoDB Topic 
+        - Lambda
+            - Call API
+            - DynamoDB.UpdateTable 
+    - test Tip: High Resolution Alarms are only available with the paid tier 
+
+Custom Metrics 
+    - Not all metrics included in standard or detiled metrics
+    - custom metrics used for RAM monitoring for example 
+    - RAM sampling is 1 minute
+    - AWS custom scripts available 
+Test Tip: In Elastic Beanstalk you can use a .ebextensions configuration file 
+
+Cloudwatch custom dashboard 
+- Customize your dashboard for easy access to your resource visibility 
+    - to get the view you require for your resources 
+    - used for monitoring groups of machines 
+    - Metric Widget types
+        - line
+        - stacked area
+        - number
+        - text 
+- Can monitor your resourcess across multiple regions and availability zones 
+ExampTip: Cloudwatch Dashboards can be used to monitor resources that are spread accross different regions 
+
+Centralized Monitoring 
+- Cloudwatch is a very powerful tool to monitor your environment
+- However, your monitoring requirements may call for using a third party toolset to enable centralized management and monitoring 
+- How to Allow Access to monitor EC2 
+    - Ports for SQL and ICMP
+    - How to use security groups 
+    - ACLs are used for both buckets and objects
+    - ACL policy (XML)
+    - Bucket policy (JSON) 
+- Cloudwatch is not granular 
+- Does Not Monitor HA NAT instace capability
+- Use centralized services like splunk or datadog 
+- Consider using security groups or ACLs
+- Open ports (ICMP)
+- IP address or IP address range 
+Test Tip: SQL 1433, Mysql 3306 
+
+Using SNS notifications 
+- is a pub/sub fully manage messageing service and mobile notification service 
+- SNS will send monitoring to cloudwatch every 5 minutes
+- AWS allows you to turn on detailed monitoring where metrics will be sent every minute 
+- SNS has n detailed monitoring capability - 5 minutes only 
+- There is a Time to live message attribute on SNS topics 
+
+SNS Notifications
+    - Publishers are people or applications using AWS services like cloudwatch and S3 to send notifications to an sns topic 
+    - TOpic is a list of subscribers who receive the notifications 
+        - Topics have an ARN (Unique) 
+    - Subscribers are endpoints, email, http, and SMS that receive notifications 
+
+SNS Messages 
+    - SNS is a push service
+    - Cloudwatch sends alerts with SNS 
+    - Create a topic to publish to SNS 
+Test Tip: Topic = 256 characters and display name = 10 characters 
+
+Application Monitoring 
+    - Cloudwatch does not monitor applications per se 
+        - Does monitor resources for applications
+        - Does react to resource issues with events
+        - Does not provide application discovery 
+        - Does not provide complete visibility of your applicatons
+        - Does not track application transactions
+        - Does not provide exetended analytics 
+    - Third Party application may be needed if you need to extend past the capability of cloudwatch 
+    - Health of appication resources can be monitored, but don't get confused over discovery, transactions , etc. 
+    Test Tip: Use cloudwatch events to react to application resource issues 
+
+Resource groups
+    - a resource group is a collection of resources that share one or more tags 
+    - Tags are word or phrases that act as metadata for organization your AWS resources 
+    - Create a Tag before resource groups 
+    - Create tags to attach to resource groups 
+    - Tag - key = value 
+    - Tag Editor to centralize tags  - to manage your tags
+    - feature to manage tags accress serices and regions
+    - search globally
+    - manage globally
+    - edit tags in bulk 
+    - free to use
+    - create tags and attach to resource groups
+    - Tags function like properties of a resource 
+    - are shared accress an entire account 
+    - share URL with users to their identity 
+    - Test Tip: What is the process for creating a resource group? create tags before your create a resource group 
+
+AWS Cloudfront EDGE Caching 
+- is a global content delivery network (CDN) service that securely delivers data, videos, applications, and APIs to your viewers with low-latency and high-transfer speeds 
+- It is a global edge network 
+- Global content cache 
+- 82 edge locations 
+- 11 regional edge caches 
+- 23 countries 
+- 49 cities 
+- Performance Benefits 
+    - can reduce cost for content delivery 
+    - Increases performance by utilizeing edge locations
+    - Speeds up content by using cache headers
+    - No charge for content to cloudfront 
+- Test Tip: How does S3 differ from cloudfront? Edge cahing in cloudfront (No edge cache in S3) 
+
+Cloudwatch logging 
+- Cloudwatch is a very powerful tool to monitor your environment
+- It can also be used for logging with cloudtrail for compliance reasons 
+- Logging Features 
+    - Free and paid resouces used like S3 
+    - monitor logs from Amazon EC2 instances in real time
+    - Monitor AWS cloudtrail logged events 
+    - Archived log data 
+- uses subscription for real time logging
+- create a subscription filter (metrics)
+- send to lambda or kinesis 
+- Test Tip: 
+    - Not that cloudwatch log groups can be created two ways:
+        - cloudwatch console 
+        - EC2 instance agent install 
+
+
+
+
 
 
 
