@@ -943,6 +943,7 @@ Cloudwatch logging
 4 Domain 4.0: Deployment and Provisioning
 4.1 Demonstrate the ability to build the environment to conform with the architected design
 4.2 Demonstrate the ability to provision cloud resources and manage implementation automation
+
 5 Domain 5.0: Data Management
 5.1 Demonstrate ability to create backups for different services
 5.2 Demonstrate ability to enforce compliance requirements
