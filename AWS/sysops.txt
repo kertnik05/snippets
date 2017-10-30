@@ -1,3 +1,6 @@
+
+
+
 1 Domain 1.0: Monitoring and Metrics
 1.1 Demonstrate ability to monitor availability and performance
 1.2 Demonstrate ability to monitor and manage billing and cost optimization processes
@@ -8,7 +11,7 @@ In AWS Monitor: EC2, ELB, ASG, RDS, SQS
 Cloudwatch and EC2 
 - Basic Monitoring
     - 5 Minute intervals
-    - Predeined Metrics
+    - Predefined Metrics
     - Status check of Metrics
 - Detailed Monitoring
     - 1 Minute intervals
@@ -936,13 +939,526 @@ Cloudwatch logging
 
 
 
-
+-----------------------------------------
 
 
 
 4 Domain 4.0: Deployment and Provisioning
 4.1 Demonstrate the ability to build the environment to conform with the architected design
 4.2 Demonstrate the ability to provision cloud resources and manage implementation automation
+#book chapter 1
+System Operators - Job to keep your application environments running at maximum performance at all times 
+    - Deploy systems
+    - Monitor systems 
+    - Optimizing systems 
+    - Fortifying systems 
+    - Securing systems 
+
+The 3 teir design 
+ - Web Teir /layer (EC2)
+    - Job 
+        - accepts request from the user and passes that request to application tier 
+        - Takes the response from application and presents it back to the user
+        - file format of response is controllled in this teir 
+        - no direct database access
+ - Application layer (EC2) 
+    - respond to web teir 
+ - Database
+    - process request from the appliction tier 
+
+Locations 
+    - Region 
+        - a separate geographic area 
+        - are made up of multiple isolated locations Availability Zones 
+    - AZ connectd through low latency links 
+    - Edge Locations
+        - Cloudfront 
+            - distribute static and dynamic content 
+        - Route 53 
+            - highly Available and scalable DNS 
+        - AWS WAF
+        - AWS Sheild 
+    - Hybrid Cloud architechture 
+        - Integration of on premises resource with cloud resource 
+
+
+Networking 
+    - VPC 
+        - private network 
+        - divided into subnets 
+            - Subnets 
+                - subnets doesn't affect latency 
+                - subnets affect access 
+                - logical subdivision of IP 
+            - NACL - controls access between subnets 
+        - logical isolated virtual network 
+    - Internet Gateways (IGW)
+        - controls in and out of VPC 
+        - allows traffic to and from external public sources 
+        - Route Table 
+            - grants access to gateway from specific subnets 
+        - Without IGW, subnets become private 
+        - horizontally scaled, redundant, and highly Available VPC component 
+        - allow communicaton between instances in your VPC and Internet 
+    - Security groups
+        - provides a stateful firewalls 
+            - EC2 security groups 
+                - virtual firewall 
+        - operates at Hypervisor level
+        - 7 Security Groups
+            - Public ELB - allows full public access
+            - Web Teir (EC2) - accepts traffic from Public ELB 
+            - Private ELB -  accepts traffic from Web Teir (EC2)
+            - Applicaton Tier Amazon EC2 - accepts traffic only from private ELB 
+            - Elasticache - accepts traffic only from Application tier 
+                - Easy deploy, operate, and scle an in-memory data store or cache in the cloud 
+            - RDS - accepts traffic only from Application Tier EC2 
+        - ELB 
+            - distributes application traffic accross multiple targets 
+            - 2 types
+                - Classic LB
+                - Appliction LB  
+    - Route Tables 
+        - set of rules to determine where data packets traviling over an IP will be directed 
+    - Active Directory Connector 
+        - easy way to establish a trusted relationship between your active Directory and AWS 
+   
+
+
+Compute 
+- EC2 - supports runtime configuration as required 
+    - provides secure, resizable compute capacity in the cloud 
+ - AWS Lambda 
+        - run code withou provisioning or managing servers 
+        - runs on their own VPC 
+            - means VPC Peering is required 
+                - create routing tables to direct traffic between the two VPCs 
+        - Authenticate at 2 Levels 
+            - when lambda function queries EC2 via Boto SDK 
+                - configured with role and policy 
+            - when lambda function establish ssh connections to the OS 
+                - Rivest-shamir-adleman (RSA) public and private key 
+                - Lambda function has the private key 
+                - Linux OS on prouction has the public key 
+        - Lamda functions 
+            - configured with role and policy 
+        - Secret Key 
+            - Encrypted using AWS Key Management Service (AWS KMS) 
+                - stored in S3 
+                - lambda retrieves the key and decrypt it using kms 
+                    - IAM policies controls who can decrypt and encrypt private key 
+                - KMS - is manage services, create and control encryption keys use to encrypt your data 
+        - Supports: Node.js, Java, and .net 
+    - AWS Lambda edge 
+        - write functions deployed to AWS network of edge locations in response to cloudfront 
+
+
+- Scallable Solutions 
+    - ASG
+        - can take predefined launch configuraitons and dynamically add or remove instances from the web or the application teir based on metrics 
+
+Database 
+- RDS runs in your VPC and on EC2 
+    - job 
+        - you select the DB engine and configuration 
+        - amazon takes care onf infastracture 
+    - Do it yourself datbase 
+    - easy setup 
+    - easy operate 
+    - scalable 
+- DynamoDB - NoSQL engine 
+    - Low Latency 
+    - High Avilability 
+        - fast 
+    - consistent 
+    - operates regional level through API access only 
+    - fully managed NoSQL database
+    - predicatable 
+    - scalable  
+Storage
+    - Block Storage (EBS) 
+        - Used by EC2  
+        - persitent block storage volumes 
+    - Object Storage 
+        - provided S3 
+            - regional level outsied VPC 
+            - Access through API Commands 
+            - Cost Effective 
+            - Massively Durable
+            - 2 kinds
+                - S3 Web hosting 
+                    - web enabled storage 
+                    - host static website 
+                    - client side scripts allowed 
+                - protected storage 
+                    - backups and AMI 
+            
+    - Archive storage (Glacier)
+        - low cost
+        - secure
+        - durable 
+        - Flexible backup and archival 
+    - Caching Storage 
+        - use by Cloudfront(CDN) 
+            - To cache content close to consumers 
+            - reduce latency and reduce cost 
+    - File Storage (EFS)
+        - provide file system interface 
+        - file system semantics 
+            - consitency
+            - file locking 
+        - concurrent accessible by EC2  
+User Management 
+IAM 
+    - controls operator access
+    - authenticate operators 
+        - control who can use resources 
+    - authorized operators 
+        - what resources they can use 
+    - AWS Directory Services - integrates with IAM 
+    - controls access to AWS services and resource for users 
+    - doesnt control EC2 
+    - Web Identity federation 
+        - delagated access to AWS management console or APIs
+            - Federated Users (external identities) are granted access without IAM user 
+
+Security Tools 
+    - Amazon Inspector 
+        - security assessment
+        - security and compliace of application 
+        - assesses application vulnerabilities or deviations from best practice 
+    - VPC Flow Logs
+        - capture IP traffic information in your vpc network interface 
+        - stored in cloudwatch logs 
+    - Amazon Cloudwatch logs 
+    - Cloudwatch 
+        - provides visibility metrics 
+        - analyze log logs and trigger alerts and corresponding actions 
+        - monitoring service for resources and applications 
+        - collects and track metrics
+        - collect and monitor log files
+            - Coudwatch logs 
+                - monitor, store, and access log files from:
+                    - EC2
+                    - Cloudtrail
+                    - VPC Flow log
+                    - etc. 
+        - set alarms 
+        - react to changes 
+    - Cloudtrail
+        - records API Calls in the AWS system 
+        - who, when, where the API call originated 
+        - delivers log files to S3 
+    - S3 access logs
+        - must be enabled
+        - to tract request access to S3 bucket 
+            - tacks the requester, bucket name, request time, request action, and response status 
+    - AWS WAF 
+        - control web application traffic using security rules 
+        - Available at edge location
+    - AWS Sheild 
+        - DDOs Protection 
+        - available at edge locations 
+
+Automated Deployment 
+    - Cloudformation 
+        - turns infastracture plans into code
+        - allowing operations to build and tear down entire systems in a single action 
+        - easy way to create collection of resources and provision them in orderly and predictable 
+    - Opsworks 
+        - stacks lets you manage applications and servers on AWS and on premises 
+        - stacks, you can model your application as a stack containg differnet layers 
+            - Load Balancing
+            - database
+            - application server 
+    - Elastic Beanstalk
+        - Handles deployment details of
+            - capacity Provisioning
+            - load balancing 
+            - auto scaling 
+            - application health monitoring 
+    
+The serverless design/architecture 
+    - replaced container services 
+    - serveless instances 
+        - a better way to track number of security updates 
+
+
+Analytics 
+Kinesis 
+    -  Platform for streaming data on AWS 
+    - easy to load and analyze streaming data 
+    - can have custom streaming for applications 
+
+Application Services 
+    - API Gateway 
+        - managed service that makes it easy for developers to publish, maintain, monitor, and sercure API 
+    - SQS 
+        - managed messaging queing service for reliably communicating among distributed softare component and microservices 
+    - SNS 
+        - web service that coordinates and manages the delivery or sending messages to subscribing endpoints or clients 
+    - SES 
+        - low sot solution for sending automated emails 
+            - such as: order confirmations, shipping notices, order status updates, policy changes, password resets, and etcs to keep your customer informed 
+
+
+#book End chapter 1
+-----------------------------------------------------------------------------------------
+#book  chapter 2
+AWS Toolset 
+- AWS Management Console 
+- AWS CLI/powershell
+    - Installation
+        - Install Phython 
+        - 32/64 bit 
+        - pip install --upgrade awscli  - command to upgrade cli 
+    - running 
+        - aws configure 
+        - Required: 
+            - cofigure credentials 
+            - need access key and secret key from IAM user 
+        - optional: 
+            - setting region: us-east-1 
+            - default format: json 
+                - other format: 
+                    - json - usable by applications/cli
+                        - aws ec2 create-security-group --cli-input-jso  file://finame.json 
+                            - file can be stored in s3 
+                    - text - parseable by grep and other text parse 
+                    - table - human readable 
+    - Create Multiple profiles 
+        - aws configure --profile profile-name 
+        - separate profile with separate privileges/configurations 
+    - credentials are stored 
+        - ~/.aws/credentials - linux 
+        - %UserProfile%\.aws/credentials - windows 
+    - Environment Variables 
+        - AWS_DEFAULT_PROFILE - default profile name 
+        - AWS_DEFAULT_REGION - default region name 
+        - AWS_CONFIG_FILE - alternate location of config 
+        - AWS_DEFAULT_OUTPUT - default output style 
+        - AWS_CA_BUNDLE - Certifcate authority bunlde 
+        - AWS_SECRET_ACCESS_KEY - AWS secret key 
+        - AWS_SESSION_TOKEN - AWS token (Temporary credentials) 
+        - https://github.com/aws/aws-cli
+        - https://aws.amazon.com/powershell/
+    - Getting help
+        - aws <resource or service like s3> help 
+    - Autcompletion 
+        - To enable: complete -C aws_completer aws 
+    - Source Code license: Apache license, version 2.0 
+    - working with servers
+        - aws <resource or service like s3> <parameter 1, parameter 2> 
+            - aws ec2 describe-Intances 
+            - aws s3 ls 
+                - s3://bucketname/
+    - backslash 
+        - to separate a command to several lines 
+    - Query 
+        - aws ec2 describe-instances 
+            - returns: InstanceID, PublicDNSName, PrivateDNSName, InstanceType 
+        - --query allows you to filter results 
+        - uses JMESPath query language 
+            - http://jmespath.org/tutorial.html
+        - Practical Queries 
+            - aws rds describe-db-instances --query 'DBInstance[?AvailabilityZone==`us-east-1e`] --output text 
+            - aws iot list-things --query 'things[?thingyTypeName==`intelEdison`] --output text 
+            - aws ec2 describe-instances --query 'Reservations[*].Instances[*].[InstanceID, LaunchTime, InstanceType] --output text 
+
+- AWS SDKs 
+    - General Usage SDK 
+        - andrioid
+        - javascript 
+        - ios 
+        - javascript
+        - .net
+        - node.js 
+        - PHP
+        - Phython
+            - Boto as an example 
+            - Installing: 
+                - pip install boto3 
+            - starting
+                - import boto3 
+            - usage:
+                - creating obj
+                    - ec2 = boto3.resource('ec2')
+                    - myinstamce = ec2.Instance('i-0bXXXXXXX') 
+                    - myinstance.stop() 
+                    - myinstance.start() 
+                    - myinstance.image_id 
+            - Featues: 
+                - low level client APIs are mapped to AWS cloud service APIs 
+                    - https://boto3.readthedocs.io/en/latest/guide/clients.html
+                - high level Resource API - allows you to avoid calling the network at the low level. 
+                    - It is object oriented way to interact  
+                - waiter - provide a strudture that alows for code to wait changes to occurs in the cloud 
+                - multithreding 
+        - Ruby 
+        - Go
+        - C++ 
+    - 2 Purpose specific SDK - provide developers with prebuilt libraries; Purpose: streamline connecting physical devices (phones, tablet, and hubs) to the cloud 
+        - AWS Mobile SDK
+            - Android
+            - ios
+            - Unity 
+            - .net
+            - xamarin
+            - React native 
+        - AWS IoT Device SDK 
+            - Embedded C
+            - Javascritpt 
+            - Arduino yun 
+            - Java 
+            - Phython 
+            - Android 
+            - C++ 
+- AWS is committed to Open Source 
+#book  end chapter 2
+-----------------------------------------------------------------------------------------
+
+Amazon AMI 
+    - are molds from which instance are huild
+    - consist of basic installations of operating systems like server 2012 
+    - may require you to have a lince for the OS
+    - can be customize for future use 
+
+EC2 Instance types 
+    D - Density
+    R - Ram
+
+    M - General Purpose
+    C - Compute
+
+    G - Graphics
+    I - IOPS
+    F - FPGA
+    T - Cheap General Purpose (Think T2 Micro)
+
+    P - Graphics (think Pics)
+    X - Extrem Memory
+
+Regions 
+- Choose the region to launch your resources 
+- Think of latency 
+
+availability zones 
+
+EBS 
+- can be customize size you need
+- can be arranged in multiple mounted volumes
+- lives independently of EC2; survives reboot 
+
+EC2 
+- connect with ssh keys provisioned by aws
+- define network connectivity with security groups 
+- tag instnces with metadata key-value pairs 
+
+Elastic Load balancers (Classic Load Balancers) 
+- High Avilability 
+- fault tolerance
+- integrated ssl support 
+- cross zone load balancing
+- basic http health checking
+- integration with auto scaling groups 
+- SSL   
+    - can perform ssl termination
+        - upload an ssl cert or use AWS certificate manager to get one for free 
+        - Associate the cert with secure listener, such as https (Port 443)
+        - use the same cert on multiple ELBs; update once without having to configure 
+- Listeners 
+    - listen on any port, forward to any port 
+    - be internal (VPC private traffic only)
+    - subject to security group 
+
+Application load balancers 
+- make layer 7 decisions
+- route based on URL patterns
+- load balance across multiple ports 
+
+AWS Auto scalling 
+- Vertical Scaling 
+    - increase capicity of the host
+    - can incure downtime 
+- Horizontal scaling 
+    - add host 
+    - no downtime 
+    - Steps 
+        - Build and provision new machine 
+        - Deploy your application
+        - add new machines to load balancer 
+        - Monitor appload to know when to take action 
+- AWS auto scaling 
+    - offers horizontal scaling as a service
+    - spins up new ec2 instances on demand or in response to conditions 
+    - charges only for the aws resources it creates for you 
+    - Policy - ASG receives event from cloudwatch  
+        - ASG can take action to add instance or remove instances 
+            - launch configuration - when adding instance ASG reads from it
+                - capture a series of choice for how to create instance 
+                - can be associated with an ASG 
+                - cannot be edite, only duplicated and re-associated 
+                - Configuration Options
+                    - AMI 
+                        - Provisioning options 
+                            - pre-bake an AMI 
+                            - script configuration with user data 
+                                - runs in root 
+                    - Instance Type 
+                    - Security groups
+                    - SSH Key 
+                    - ELB 
+                    - Tags
+                    - Event notifications 
+                    - scheduled scaling events 
+            - Scaling policies
+                - based on cloudwatch alarms 
+                - Example: add new instnace when CPU usage exceeds 80% for 300 seconds
+                - use cooldown times to define when instances should be removed 
+    - Definition
+        - Name
+        - VPC and subnets
+        - group size 
+    
+AWS Security Groups 
+- resuable groups of network security rules
+- define incoming and outing rules
+- can be attached to almost any resource in AWS: 
+    - EC2
+    - ELB
+    - RDS 
+- Act like local firewalls for that resource 
+    - Deny All incoming by default 
+    - Allow all outgoing traffic by default 
+    - Treat Deny as primary rule 
+- Advantages
+    - Reuse common rule sets
+    - easily see where rule sets are applied
+    - keep network access rules close to the resource they control 
+    - apply multiple to a single resource 
+    - Trusting other Security Groups 
+        - Use SG-ID 
+
+SSH Key Authentication 
+- Port 22 
+- SSHD running in server
+    - user account exist 
+    - AWS creates .pub and .pem with | chmod 300 my-key.pem 
+        - AWS only keeps the .pub 
+    - has public key: .pub
+- Use SSH or putty in client
+    - has .pem file 
+- Using your private key 
+    - ssh ec2-user@<remote_ip> -i /path/to/private_key.pem 
+- SSH Keyring - list of private keys 
+    - ssh-add /path/private_key.pem (add a private key)
+    - ssh-add -d /path/private_key.pem  (remove a private key) 
+    - ssh-add -l 
+    - ssh-add-D - removes all the keys (it doesn't delete)
+
+
+
+
 
 5 Domain 5.0: Data Management
 5.1 Demonstrate ability to create backups for different services
@@ -1200,6 +1716,150 @@ NewSQL - small, medium, complex
 6.2 Ensure data integrity and access controls when using the AWS platform
 6.3 Demonstrate understanding of the shared responsibility model
 6.4 Demonstrate ability to prepare for security assessment use of AWS
+
+
+-----------------------------------------------------------------------------------------
+#book  chapter 3
+Shared Responsibility Model 
+    - AWS is responsible for secyrity underlying infastracture that supports the cloud 
+        - global infastracture 
+            - hardware
+            - software
+            - networking 
+            - facilities 
+            - Manage product/service configurations 
+                - basic security tasks
+                    - OS and database patching 
+                    - firewall configuration 
+                    - disaster recovery 
+                - List of Manage Services   
+                    - RDS
+                        - aws replicate the database 
+                        - aws maintaing the database
+            - Physical and Environmental security
+                - Datacenters are housed in nodescript facilities 
+                    - control perimeter 
+                        - electronic survellance 
+                        - Authorized staff must pass two factor authentication a minimum of two times to access datacenter floors 
+                            - employees is logged 
+                        - visitors and contractos are required to present ID and are signed in and continually escorted by authorized staff 
+                            - only legitimate business visit 
+                - Fire detection and suppression 
+                    - uses smoke detection sensors 
+                    - protected by wet-pipe, double-interlocked pre-action or gaseous sprinkler systems 
+                - Power 
+                    - uses UPS 
+                    - backup generators 
+                - Climate and Temperature
+                    - Built to maintain atmostpheric pressure 
+                    - Personnel and system monitor and control temperature and humidity 
+                - Management 
+                    - Personnel performs Preventive maintenance 
+                - Storage Device Decommisioning 
+                    - to prevent the data from being exposed to unauthorized individuals 
+                - Business continuity management 
+                    - designed its system to tolerate system or hardware failures with minimal customer impact 
+                - Availability 
+                    - Datacenters are built in clusters in various gobal regions 
+                        - Datacenters are all online and no datacenter is cold 
+                        - In case of failure, automated process move data traffic away from the affected area 
+                    - Each AZ is designed as an independent failure zone 
+                        - located in lower risk floodplains
+                        - located in metropolitan areas 
+                        - fed via different grids from independent utilities to reduce single points of failure 
+                - Incident Response 
+                    - Amazon Incident Management Team 
+                        - Industry standard diagnostic procedure
+                        - 24/7 coverage to detect incidents and manage impacts, and resolution 
+                - Communication 
+                    - global level internal Communication
+                        - communicate events in timely manner 
+                        - employee orientation and training 
+                        - posting invormation via amazon intranet 
+                    - external Communication
+                        - to support customer 
+                        - AWS Service Health Dashboard - maintain by customer support team 
+                        - Customers can subscritbe to AWS Support 
+
+        - Auditing
+            - AWS provides reports from third party auditors 
+    - You are responsible for anything you put on the cloud 
+        - ssl/tls 
+        - data encryption at rest 
+        - user activity 
+            - protect account credentials 
+                - Lock Away Your AWS Account Root User Access Keys
+                - Create Individual IAM Users
+                - Use AWS Defined Policies to Assign Permissions Whenever Possible
+                - Use Groups to Assign Permissions to IAM Users
+                - Grant Least Privilege
+                - Use Access Levels to Review IAM Permissions
+                - Configure a Strong Password Policy for Your Users
+                - Enable MFA for Privileged Users
+                - Use Roles for Applications That Run on Amazon EC2 Instances
+                - Delegate by Using Roles Instead of by Sharing Credentials
+                - Rotate Credentials Regularly
+                - Remove Unnecessary Credentials
+                - Use Policy Conditions for Extra Security
+                - Monitor Activity in Your AWS Account
+                - Use Cloudtrail - track user API activity  
+                - require users to use SSL/TLS to communicate with AWS resources 
+        - configure logical access controls for the resources 
+        - create database user accounts 
+        - provision virtual servers, storage, databases, and desktops 
+        - use cloud-based analytics and workflow tools 
+        - In EC2 
+            - management of guest OS (include updatesm and security paches) 
+            - management of application software or utlitites you install on instance 
+            - AWS-Provided fielwall(Security group configuration) 
+        - Distributing Applications Accros AZ to provide resiliency 
+
+- Network Security
+    - secure network architecture
+        - firewall and other boundary devices 
+            - employs rule sets, ACLs and configurations 
+                - ACLs/traffic flow policies are approved by Amazon Information Security 
+    - Secure access points 
+        - limited access point to the cloud 
+        - customer access points (API endpoints) 
+            - allow http/s
+                - To support customers with Federal Information Processing Standard (FIPS)
+                - SSL terminating LB are FIPS 140-2 compliant 
+        - Manage Devices interfacing ISP 
+    - Transmission protection 
+        - AWS Access point - you can connect using http/s 
+            - SSL - cryptographic tool to protect eavesdropping, tampering, and message forgery
+        - VPC 
+            - provide private IP subnet 
+            - use an IPsec/VPN device to provide encrypted tunnell between Amazon VPC and your datacenter 
+- Network Monitoring Protection
+    - AWS protect agains traditional network security issues 
+        - DDoS attacks 
+            - Proprietary Distributed Denial of Service mitigation technique 
+            - muli-homed accross a number of providers to achive internet access diversity 
+        - Main in the Middle Attacks 
+            - AWS APIs are SSL protected endpoints 
+            - EC2 automaicall generate new secure SSH host certificates on before logging into the instance 
+        - IP spoofing 
+            - EC2 instances cannot send spoofed network traffic 
+                - host based firewall will not permit
+        - Port scanning 
+            - unauthorized port scan by customers is a violation of AWS acceptable use 
+                - when detected, it is stopped and blocked 
+            - All inbound ports on Amazon EC2 instances are closed and are only opened by the customer 
+                - security groups can mitigate port scans 
+            - you may request permission to conduct vulnerability scans to meet compliance requirements 
+                - scans must be limited to your own instances 
+                - advance approval can be requested to aws website 
+        - packet sniffing by othe tentants 
+            - Hypervisor will not deliver any traffic 
+            - standard practice, encrypt sensitive traffic 
+        - ARP Cache poisoning
+
+AWS compliance program 
+
+#book  end chapter 3
+-----------------------------------------------------------------------------------------
 7 Domain 7.0: Networking
 7.1 Demonstrate ability to implement networking features of AWS
 7.2 Demonstrate ability to implement connectivity features of AWS
