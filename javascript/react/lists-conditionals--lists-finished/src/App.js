@@ -10,7 +10,7 @@ class App extends Component {
       { id: 'asdf11', name: 'Stephanie', age: 26 }
     ],
     otherState: 'some other value',
-    showPersons: false
+    showPersons: false //1. use to display or not
   }
 
   nameChangedHandler = ( event, id ) => {
@@ -19,9 +19,9 @@ class App extends Component {
     });
 
     const person = {
-      ...this.state.persons[personIndex]
+      ...this.state.persons[personIndex] //copy the original this.state.persons and so you won't mutate the original value
     };
-
+    //same as above
     // const person = Object.assign({}, this.state.persons[personIndex]);
 
     person.name = event.target.value;
@@ -34,11 +34,11 @@ class App extends Component {
 
   deletePersonHandler = (personIndex) => {
     // const persons = this.state.persons.slice();
-    const persons = [...this.state.persons];
+    const persons = [...this.state.persons]; //create a copy of an array before manipulating
     persons.splice(personIndex, 1);
     this.setState({persons: persons});
   }
-
+//2. toggleperson handler update 
   togglePersonsHandler = () => {
     const doesShow = this.state.showPersons;
     this.setState( { showPersons: !doesShow } );
@@ -52,18 +52,20 @@ class App extends Component {
       padding: '8px',
       cursor: 'pointer'
     };
-
+    //3 if else to check showPersons
     let persons = null;
-
     if ( this.state.showPersons ) {
       persons = (
         <div>
+          {/*1B. Outputing list using the map function and note key property is used by react, index is provided by arrow function*/}
           {this.state.persons.map((person, index) => {
             return <Person
+            // 1C updating the list thour state 
               click={() => this.deletePersonHandler(index)}
               name={person.name} 
               age={person.age}
               key={person.id}
+              //1D updating list: event comes from change event in child and use the event in nameChangedHandler
               changed={(event) => this.nameChangedHandler(event, person.id)} />
           })}
         </div>
@@ -77,6 +79,7 @@ class App extends Component {
         <button
           style={style}
           onClick={this.togglePersonsHandler}>Toggle Persons</button>
+        {/*4.Display the persons div*/}
         {persons}
       </div>
     );
