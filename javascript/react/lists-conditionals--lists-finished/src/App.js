@@ -70,6 +70,8 @@ class App extends Component {
           })}
         </div>
       );
+
+      style.backgroundColor = 'red'; //Dynamic Styling
     }
 
     return (

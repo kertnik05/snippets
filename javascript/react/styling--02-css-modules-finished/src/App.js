@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import classes from './App.css';
+import classes from './App.css'; //1. Possible because on npm run eject and configure css loader
 import Person from './Person/Person';
 
 class App extends Component {
@@ -46,7 +46,7 @@ class App extends Component {
 
   render () {
     let persons = null;
-    let btnClass = '';
+    let btnClass = ''; //1B. Applying hover
 
     if ( this.state.showPersons ) {
       persons = (
@@ -62,7 +62,7 @@ class App extends Component {
         </div>
       );
 
-      btnClass = classes.Red;
+      btnClass = classes.Red; //2B
     }
 
     const assignedClasses = [];
@@ -74,11 +74,11 @@ class App extends Component {
     }
 
     return (
-        <div className={classes.App}>
+        <div className={classes.App}> {/*2. use the class*/}
           <h1>Hi, I'm a React App</h1>
           <p className={assignedClasses.join( ' ' )}>This is really working!</p>
           <button
-            className={btnClass}
+            className={btnClass}//3B
             onClick={this.togglePersonsHandler}>Toggle Persons</button>
           {persons}
         </div>

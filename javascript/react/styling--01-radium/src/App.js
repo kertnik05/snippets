@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import Radium, { StyleRoot } from 'radium';
+import Radium, { StyleRoot } from 'radium'; //1B npm install --save radium 
 import Person from './Person/Person';
 
 class App extends Component {
@@ -52,8 +52,8 @@ class App extends Component {
       font: 'inherit',
       border: '1px solid blue',
       padding: '8px',
-      cursor: 'pointer',
-      ':hover': {
+      cursor: 'pointer', 
+      ':hover': { //2B. see import
         backgroundColor: 'lightgreen',
         color: 'black'
       }
@@ -81,8 +81,11 @@ class App extends Component {
         color: 'black'
       };
     }
-
+    
+    //let classes = ['red', 'bold'].join(' '); //outputs: "red bold"
+    //1: Dynamic Class: define a classes array
     const classes = [];
+    //2. create a logic
     if ( this.state.persons.length <= 2 ) {
       classes.push( 'red' ); // classes = ['red']
     }
@@ -91,9 +94,10 @@ class App extends Component {
     }
 
     return (
-      <StyleRoot>
+      <StyleRoot>{/*3B StyleRoot - when you use media queries*/}
         <div className="App">
           <h1>Hi, I'm a React App</h1>
+          {/* Use the classes array*/}
           <p className={classes.join( ' ' )}>This is really working!</p>
           <button
             style={style}
@@ -106,4 +110,4 @@ class App extends Component {
   }
 }
 
-export default Radium( App );
+export default Radium( App ); //4B wrap your Component with radium
