@@ -14,6 +14,8 @@ web: node index.js
 app.json - configurable environment variables https://devcenter.heroku.com/articles/app-json-schema
 ------------------------
 heroku create <appname> 
+git remote -v
+heroku git:remote -a <appname> 
 git push heroku master 
 heroku open  - to open heroku web 
 heroku local web - runs a loval web server 

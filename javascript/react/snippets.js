@@ -49,8 +49,17 @@ class NewWorld extends React.Component {
 }
 
 /****************************/
+/* Store (const createStore = redux.createStore; ) - Store all state
+    Reducer (normally stored in the store folder) - Takes the New State and which action and Replace the old state; Initial state should reside here.
+    Dispatcher - Normally resides inside a function handler to invoke the action and pass it to reducer
+    Subscriber - Components that subscribe to the store */
+
+
+
+
+
 const redux = require('redux'); //index.js
-const createStore = redux.createStore; //index.js
+const createStore = redux.createStore; //index.js Central Storage to store all state
 
 
 
@@ -68,7 +77,8 @@ const createStore = redux.createStore; //index.js
     const initialState = {
         counter: 0
     };
-
+    
+    //Reducer Takes the New State and which action and Replace the old state
     const reducer = ( state = initialState, action ) => {
         switch ( action.type ) {
             case actionTypes.INCREMENT:
@@ -136,14 +146,14 @@ const createStore = redux.createStore; //index.js
     import './index.css';
     import App from './App';
     import registerServiceWorker from './registerServiceWorker';
-
+    //Combines the reducer
     const rootReducer = combineReducers({
         ctr: counterReducer,
         res: resultReducer
     });
-
+    //Connects reducer to the store
     const store = createStore(rootReducer);
-    //This connects your store to the entire app 
+    //Provider connects your store to the entire app 
     ReactDOM.render(<Provider store={store}><App /></Provider>, document.getElementById('root'));
     registerServiceWorker();
 
@@ -151,7 +161,7 @@ const createStore = redux.createStore; //index.js
 
 
 
-// Subscription - Inisde Class Container
+// Subscription - Inisde Class Container Counter.js
 import React, { Component } from 'react';
 import { connect } from 'react-redux'; //Connect Container to Store
 
@@ -179,11 +189,10 @@ class Counter extends Component {
         );
     }
 }
-//Mapping Global State from store Changes to your props - this.props.ctr and this.props.storedResults
+//(This is somewhat like a subscription)Mapping Global State from store Changes to your props - this.props.ctr and this.props.storedResults 
 const mapStateToProps = state => {
     return {
-
-        ctr: state.ctr.counter,
+        ctr: state.ctr.counter, //From Reducers state state.ctr.counter to your container this.props.ctr
         storedResults: state.res.results
     }
 };
@@ -191,7 +200,7 @@ const mapStateToProps = state => {
 //Dispaching Action - when onclick or some event calls the property onIncrementCounter . It will dispacth a action from reducer
 const mapDispatchToProps = dispatch => {
     return {
-        onIncrementCounter: () => dispatch({type: actionTypes.INCREMENT}),
+        onIncrementCounter: () => dispatch({type: actionTypes.INCREMENT}), //when click this.props.onIncrementCounter: executes the dispatch
         onDecrementCounter: () => dispatch({type: actionTypes.DECREMENT}),
         onAddCounter: () => dispatch({type: actionTypes.ADD, val: 10}),
         onSubtractCounter: () => dispatch({type: actionTypes.SUBTRACT, val: 15}),
@@ -199,7 +208,7 @@ const mapDispatchToProps = dispatch => {
         onDeleteResult: (id) => dispatch({type: actionTypes.DELETE_RESULT, resultElId: id})
     }
 };
-//export default connect(mapStateToProps, mapDispatchToProps)(Class);
+//export default connect(mapStateToProps, mapDispatchToProps)(Class); // If no mapStateToProps, connect(null, mapDispatchToProps)(Counter);
 export default connect(mapStateToProps, mapDispatchToProps)(Counter);
 
 store.subscribe(() => {
