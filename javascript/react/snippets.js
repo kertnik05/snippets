@@ -135,11 +135,11 @@ const createStore = redux.createStore; //index.js Central Storage to store all s
     };
     export default reducer;
 
-// Store
+// Store index.js
     import React from 'react';
     import ReactDOM from 'react-dom';
-    import { Provider } from 'react-redux';
-    import { createStore, combineReducers } from 'redux'; //index.js
+    import { Provider } from 'react-redux'; //Provider a helper function to connect store to components
+    import { createStore, combineReducers } from 'redux'; //combineReducers can combine reducers
 
     import counterReducer from './store/reducers/counter'; //Import Reducers
     import resultReducer from './store/reducers/result';//Import Reducers
@@ -200,7 +200,7 @@ const mapStateToProps = state => {
 //Dispaching Action - when onclick or some event calls the property onIncrementCounter . It will dispacth a action from reducer
 const mapDispatchToProps = dispatch => {
     return {
-        onIncrementCounter: () => dispatch({type: actionTypes.INCREMENT}), //when click this.props.onIncrementCounter: executes the dispatch
+        onIncrementCounter: () => dispatch({type: actionTypes.INCREMENT}), //when click this.props.onIncrementCounter: executes the dispatch and pass action and value to the reducers
         onDecrementCounter: () => dispatch({type: actionTypes.DECREMENT}),
         onAddCounter: () => dispatch({type: actionTypes.ADD, val: 10}),
         onSubtractCounter: () => dispatch({type: actionTypes.SUBTRACT, val: 15}),

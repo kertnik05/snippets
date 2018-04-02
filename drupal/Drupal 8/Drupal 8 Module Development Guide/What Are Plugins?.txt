@@ -16,9 +16,12 @@ Common plugin types
     Views filter: Add a new filter option to Views
 
 To get list of plugins:
-drupal plugin:debug
+drupal  debug:plugin //Display Plugin type and Plugin manager class
 
-To get list of plugin types:
+To see all plugin managers: https://api.drupal.org/api/drupal/services
+- search for any prefixed with plugin.manager
+
+To get a list of the plugin types that Drupal console can generate for you
 drupal list generate:plugin
 
 All plugin managers are implementations of the \Drupal\Component\Plugin\PluginManagerInterface, 

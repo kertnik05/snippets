@@ -39,12 +39,12 @@ Discovering Existing hooks
   $ drush fn-hook modulename
 
 
-Define a New hook 
+Define a New hook  (See hooks_example module)
   1. Choosing a unique name for your hook
   2. Documenting your new hook
-  3. Invoking the hook in your module's code
+  3. Invoking the hook in your .module file  //ways to invoke the hook core/lib/Drupal/Core/Extension/ModuleHandler.php 
 
 See Example module: hooks_example 
 hook_modulename_functionname();
 Place a doc block
-and provide implementation example
+and provide implementation example  

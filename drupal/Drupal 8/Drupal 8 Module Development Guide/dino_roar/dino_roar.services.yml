@@ -10,6 +10,6 @@ services:
 
     dino_roar.dino_listener:
         class: Drupal\dino_roar\Jurassic\DinoListener
-        arguments: ['@logger.factory'] #LoggerChannelFactoryInterface is used as an arguemnt in  __construct
+        arguments: ['@logger.factory'] #@logger.factory is a service name - LoggerChannelFactoryInterface is used as an arguemnt in  __construct
         tags: #use for registering event listener
-            - { name: event_subscriber } #event_subscriber tells drupal that this is an event
+            - { name: event_subscriber } #This services gets added on top of - core/core.services.yml ; Also, the tags area is standard just copy and paste from core to your services for examole format: drupal_ajax

@@ -64,8 +64,8 @@ dino_roar.routing.yml -
 //$ Drupal  - command line utility
 $ drupal cache:rebuild
 $ drupal router:debug //show's route name
-$ drupal router:debug paste_router_name 
-$ drupal container:debug 
+$ drupal router:debug <paste_router_name>
+$ drupal container:debug //prints all the services Left- how to get the nickname of the service
 $ drupal container:debug | grep enter_service_name
 $ drupal generate:service
 $ drupal generate:controller

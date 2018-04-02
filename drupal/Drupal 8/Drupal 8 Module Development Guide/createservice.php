@@ -4,6 +4,7 @@
 
 //1. Create a Service
 //Folder Structure - modulename/src/servicename/classname.php
+                    //dino_roar/src/Jurassic/RoarGenerator.php
 namespace Drupal\modulename\servicefoldername;
 
 class ServicenameGenerator {
@@ -14,6 +15,7 @@ class ServicenameGenerator {
 
 //2. using the Service
 //Folder Structure - modulename/src/Controller/NameController.php
+                    //dino_roar/src/Controller/RoarController.php
 namespace Drupal\modulename\Controller;
 use Drupal\modulename\servicefoldername\ServicenameGenerator;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,14 +34,15 @@ class NameController
 
 //3. Teach Drupal core about this service
 //Folder Structure - modulename/services.yml
+                //dino_roar/dino_roar.routing.yml
 services:
-    modulename.servicename_generator:
+    modulename.servicename_generator: //nickname of the service - will appear in drupal container:debug | grep enter_service_name
         class Drupal\modulename\servicefoldername\ServicenameGenerator
 //Display list of services from terminal - your services is now viewable in terminal console 
 //$ drupal container:debug 
 
 
-//4. using service from container in controller
+//4. How to Get a other Services in the ControllerBase - Dependency Injection
 namespace Drupal\modulename\Controller;
 use Drupal\Core\Controller\ControllerBase; //4.1 Get the service container
 use Drupal\modulename\servicefoldername\ServicenameGenerator;
@@ -64,6 +67,7 @@ class NameController extends ControllerBase
     }
    
 }
+///------------------------------------------
 
 //$ drupal container:debug | grep log
 
@@ -84,13 +88,13 @@ class NameController extends ControllerBase
 
      public function functionname($variablefromurl){
        
-        $roar = $this->somevar->getRoar($variablefromurl);
-        $this->somevarFactory->get('default')->debug($roar); // this logs it into localhost/admin/dblog
+       // $roar = $this->somevar->getRoar($variablefromurl);
+       // $this->somevarFactory->get('default')->debug($roar); // this logs it into localhost/admin/dblog
 
-        //5. keyValue is a service/function from ControllerBase 
-        $keyValueStore = $this->keyValue('somestring');
-        $keyValueStore->set('roar_string',  $roar);
-        $keyValueStore->get('roar_string');
+        //1. keyValue is a service/function from ControllerBase 
+        $keyValueStore = $this->keyValue('somestring'); //'somestring' is just whatever string you set
+        // $keyValueStore->set('roar_string',  $roar); //This is how to set
+        $roar = $keyValueStore->get('roar_string'); //This is how to get
         return new Response($roar);
     }
 
@@ -102,12 +106,12 @@ class NameController extends ControllerBase
    
 }
 
-
-//using service from container in your service
+///------------------------------------------
+//using service from container/controller in your service
 //$ drupal container:debug | grep keyvalue
 //Folder Structure - modulename/src/servicename/classname.php
 namespace Drupal\modulename\servicefoldername;
-use Drupal\Core\KeyValueStore/KeyValueFactoryInterface; //Step 1. find the service $ drupal container:debug | grep servicename
+use Drupal\Core\KeyValueStore\KeyValueFactoryInterface; //Step 1. find the service $ drupal container:debug | grep servicename
 class ServicenameGenerator {
     
     private $keyValueFactory;
@@ -119,7 +123,7 @@ class ServicenameGenerator {
     public function getRoar($length){
         $key = 'roar_'.$length;
         //Step 5. Now you can use the service
-        $store = $this->keyValueFactory->get('somestring');
+        $store = $this->keyValueFactory->get('somestring'); //$keyValueStore = $this->keyValue('somestring');  this comes from controller
         if ($store->has($key)){
             return $store->get($key);
         }
@@ -134,20 +138,21 @@ services:
     modulename.servicename_generator:
         class Drupal\modulename\servicefoldername\ServicenameGenerator
         arguments:    //Step 2. pass an argument to use another service using @servicename
-            - '@keyvalue' 
+            - '@keyvalue'  
 
-
+///------------------------------------------
 
 //Add multiple parameter to service
 namespace Drupal\modulename\servicefoldername;
-use Drupal\Core\KeyValueStore/KeyValueFactoryInterface;
+use Drupal\Core\KeyValueStore\KeyValueFactoryInterface;
 class ServicenameGenerator {
     
     private $keyValueFactory;
     private $useCache;
-    //Step 1: $useCache
-    public function __contruct(KeyValueFactoryInterface $keyValueFactory, $useCache){
+
+    public function __contruct(KeyValueFactoryInterface $keyValueFactory, $useCache){ //$useCache 
         $this->keyValueFactory = $keyValueFactory;
+        $this->useCache = $useCache; //use the $useCache to instantiate
     }
     public function getRoar($length){
         $key = 'roar_'.$length;
@@ -170,17 +175,18 @@ parameters:
     modulename.use_keyvalue_cache: true //Step 2
 
 services:
-    modulename.servicename_generator:
-        class Drupal\modulename\servicefoldername\ServicenameGenerator
+    modulename.servicename_generator: //dino_roar/src/Jurassic/RoarGenerator.php
+        class: Drupal\modulename\servicefoldername\ServicenameGenerator //where the argument pass to what class dino_roar/src/Jurassic/RoarGenerator.php
         arguments: 
             - '@keyvalue'
             - %modulename.use_keyvalue_cache% //Step 3
 
+///------------------------------------------
 
 //Override Drupal Core Services
-//settings.local.php loads development.services.yml
+//settings.local.php loads development.services.yml 
 parameters:
-    modulename.use_keyvalue_cache: false
+    modulename.use_keyvalue_cache: false // copy parameters from dino_roar/dino_roar.services.yml and paste it (sites/default/default.services.yml - change this to services.yml) to override
 services:
   cache.backend.null:
     class: Drupal\Core\Cache\NullBackendFactory

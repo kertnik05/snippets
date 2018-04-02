@@ -37,13 +37,16 @@ class RoarController extends ControllerBase
 
         return new static($roarGenerator, $loggerFactory);
     }
-
+    //path: /the/dino/says/{count}
     public function roar($count)
     {
         $roar = $this->roarGenerator->getRoar($count);
         $this->loggerFactoryService->get('default')
             ->debug($roar);
-        #kernel.view will wrap this return in to a renderable array
+        
+        //return new Reponse($roar); 
+        #kernel.view event listener will wrap this return in to a renderable array 
+            //core/core.services.yml 
         return [
             '#title' => $roar
         ];

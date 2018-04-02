@@ -4,11 +4,12 @@
 /* Event System (event is an Object Oriented version of Hook system)
 1. Create a Function
 2. Tell Drupal to call your function, if something happens
+3. Events are OOP version of hooks
 
-//See Web Profiler events tab 
+//See Web Profiler events tab - This list all the events
 //http://drupal-8.dd:8083/admin/reports/profiler/view/da9e84#events
 
-See: DinoListener.php - Create an Event Listener
+See: DinoListener.php - Create an Event Listener (just a function to run)
 See: dino_roar.services.yml - Register the Event Listener
 
 //devdesktop/drupal-8/core/core.services.yml 
