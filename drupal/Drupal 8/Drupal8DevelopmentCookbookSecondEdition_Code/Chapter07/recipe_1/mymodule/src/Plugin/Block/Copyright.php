@@ -56,9 +56,8 @@ class Copyright extends BlockBase {
 
   /**
    * {@inheritdoc}
-   */
-
-  protected function blockAccess(AccountInterface $account) {
+   */ 
+  protected function blockAccess(AccountInterface $account) { //hook_block_access() can override the blockAccess
     $route_name = $this->routeMatch->getRouteName();
     if ($account->isAnonymous() && !in_array($route_name,
     array('user.login', 'user.logout'))) {
@@ -68,5 +67,24 @@ class Copyright extends BlockBase {
     }
     return AccessResult::forbidden();
     }
+
+  /**
+  * Implements hook_block_access(). //This goes in other other module's .module
+  */
+  /*
+  function mymodule_block_access(\Drupal\block\Entity\Block $block,
+  $operation, \Drupal\Core\Session\AccountInterface $account) {
+  // Example code that would prevent displaying the Copyright' block
+  in
+  // a region different than the footer.
+  if ($operation == 'view' && $block->getPluginId() == 'copyright') {
+
+  return \Drupal\Core\Access\AccessResult::forbiddenIf($block-
+  >getRegion() != 'footer');
+
+  }
+  // No opinion.
+  return \Drupal\Core\Access\AccessResult::neutral();
+  }*/
 
 }
