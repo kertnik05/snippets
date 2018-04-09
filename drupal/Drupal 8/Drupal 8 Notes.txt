@@ -91,7 +91,7 @@ core/modules/comment/templates: This contains the comment templates
 core/modules/block/templates: This contains the templates for blocks
 
 
-Enable Tiwg Debug
+Enable Twig Debug
 sites/development.services.yml
 Add the following lines to the bottom of the file: (This enable Twig Debugging in the console)
 parameters:
