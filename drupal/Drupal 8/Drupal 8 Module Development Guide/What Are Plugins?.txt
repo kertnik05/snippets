@@ -69,3 +69,9 @@ The reflection factory
 Drupal\Component\Plugin\Factory\ReflectionFactory 
 
 Mappers
+Mappers are used when the plugin manager needs to locate a plugin instance based on application context instead of via a unique ID. 
+Mappers provide the plugin manager with a ::getInstance() method that can return the correct plugin based on additional logic.
+Checkout the example from \Drupal\Core\Field\FormatterPluginManager::getInstance() to get an idea of how this might work.
+
+
+Plugin Derivatives
