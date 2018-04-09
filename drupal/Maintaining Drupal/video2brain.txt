@@ -25,7 +25,7 @@ Updating Drupal
 2. Put the Site into maintenance mode
 3. Download the Latest drupal
 4. Copy Everything from the new drupal except the sites directory into the old drupal 
-- Note: Make sure the .htaccess .gitignore is not overriden
+- Note: Make sure the .htaccess, .git, .gitignore is not overriden
 5. Run update.php - if no access use user 1
 6. Run the update
 7. Take out the site in maintenance mode
