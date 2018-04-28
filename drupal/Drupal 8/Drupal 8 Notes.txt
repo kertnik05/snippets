@@ -33,8 +33,73 @@ $settings['cache']['bins']['dynamic_page_cache'] = 'cache.backend.null';
 
 $settings['extension_discovery_scan_tests'] = FALSE;
 
+Drupal root
++-- core
+|   +-- themes
+|       +-- bartik
+|       +-- classy
+|       +-- engines
+|       +-- seven
+|       +-- stable
+|       +-- stark
++-- sites
+|   +-- *
+|       +-- themes
+|           +-- maya
++-- themes
+    +-- contrib
+        +-- zen        
+    +-- custom
+        +-- my_custom_theme
 
-*.info.yml
+
+/core/themes/bartik
+ +-- bartik.breakpoints.yml
+ +-- bartik.info.yml
+ +-- bartik.libraries.yml
+ +-- bartik.theme
+ +-- config
+ |   +-- schema
+ |   +-- bartik.schema.yml
+ +-- css
+ |   +-- base
+ |   |   +-- elements.css
+ |   +-- colors.css
+ |   +-- components
+ |   |   +-- block.css
+ |   |   +-- book.css
+ ...
+ |   |   +-- views.css
+ |   +-- layout.css
+ |   +-- maintenance-page.css
+ |   +-- print.css
+ +-- images
+ |   +-- tabs-border.png
+ +-- logo.svg
+ +-- screenshot.png
+ +-- templates
+ +-- block--search-form-block.html.twig
+ ...
+ +-- status-messages.html.twig
+
+ All template files goes to templates directory see classy theme
+ .theme - contains your php logic 
+ .yml - contains configuration
+ js folder - for all js
+ css folder - for all classes
+ images - for all theme images
+---------------------------------------------------
+Describe Your Theme with an Info File
+
+themes/icecream/icecream.info.yml
+# THEMENAME.info.yml file for Ice Cream example theme.
+name: Ice Cream
+type: theme
+base theme: classy
+description: 'A great theme for warm summer days.'
+package: Custom
+core: 8.x
+
     name (required): This is the name of our theme.
     type (required): This is the type of extension (theme, module, or profile).
     base theme (required): This is the theme that the current theme is inheriting. In most cases, it is recommended we reference either classy or stable as our base theme. If we choose not to reference a based theme, then we will need to set the value to false (base theme: false).
@@ -42,10 +107,36 @@ $settings['extension_discovery_scan_tests'] = FALSE;
     package (optional): This is used to group similar files when creating modules.
     version (optional): This is created by packaging script.
     core (required): This specifies the version of Drupal that a theme is compatible with.
+---------------------------------------------------
+theme-settings-overview
+- admin/people/permissions
+  - create a role - themer  and assigned permissions
+    - Administer themes
+    - Use the administration pages and help
+    - View the administration theme
+- admin/appearance/settings
+  - See core/includes/theme.inc: function get_theme_setting() and search for string, "logo.svg" to peek under the hood and see how this works.
+---------------------------------------------------
+Adding Regions (See Bartik)
 
-    //adding CSS and JS libraries
+Step 1: 
+regions:
+  machinenameofregion: 'Human Readable Region Name'
+  machinenameofregion: 'Human Readable Region Name'
+Step 2:
+  //to use inside twig file pag.html.twig
+   {{ page.machinenameofregion }}
+Step 3: 
+  Add block to region: admin/structure/block
+
+If no regions, Default Regions will display. 
+If you define the region, you will define all region. in theme.info.yml 
+
+
+---------------------------------------------------
+    //adding CSS and JS libraries (See Bartik)
     libraries:
-  - themename(folderlocation)/rootkey-name -- see seven.libraries.html(foldername.libraries.yml) for example
+  - themename(folderlocation)/rootkey-name -- see <themefoldername>.libraries.html(foldername.libraries.yml) for example
   - themename(folderlocation)/rootkey-name
 
     libraries-override:
@@ -69,15 +160,47 @@ $settings['extension_discovery_scan_tests'] = FALSE;
             $variables['#attached']['library'][] = 'themename(folderlocation)/rootkey-name';
         }
     }
+---------------------------------------------------
+<themefoldername>.theme 
+- has mostly preprocess hook 
+---------------------------------------------------
+<themefoldername>.breakpoints.yml 
+  bartik.mobile:
+    label: mobile
+    mediaQuery: ''
+    weight: 0
+    multipliers:
+      - 1x
+  bartik.narrow:
+    label: narrow
+    mediaQuery: 'all and (min-width: 560px) and (max-width: 850px)'
+    weight: 1
+    multipliers:
+      - 1x
+  bartik.wide:
+    label: wide
+    mediaQuery: 'all and (min-width: 851px)'
+    weight: 2
+    multipliers:
+      - 1x
+
+ 
+go to /admin/modules
+Enable 	Responsive Image
+admin/config/media/responsive-image-style should match <themefoldername>.breakpoints.yml 
+---------------------------------------------------
+Add a screenshot to your theme
+width: 588 px 
+length: 438 px 
+.png 
+- optional use https://imageoptim.com/mac to optimize image 
+save image as screenshot.png inside your themefoldername 
+
+if you name file differently, edit THEME.info.yml
+screenshot: screenshot_icecream.png or 
+screenshot: images/screenshot_icecream.png 
 
 
-*.info.yml - regions
-  regions:
-  machinenameofregion: 'Human Readable Region Name'
-  machinenameofregion: 'Human Readable Region Name'
-
-  //to use inside twig file pag.html.twig
-   {{ page.machinenameofregion }}
 
 *.twig 
 Twig Template hierarchy https://www.drupal.org/docs/8/theming/twig/twig-template-naming-conventions
