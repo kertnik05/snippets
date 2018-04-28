@@ -8,13 +8,17 @@ URL for Theme Manangement
 /admin/appearance
 
 sites/default - 0777
+$ chmod -R 777 .
+
 
 During Development 
-
 //Uncomment inside sites/default/settings.php if this causes an error try url/rebuild.php
 if (file_exists(__DIR__ . '/settings.local.php')) {
   include __DIR__ . '/settings.local.php';
 }
+
+set settings.php back to 644
+$ chmod 644 settings.php
 
 
 //Settings.local.php - copied from sites/example.settings.local.php into sites/default/settings.local.php

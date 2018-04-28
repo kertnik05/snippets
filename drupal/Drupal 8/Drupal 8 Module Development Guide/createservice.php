@@ -17,13 +17,13 @@ class ServicenameGenerator {
 //Folder Structure - modulename/src/Controller/NameController.php
                     //dino_roar/src/Controller/RoarController.php
 namespace Drupal\modulename\Controller;
-use Drupal\modulename\servicefoldername\ServicenameGenerator;
+use Drupal\modulename\servicefoldername\ServicenameGenerator;//1
 use Symfony\Component\HttpFoundation\Response;
 
 class NameController 
 {
     public function functionname($variablefromurl){
-        $servicenameGerator = new ServicenameGenerator();
+        $servicenameGerator = new ServicenameGenerator();//2
         $roar = $servicenameGerator->getRoar($variablefromurl);
         return new Response($roar);
     }
@@ -35,6 +35,7 @@ class NameController
 //3. Teach Drupal core about this service
 //Folder Structure - modulename/services.yml
                 //dino_roar/dino_roar.routing.yml
+                //core services - core.services.yml
 services:
     modulename.servicename_generator: //nickname of the service - will appear in drupal container:debug | grep enter_service_name
         class Drupal\modulename\servicefoldername\ServicenameGenerator
@@ -44,7 +45,7 @@ services:
 
 //4. How to Get a other Services in the ControllerBase - Dependency Injection
 namespace Drupal\modulename\Controller;
-use Drupal\Core\Controller\ControllerBase; //4.1 Get the service container
+use Drupal\Core\Controller\ControllerBase; //4.1 Get the ControllerBase which contains services
 use Drupal\modulename\servicefoldername\ServicenameGenerator;
 
 class NameController extends ControllerBase
@@ -68,22 +69,22 @@ class NameController extends ControllerBase
    
 }
 ///------------------------------------------
-
+//Using a service in your controller
 //$ drupal container:debug | grep log
 
 namespace Drupal\modulename\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\modulename\servicefoldername\ServicenameGenerator;
-use Drupal\Core\Logger\LoggerChannelFactory
+use Drupal\Core\Logger\LoggerChannelFactoryInterface; //2
 
 class NameController extends ControllerBase
 {   
     private $somevar;
-    private $somevarFactory;
+    private $somevarFactory; //4 use it when ready
 
-    public function __contruct(ServicenameGenerator $somevar, LoggerChannelFactoryInterface $somevarFactory){
+    public function __contruct(ServicenameGenerator $somevar, LoggerChannelFactoryInterface $somevarFactory){ //3 LoggerChannelFactoryInterface 
         $this->somevar = $somevar;
-        $this->somevarFactory = $somevarFactory;
+        $this->somevarFactory = $somevarFactory; //3
     }
 
      public function functionname($variablefromurl){
@@ -91,7 +92,7 @@ class NameController extends ControllerBase
        // $roar = $this->somevar->getRoar($variablefromurl);
        // $this->somevarFactory->get('default')->debug($roar); // this logs it into localhost/admin/dblog
 
-        //1. keyValue is a service/function from ControllerBase 
+        //keyValue is a service/function from ControllerBase - to see all methods and variabe try dump($this)
         $keyValueStore = $this->keyValue('somestring'); //'somestring' is just whatever string you set
         // $keyValueStore->set('roar_string',  $roar); //This is how to set
         $roar = $keyValueStore->get('roar_string'); //This is how to get
@@ -100,7 +101,7 @@ class NameController extends ControllerBase
 
     public static function create(ContainerInterface $container) {
      $somevar = $container->get('modulename.servicename_generator');
-     $somevarFactory = $container->get('logger.factory');
+     $somevarFactory = $container->get('logger.factory'); //1 get the service from the container
      return new static($somevar, $somevarFactory);
     }
    
@@ -115,7 +116,7 @@ use Drupal\Core\KeyValueStore\KeyValueFactoryInterface; //Step 1. find the servi
 class ServicenameGenerator {
     
     private $keyValueFactory;
-    //Step 3: call the interface $entercustominterface
+    //Step 3: call the service interface
     public function __contruct(KeyValueFactoryInterface $keyValueFactory){
         //Step 4: Use the variable object
         $this->keyValueFactory = $keyValueFactory;
@@ -137,12 +138,12 @@ class ServicenameGenerator {
 services:
     modulename.servicename_generator:
         class Drupal\modulename\servicefoldername\ServicenameGenerator
-        arguments:    //Step 2. pass an argument to use another service using @servicename
+        arguments:    //Step 2. pass an argument to use another service using @servicename - use  $ drupal container:debug to see the name
             - '@keyvalue'  
 
 ///------------------------------------------
 
-//Add multiple parameter to service
+//Add custom parameter to service
 namespace Drupal\modulename\servicefoldername;
 use Drupal\Core\KeyValueStore\KeyValueFactoryInterface;
 class ServicenameGenerator {
@@ -150,7 +151,7 @@ class ServicenameGenerator {
     private $keyValueFactory;
     private $useCache;
 
-    public function __contruct(KeyValueFactoryInterface $keyValueFactory, $useCache){ //$useCache 
+    public function __contruct(KeyValueFactoryInterface $keyValueFactory, $useCache){ //1 $useCache 
         $this->keyValueFactory = $keyValueFactory;
         $this->useCache = $useCache; //use the $useCache to instantiate
     }
@@ -172,7 +173,7 @@ class ServicenameGenerator {
 
 //Folder Structure - modulename/services.yml
 parameters:
-    modulename.use_keyvalue_cache: true //Step 2
+    modulename.use_keyvalue_cache: true //Step 2 //the purpose is so that you can override this in your settings.local.php loads development.services.yml or settings.php loads default.services.yml 
 
 services:
     modulename.servicename_generator: //dino_roar/src/Jurassic/RoarGenerator.php
@@ -183,7 +184,7 @@ services:
 
 ///------------------------------------------
 
-//Override Drupal Core Services
+//Override Drupal Core Services 
 //settings.local.php loads development.services.yml 
 parameters:
     modulename.use_keyvalue_cache: false // copy parameters from dino_roar/dino_roar.services.yml and paste it (sites/default/default.services.yml - change this to services.yml) to override
