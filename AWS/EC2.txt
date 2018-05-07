@@ -35,3 +35,5 @@ $ yum update -y   - to update the webserver
 $ yum install httpd - y  - to install apache
 $ cd /var/www/html/techtraing1
 
+Create Elastic IP to have a static IP - Allocate the Elastic IP right away with EC2 instance so there will be no charge
+

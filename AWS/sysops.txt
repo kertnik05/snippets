@@ -1,138 +1,147 @@
 
-3 Tier Architecture Components
-- Environment
-    - AWS has multiple regions separated georgraphically 
-    - Each region has multiple isolated location Availability Zone 
-        - Each AZ is connected on low latency links
-    - Edge Locations - Network of DataCenters
-        - Lambda
-        - AWS Cloudfront - CDN
-        - Amazon Route 53 - DNS
-            - highly available and scalable
-        - AWS Sheild
-        - AWS WAF service
-    - Hybrid Cloud - On Premise with cloud resources
+3 Tier Architecture 
+- layers
+    - Database layer
+    - Front end web server layer
+    - Application Layer
+- Components
+    - Environment
+        - AWS has multiple regions separated georgraphically 
+        - Availability Zone - Each region has multiple isolated location 
+            - Each AZ is connected on low latency links
+            - High Availability, fault tolerance, scale applications
+        - Edge Locations - Network of DataCenters
+            - Lambda
+            - AWS Cloudfront - CDN
+            - Amazon Route 53 - DNS
+                - highly available and scalable
+            - AWS Sheild
+            - AWS WAF service
+        - Hybrid Cloud - On Premise with cloud resources
 
-- Networking
-    - Amazon Virtual Private Cloud (VPC) - private network
-        - No latency affected between subnets, it only affects access
-        - Access between subnets is controlled by NACL
-        - Logically Isolated from other VPC
-            - It is where your EC2 Runs
-        - Internet Gateway 
-            - controls in and out of VPC
-        - Subnets 
-            - logical subdivision of IP network
-        - Route Table - a set of rules that determines where data packets are travelling over an IP network
-            - directr traffic between VPC
-    - Security Groups 
-        - Acts as a virtual firewall for one or more instances
-        - Operate at Hypervisor level
-        - Seven Security Groups
-            - Public Elatic Load Balacing - Allows full public access
-                - Controls incoming Applicationt traffic across multiple targets (EC2)
-                - It monitors health of registered targets - routes only to healty target
-                - Two Types of Load Balancers
-                    - Applciation Load Balancers 
-                    - Classic Load Balancers 
-            - Web Teir Amazon EC2 - Accepts traffic only from Public ELB 
-            - Private Elatic Load Balance - Accepts traffic only from web teir amazon EC2
-            - Application Teir Amazon Ec2 - This accepts traffic only from private ELB 
-            - Amazon Elastic Cache - This accepts traffic only from Application Teir Amazon EC2 
-                - A cloud in memory data store or cache 
-            - Amazon Regional Database Service (RDS) - This accepts traffic only from Application Teir Amazon EC2 
-            - Network Address Translation (NAT) - for outbound traffic - intiated internally 
-- Compute 
-    - Instance
-        - Software - linux, windows
-        - Hardware - Memory, CPUs, Network Capacity
-        - EC2 a web service that provides secure resizeble compute Capacity in the cloud 
-        - Auto Scalling - helps maintain Avilability - scale up or down 
-- Database
-    - Amazon RDS 
-        - runs in your Amazon VPC on EC2 
-        - DB Engines -  Mysql, Oracle, PostgreSQL
-        - Configuration - Size of EC2, subnets to use, how often to backup 
-        - RDS takes Care of Intances and Engines
-            - DBA takes care of Database schema and data 
-    - DynamoDB
-        - Native NoSQL Engine 
-        - low latency and high availability
-        - consitent red and write
-        - Operates at regional level
-        - Fully managed by Amazon
-        - API access only 
-        - Seemless scalable
-- Storage 
-    - Block Storage - used by EC2 
-        - Amazon EBS 
-            - persistent block storage used by EC2 and RDS
-            - boot volumes, data volumes, ephemeral storage (Instance Storage)
-            - Operational judgement - Speed Persistece and Cost
-    - Object Storage (S3)
-        - keeping all media as well as backups and AMIs 
-        - Operate at Regional level outside VPC 
-        - Access only through API (Web service Interface)
-        - cost Effective
-        - Durable 
-            - web enable storage
-            - protected storage for database backups and AMI storage 
-    - Caching Storage - used by amazon cloudfront - a Content Delivery Network (CDN)
-        - Caches Content close to consumers
-    - File storage 
-        - use for EC2 
-        - provide a file system interface 
-        - file system interface 
-        - file system access semantics
-    - Amazon Glacier 
-        - low cost storage service provides secure, and durable and Flexible for data backup and archival 
-- User Management 
-    - IAM 
-        - Authentication - Operator Access is controlled 
-            - Validates Authentication (Passwords, Access Keys, etc)
-            - Grants Access to authenticated Operators
-        - Authorization - Controls  all permissions to AWS services and resources
-            - It does not controll access to the Amazon EC2
-        - Can be integrated with existing Active Directory systems via AWS Directory Service 
-            - Active Directory Connector - helps establish a trust relationship between your AD and AWS
-        - Web Identity federation
-            - IAM supports Identity federation for delagated access to AWS console or AWS API
-                - External identities (Federated Users) are granted secure access to resources in your AWS Account without having to create IAM
-- Security Monitoring and Deployment
-    - Security Tools
-        - Amazon Inspector
-            - Automated Security assessment service that helps improve the security and compliance of applications deployed on AWS
-            - automatically assesses application for vulnerabilities or devations from best practices 
-        - Amazon VPC Flow Logs
-            - Enables you to Capture Information about the IP traffic going to and from network interface in your VPC 
-            - Flow logs data is stored in Amazon Cloudwatch logs
-        - Amazon Cloudwatch Logs
-            - To monitor, store, and secure access your log files from (Amazon EC2 instances, AWS Cloudtrail, and other sources)
-        - Amazon S3 access logs 
-            - track bucket access by enabling access logging 
-            - each access log record provides details about single access request, such as the requester, bucket name, request time, request action, response status, and error code
-    - Monitoring Tools
-        - Amazon Cloudwatch provides visibility into metrics that happen on the Customer side of the shared responsibility model 
-            - Monitoring Services for AWS cloud Resources and Application you run on AWS
-            - To collect and track metrics 
-            - Collect and monitor log files 
-            - set alarms and automatically react on changes on AWS resources
-        - Amazon Cloudtrail 
-            - records every API call in the AWS system (Who, when, where API is called)
-                - logs through Amazon Cloudwatch Logs (analyze text data for patterns that trigger alerts and corresponding actions)
-                - delivers logs files to S3 bucket
-    - Deployment Tools
-        - AWS Cloudformation 
-            - turns Insfastructure plans into code
-                - Build and teardown entire system with a single action
-            - easy way to create a collection of related AWS resources and provision them in an ordely and predictable fashion
-        - AWS Elastic Beanstalk
-            - For Developers to Easily deploy and managed applications in AWS
-            - Developers simply upload their applications and Beanstalk handles the deployment details of capacity and provisioning, 
-                load balancing, Auto Scaling and Application health monitoring 
-        - AWS Opsworks stacks 
-            - lets you manage application and servers on AWS and on premises
-            - you can model your application as a stack containing different layers, such as load balancing, database, and applciation server
+    - Networking
+        - Amazon Virtual Private Cloud (VPC) - private network
+            - No latency affected between subnets, it only affects access
+            - Access between subnets is controlled by NACL
+            - Logically Isolated from other VPC
+                - It is where your EC2 Runs
+            - Internet Gateway 
+                - controls in and out of VPC
+            - Subnets 
+                - logical subdivision of IP network
+            - Route Table - a set of rules that determines where data packets are travelling over an IP network
+                - directr traffic between VPC
+        - Security Groups 
+            - Acts as a virtual firewall for one or more instances
+            - Operate at Hypervisor level
+            - Seven Security Groups
+                - Public Elatic Load Balacing - Allows full public access
+                    - Controls incoming Applicationt traffic across multiple targets (EC2)
+                    - It monitors health of registered targets - routes only to healty target
+                    - Two Types of Load Balancers
+                        - Applciation Load Balancers 
+                        - Classic Load Balancers 
+                - Web Teir Amazon EC2 - Accepts traffic only from Public ELB 
+                - Private Elatic Load Balance - Accepts traffic only from web teir amazon EC2
+                - Application Teir Amazon Ec2 - This accepts traffic only from private ELB 
+                - Amazon Elastic Cache - This accepts traffic only from Application Teir Amazon EC2 
+                    - A cloud in memory data store or cache 
+                - Amazon Regional Database Service (RDS) - This accepts traffic only from Application Teir Amazon EC2 
+                - Network Address Translation (NAT) - for outbound traffic - intiated internally 
+    - Compute 
+        - Instance
+            - Software - linux, windows
+            - Hardware - Memory, CPUs, Network Capacity
+            - EC2 a web service that provides secure resizeble compute Capacity in the cloud 
+            - Auto Scalling - helps maintain Avilability - scale up or down 
+    - Database
+        - Amazon RDS 
+            - runs in your Amazon VPC on EC2 
+            - DB Engines -  Mysql, Oracle, PostgreSQL
+            - Configuration - Size of EC2, subnets to use, how often to backup 
+            - RDS takes Care of Intances and Engines
+                - DBA takes care of Database schema and data 
+        - DynamoDB
+            - Native NoSQL Engine 
+            - low latency and high availability
+            - consitent red and write
+            - Operates at regional level
+            - Fully managed by Amazon
+            - API access only 
+            - Seemless scalable
+    - Storage 
+        - Block Storage - used by EC2 
+            - Amazon EBS 
+                - persistent block storage used by EC2 and RDS
+                - boot volumes, data volumes, ephemeral storage (Instance Storage)
+                - Operational judgement - Speed Persistece and Cost
+        - Object Storage (S3)
+            - keeping all media as well as backups and AMIs 
+            - Operate at Regional level outside VPC 
+            - Access only through API (Web service Interface)
+            - cost Effective
+            - Durable 
+                - web enable storage
+                - protected storage for database backups and AMI storage 
+        - Caching Storage - used by amazon cloudfront - a Content Delivery Network (CDN)
+            - Caches Content close to consumers
+        - File storage 
+            - use for EC2 
+            - provide a file system interface 
+            - file system interface 
+            - file system access semantics
+        - Amazon Glacier 
+            - low cost storage service provides secure, and durable and Flexible for data backup and archival 
+    - User Management 
+        - IAM 
+            - Authentication - Operator Access is controlled 
+                - Validates Authentication (Passwords, Access Keys, etc)
+                - Grants Access to authenticated Operators
+            - Authorization - Controls  all permissions to AWS services and resources
+                - It does not controll access to the Amazon EC2
+            - Can be integrated with existing Active Directory systems via AWS Directory Service 
+                - Active Directory Connector - helps establish a trust relationship between your AD and AWS
+            - Web Identity federation
+                - IAM supports Identity federation for delagated access to AWS console or AWS API
+                    - External identities (Federated Users) are granted secure access to resources in your AWS Account without having to create IAM
+    - Security Monitoring and Deployment
+        - Security Tools
+            - Amazon Inspector
+                - Automated Security assessment service that helps improve the security and compliance of applications deployed on AWS
+                - automatically assesses application for vulnerabilities or devations from best practices 
+            - Amazon VPC Flow Logs
+                - Enables you to Capture Information about the IP traffic going to and from network interface in your VPC 
+                - Flow logs data is stored in Amazon Cloudwatch logs
+            - Amazon Cloudwatch Logs
+                - To monitor, store, and secure access your log files from (Amazon EC2 instances, AWS Cloudtrail, and other sources)
+            - Amazon S3 access logs 
+                - track bucket access by enabling access logging 
+                - each access log record provides details about single access request, such as the requester, bucket name, request time, request action, response status, and error code
+        - Monitoring Tools
+            - Amazon Cloudwatch 
+                - provides visibility (about resource utilization, application performance, and operational health) into metrics that happen on the Customer side of the shared responsibility model 
+                - Monitoring Services for AWS cloud Resources and Application you run on AWS
+                - To collect and track metrics 
+                - Collect and monitor log files 
+                - set alarms and automatically react on changes on AWS resources
+
+            - Amazon Cloudtrail 
+                - records every API call in the AWS system (Who, when, where API is called)
+                    - logs through Amazon Cloudwatch Logs (analyze text data for patterns that trigger alerts and corresponding actions)
+                    - delivers logs files to S3 bucket
+                    - Enables governance, compliance, operational auditing, and risk auditing of your AWS account 
+        - Deployment Tools
+            - AWS Cloudformation 
+                - turns Insfastructure plans into code
+                    - Build and teardown entire system with a single action
+                - easy way to create a collection of related AWS resources and provision them in an ordely and predictable fashion
+            - AWS Elastic Beanstalk
+                - For Developers to Easily deploy and managed applications in AWS
+                - Developers simply upload their applications and Beanstalk handles the deployment details of capacity and provisioning, 
+                    load balancing, Auto Scaling and Application health monitoring 
+            - AWS Opsworks stacks 
+                - lets you manage application and servers on AWS and on premises
+                - you can model your application as a stack containing different layers, such as load balancing, database, and applciation server
 
 Serverless Architecture
     - Challenge
@@ -179,6 +188,40 @@ Serverless Architecture
         - AWS shield - is a managed distributed denial of service protection service that safeguards web applicationss running on AWS.
 
     
+AWS Toolset
+- AWS Management Console
+- The web based interface
+- Command line Tools
+    - AWS CLI
+        - Installing
+            - https://aws.amazon.com/cli/
+            - pip install awscli 
+        - Upgrading 
+            - pip install --upgrage awscli 
+            - https://aws.amazon.com/security/security-bulletins/
+        - Configuration
+            - aws configure 
+                - command to configure it with your credentials you will need access key and secret key from IAM user
+                - --region 
+                    - Optionally you can set a default region
+                - Default format is json
+                - --profile <profile-name> 
+                    - to create multiple profile
+                    - you can have separate profile for development, testing, and production environment
+                    - create a unique profile for multiple accounts
+                - where your credetials is stored
+                    - ~/.aws/credentials (Linux or Mac) 
+                    - %UserProfile%\.aws/credentials (windows)
+                - where other configuration parameters is stored
+                    - ~/.aws/config (Linux or Mac) 
+                    - %UserProfile%\.aws/config (windows)
+                - Multi Factor Authentication use with Amazon Resource Name
+                    - aws help config-vars 
+        - Environment Variables
+            - See AWS CLI ENV Variables.png
+            - export environment_variable=option -  to set new varaibles
+    - AWS tools for powershell
+    - AWS SDKs
 
 
 

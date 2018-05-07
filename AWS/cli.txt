@@ -1,20 +1,27 @@
 http://docs.aws.amazon.com/cli/latest/userguide/cli-install-macos.html
 
-Installing Phyton in CLI
-1. SSH to AWS
-2. sudo apt-get install install phyton-pip
+Local Computer
+    1. Installing Phyton in CLI
+    - sudo apt-get install install phyton-pip
+    $ python --version 
 
-$ python --version 
+    2. Installing the CLI
+    $ pip install awscli  - https://github.com/aws/aws-cli
 
-Installing the CLI
-$ pip install awscli  - https://github.com/aws/aws-cli
+AWS Console
+    1. Create A Role
+        - Attach a Policy to this Role as to what it can do
+    2. Add a Group to the Role
+    3. Add IAM User to the Group
+    4. Click on User - Security Credentials create access key 
+        - Make sure to secure your access key 
 
-
-AWS Configure
+Local Computer
+1. Run - $ AWS Configure
 - AWS Access Key ID
 - Secret Access Key 
-- Default Region
-- Output Format
+- Default Region: us-east-1
+- Output Format: json
 
 - AWS CLI Credentials 
     - ls ~/.aws 
@@ -25,3 +32,7 @@ AWS Configure
         - - [ <profilename>]
         - aws_access_key_id = <yourrandomaccesskeyid>
         - aws_secret_access_key = <yoursecretaccesskeyid> 
+
+For More Advance CLI Install https://github.com/awslabs/aws-shell
+1. sudo pip install aws-shell
+2. $ aws-shell - f10 to exit 
