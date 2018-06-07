@@ -24,3 +24,6 @@ disable toolbar, enable admin_menu (install it first)
 
 Exporting Users
 admin/structure/views
+
+Composer D7 and D8
+admin/config/system/composer-manager/settings
