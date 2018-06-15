@@ -217,12 +217,62 @@ AWS Toolset
                     - %UserProfile%\.aws/config (windows)
                 - Multi Factor Authentication use with Amazon Resource Name
                     - aws help config-vars 
+        - https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html
         - Environment Variables
-            - See AWS CLI ENV Variables.png
-            - export environment_variable=option -  to set new varaibles
-    - AWS tools for powershell
-    - AWS SDKs
-
+            - https://github.com/aws/aws-cli
+            - See AWS CLI ENV Variables2.png and AWS CLI ENV Variables.png
+            - export environment_variable=option -  to set new variables in bash shell
+        - Getting Help with command line
+            - aws help will return a list of all the services available to use as options.
+                - aws <service name> help - aws s3 help
+        - To enable tab completion - complete -C aws_complete aws 
+        - Source Code - Apache license Version 2.0 - https://github.com/aws/aws-cli
+        - Working with Services
+            - Command Line Format - aws <servicename> <parmeter1, parameter2, etc..>
+                - For Example: 
+                    - aws ec2 describe-instances
+                    - aws s3 ls s3://<bucketname>
+            - Output Format - json, txt, or table
+                - default is json - can be used by other applications 
+                - Text output - in tab delimited format can be parsed by grep 
+                - Table format - for human readability 
+            - Avoiding unweildy lines
+                - backslash - to separate the command into multiple lines
+            - Tell command line to input json - --cli-input-json
+                - aws ec2 create-security-group --cli-input-json file://filename.json or 
+                - aws ec2 create-security-group --cli-input-json https://s3.amazonaws.com/<bucketname>/filename.json
+            - Query to filter results - --query
+                - uses JAMESPATH query language - http://jmespath.org/tutorial.html
+                - aws rds describe-db-instances --query 'DBInstance[?AvailabilityZone==`us-east-1e`] --output text 
+                - aws iot list-things --query 'things[?thingyTypeName==`intelEdison`] --output text 
+                - aws ec2 describe-instances --query 'Reservations[*].Instances[*].[InstanceID, LaunchTime, InstanceType] --output text 
+    - AWS tools for powershell - https://aws.amazon.com/powershell/
+    - AWS SDKs 
+        - Android, Browser Javascript, IOS, Java, .net, node.js, PHP, Phython, Ruby, Go, and C++ 
+        - Two Purpose SDK 
+            - AWS Mobile SDK - purpose to streamline connecting physical devices, like phones and tablet or sensors and hubs, to the cloud
+                - Android, ios, xamarian, unity, .net, react native
+            - AWS IOT Device SDK -  to simplify the process of connecting things to the AWS Iot service
+                - Embedded C, javascript, Arduino Yun, Java, Phyton, ios, android, and C++
+        - Phython SDK - Boto
+            - Installing Boto - https://www.python.org/ and https://pip.pypa.io/en/stable/
+            - pip install boto3
+            - boto uses the credential files that you estbalished in setting up the AWS CLI as its own credentials for authenticating to the AWS API endpoints
+        - Features of Boto
+            - https://boto3.readthedocs.io/en/latest/guide/clients.html
+            - Contains variety of API 
+                - high level api - prevents calling the network low level api - it uses object oriented way to interact with aws cloud
+                - low level api - are mapped to aws cloud service-specific api 
+            - waiter - provides a structure that allows for code to wait for changes to occur in the cloud
+            - multithreading support
+            - https://boto3.readthedocs.io/en/latest/guide/index.html#general-feature-guides
+        - usage: boto3.resource is a class 
+            - creating obj in oop
+                - ec2 = boto3.resource('ec2')
+                - myinstamce = ec2.Instance('i-0bXXXXXXX') 
+                - myinstance.stop() 
+                - myinstance.start() 
+                - myinstance.image_id 
 
 
 
@@ -2038,7 +2088,7 @@ Shared Responsibility Model
             - management of application software or utlitites you install on instance 
             - AWS-Provided fielwall(Security group configuration) 
         - Distributing Applications Accros AZ to provide resiliency 
-
+    - shared_responsibility_model.png
 - Network Security
     - secure network architecture
         - firewall and other boundary devices 
@@ -2082,7 +2132,39 @@ Shared Responsibility Model
         - ARP Cache poisoning
 
 AWS compliance program 
+- Compliance responsibility is shared  
+    - government focused and audit friendly service features 
+    - https://aws.amazon.com/compliance/
+- Customers must notify AWS support prior starting any vulnerability scanning and penetration testing 
+    - nano, micro, and small are not permitted for scanning
+    - https://aws.amazon.com/security/penetration-testing/
 
+Securing your AWS Account with IAM
+- IAM - provides a centralize management of access and authentication of users to the services in an AWS account
+- No charge - its free
+- User, Group, and Role have policy (JSON) applied to them 
+    - Policy
+        - define what and how resource can be accessed 
+        - uses least previlage 
+- IAM allows appropriate credentials to be defined for users
+- IAM is integrated in AWS marketplace - control over usage and software cost
+- IAM User 
+    - is an entity to interact with the resources 
+    - can be any individual, system, or application (console, SDK, CLI)
+    - unique name and unique credentials
+    - when AWS account is first created - it creates a root user account ID 
+        - root user are unrestricted 
+        - best practice:
+            - Do not use root user, when interacting with resources create a separate IAM user with admin previlege 
+- IAM credential 
+    - 3 ways to use AWS services and resources 
+        - AWS Management Console
+            - Do not use root user
+            - uses username and password
+        - SDK
+            - uses access key ID and secret access key
+        - CLI
+            - uses access key ID and secret access key
 #book  end chapter 3
 -----------------------------------------------------------------------------------------
 7 Domain 7.0: Networking
