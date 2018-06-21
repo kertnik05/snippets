@@ -75,6 +75,10 @@ git checkout -b <branchname> - Create a new branch and switch to it:
 git checkout <branchname> - Switch from one branch to another:	
 git branch - List all the branches in your repo, and also tell you what branch you're currently in:	
 git branch -d <branchname> - Delete the feature branch:	
+    - If branch has not been merged, use 
+        - $ git branch -D <branchname>
+        - $ git push origin :<deletedbranch>  - push the branch to delete at remote (This means push nothing) - Prior 1.7 git version 
+        - $ git push --delete origin <deletedbranch> or git push --d origin <deletedbranch> - 1.7 or higher 
 git push origin <branchname> - Push the branch to your remote repository, so others can use it:	
 git push --all origin Push all branches to your remote repository:	
 git push origin :<branchname> - Delete a branch on your remote repository:	
@@ -999,4 +1003,90 @@ $ heroku open //it will open your app in the browser
 for app in $(heroku apps); do heroku apps:destroy --app $app --confirm $app; done
 git remote -v //to see all remote heroku app
 git remote rm heroku //Delete all app from heroku
+
+---------
+Git Intermediate
+Force push to Remote (Push when merging is undesireable and you need to totally replace the remote) - warning very distructive
+$ git push -f or git push --force 
+
+$ git branch --merged  - to get the list of branch that has been merged 
+$ git branch --no-merged - to get the list of branch that has not been merged 
+    - If there are branches that are not merged, merge it with your current branch
+        - (yourbranch) $ git merge <branchtomerge> 
+$ git branch -r --merged - list the remote branches tha has been merged 
+
+Identify Merged Branches 
+$ git branch --merged HEAD 
+$ git branch --merged <branchname, commit_id>
+
+Prune Stale Branches 
+- Delete all stale remote-tracking(a local branch that tracks a deleted remote branch) branches
+- $ git remote prune origin 
+- $ git remote prune origin --dry-run 
+- $ git fetch --prune - this prune everything 
+- $ git fetch -p
+- $ git config --global fetch.prune true - always prune before fetching (not safe)
+
+Tag
+    $ git tag <tagname> <commit_id> - lightweight tag 
+    $ git tag -a <v1.1> -m "<Version 1.0" <commit_id> - most common tag 
+    $ git tag --list or $ git tag --l - to get the list of tag 
+        $ git tag -l "<v2*>" - get list of all v2 tag 
+        $ git tag -l -n - git tag list with annotation 
+    $ git show <tag_number> or git show <v1.1>
+    $ git diff v1.0..v1.1 
+
+    Deleting Tags
+    git tag --delete v1.1 
+    git tag -d v1.1 
+
+    Push tags to a remote 
+    git push origin v1.1 - push a single tags 
+    git push origin --tags - push all tags 
+
+    git fetch 
+    git fetch --tags 
+
+    git push origin :v1.1 - delete remote tags
+    git push --delete origin v1.1 
+    git push -d origin v1.1 
+
+    Checking out tags 
+    $ git checkout -b <new_branch_name> v1.1 - preferred state 
+    $ git checkout v1.1 - be careful it will move the head backwards which can cause detached head state 
+        $ git tag temp 
+        $ git branch temp_branch
+        $ git checkout -b temp_branch 
+    
+Interactive Staging 
+$ git add --interactive 
+$ git add -i
+
+Patch Mode 
+Allows staging portions of a changed file 
+git add -i 
+    -   choose p for patch 
+    - choose which file 
+    - enter ? to see all options
+    - enter n 
+    - enter y 
+    - enter q to exit 
+
+Cherry Picking Commits 
+- Choosing from one or more existing commits 
+- like copy and paste 
+- $ git cherry-pick <commit_id_of_other_branch> 
+
+How to Create Diff Patches 
+$ git diff <from-commit> <to-commit> > folder_loc/output.diff 
+
+Applying Diff Patches 
+$ git apply output.diff  
+
+Rebasing 
+- Cleaner than merge 
+- (new_feature) $ git rebase <branch_you_want_the_commit_to_move>  
+- (new_feature) $ git rebase master 
+- (master) $ git log --graph --all --decorate --oneline - useful for visualizing branches 
+- (master) $ git merge-base master new_feature - shows wheres the common commit id of both master and new_feature 
 

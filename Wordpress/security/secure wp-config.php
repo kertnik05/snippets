@@ -14,3 +14,8 @@ define('FORCE_SSL_ADMIN',true);
 //Don't use default admin username
 //Use stong Password
 //Change Table Prefix
+
+//https://codex.wordpress.org/Data_Validation
+//https://codex.wordpress.org/Validating_Sanitizing_and_Escaping_User_Data
+
+//add a blank index.php inside your plugin
