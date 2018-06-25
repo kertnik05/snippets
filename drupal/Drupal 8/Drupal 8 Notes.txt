@@ -132,6 +132,38 @@ Step 3:
 If no regions, Default Regions will display. 
 If you define the region, you will define all region. in theme.info.yml 
 
+---------------------------------------------------
+Configure Your Environment for Theme Development
+
+- Create Environment variables
+  - Create settings.local.php 
+  sites/default/settings.php
+  //1. uncomment and paste it all the way to the bottom 
+  if (file_exists($app_root . '/' . $site_path . '/settings.local.php')) {
+     include $app_root . '/' . $site_path . '/settings.local.php';
+  }
+- Disable render caching and Enable Twig Debugging mode
+  //2. Copy sites/default/example.settings.local.php and paste it in sites/default/settings.local.php 
+  - just by including settings.local.php the js and css cache is disabled 
+  - just by including settings.local.php  it's now reading the development.services.yml which has development settings and you can include additional/override development settings (copy from default.services.yml and paste it here)
+    - $settings['container_yamls'][] = DRUPAL_ROOT . '/sites/development.services.yml';
+    - Enable Twig Debugging 
+      parameters:
+        twig.config:
+          debug: true
+          auto_reload: true 
+          cache: false 
+
+    This gives:
+    FILE NAME SUGGESTIONS
+    OUTPUT - where the code template is generated from
+  - uncomment 
+   $settings['cache']['bins']['render'] = 'cache.backend.null';
+   $settings['cache']['bins']['page'] = 'cache.backend.null'; 
+
+- Preview Changes after enabling debugging 
+  - $ drush cr 
+  - view source 
 
 ---------------------------------------------------
     //adding CSS and JS libraries (See Bartik)
@@ -201,7 +233,7 @@ screenshot: screenshot_icecream.png or
 screenshot: images/screenshot_icecream.png 
 
 
-
+---------------------------------------------------
 *.twig 
 Twig Template hierarchy https://www.drupal.org/docs/8/theming/twig/twig-template-naming-conventions
     HTML wrapper: This contains the top-level HTML markup, including title, metadata, style sheets, and scripts, and it is commonly referred to as html.html.twig.
@@ -217,54 +249,26 @@ core/modules/node/templates: This contains the templates for nodes
 core/modules/comment/templates: This contains the comment templates
 core/modules/block/templates: This contains the templates for blocks
 
-
-Enable Twig Debug
-sites/development.services.yml
-Add the following lines to the bottom of the file: (This enable Twig Debugging in the console)
-parameters:
-  twig.config:
-    debug : true
-    auto_reload: true
-    cache: false
-
-This gives:
-FILE NAME SUGGESTIONS
-OUTPUT - where the code template is generated from
-
-Twig Fundamentals
-{# ... #} - comment tag - replaces <!-- This is a comment -->
-{{ ... }} - print tag
-{% ... %} -  statement tag
-
-Place inside page.html.twig
-    {# Setting a variable #}
-    {% set name = 'Drupal' %}
-
-    {# Gettting variables #}
-    <pre>{{ dump(name, is_front) }}</pre>
-
-    {# Filter a variable #}
-    <pre>{{ name|upper}} Rocks</pre> 
-
-    {# Filter a variable and elements#}
-    {% filter upper %}
-        <p>{{ name }} is the best cms around.</p>
-    {% endfilter %}
-
-    {# Conditional logic #}
-    {% set offline = true %}
-    {% if offline == true %}
-        <p>Website is in maintenance mode.</p>
-    {% endif %}
-
-    {# Looping #}
-    {% for i in 0 ..10 %}
-    {{ i }}
-    {% endfor %}
-
-
-Each Twig templage has list of variables written at the top of the file
-It can be displayed as such: {{ variablename }} 
+Override a template File 
+- view source - to see where the template is generated from 
+- copy the actuacl <name>.html.twig and paste it inside templates directory of your theme  
+  - optionally, you can be more specific in theming by renaming the file to available template suggestion (which can be viewed in view source)
+- {hook}--{optional context}.html.twig
+  For example:
+  node.html.twig: hook name is node
+  node--blog_post.html.twig: hook name is node
+  field--node--title--page.html.twig: hook name is field
+- To view more template files 
+  - use the {{ dump }} in *.html.twig
+    - or {{ dump(_context|keys) }} 
+    - or {{ dump(variable_key_name) }}
+  - use the kint() of the devel module 
+    - Usage Example inside node.html.twig 
+      - {{ kint()}}
+      - or {{ kint(_context|keys) }} 
+      - or {{ kint(variable_key_name) }}
+- var_dump 
+---------------------------------------------------
 
 themename.theme
     Intercept and Override variables
@@ -310,8 +314,205 @@ themename.theme
             else
                 return $count . ' ' . $plural;
         }
+    - Adding template variable to *.html.twig 
+      - For example: in themename.theme 
+        - function themename_preprocess_node(&$variables){
+            $variables['your_custom_variable'] = array(
+              '$markup' => 'A simple string', 
+            );
+          }
+        -In your node.html.twig 
+          {{ your_custom_variable }}
+    - Complete list of default preprocess function 
+      template_preprocess(&$variables, $hook): Creates a default set of variables for all theme hooks with template implementations. Provided by Drupal Core.
+      template_preprocess_HOOK(&$variables): Should be implemented by the module that registers the theme hook, to set up default variables.
+      MODULE_preprocess(&$variables, $hook): hook_preprocess() is invoked on all implementing modules.
+      MODULE_preprocess_HOOK(&$variables): hook_preprocess_HOOK() is invoked on all implementing modules, so that modules that didn't define the theme hook can alter the variables.
+      ENGINE_engine_preprocess(&$variables, $hook): Allows the theme engine to set necessary variables for all theme hooks with template implementations.
+      ENGINE_engine_preprocess_HOOK(&$variables): Allows the theme engine to set necessary variables for the particular theme hook.
+      THEME_preprocess(&$variables, $hook): Allows the theme to set necessary variables for all theme hooks with template implementations.
+      THEME_preprocess_HOOK(&$variables): Allows the theme to set necessary variables specific to the particular theme hook.
+      - if you view source, THEME_HOOK: 'node' 
+        - inside themename.theme 
+          - function themename_preprocess_node(&$variables){
+            //override variable as needed 
+          }
+
+---------------------------------------------------
+  How to add theme hook suggestions
+
+$element = array(
+  '#theme' => array(
+    'node__custom_suggestion', // node--custom-suggestion.html.twig
+    'node__teaser' // node--teaser.html.twig
+    'node' // node.html.twig
+  ),
+);
+
+hook_theme_suggestions_HOOK: Modules that provide new templates
+https://api.drupal.org/api/drupal/core%21lib%21Drupal%21Core%21Render%21theme.api.php/function/hook_theme_suggestions_HOOK/8.2.x
+hook_theme_suggestions_HOOK_alter: To remove, reorder or add the list of theme hook suggestions for a given template
+https://api.drupal.org/api/drupal/core%21lib%21Drupal%21Core%21Render%21theme.api.php/function/hook_theme_suggestions_HOOK_alter/8.2.x
+  /**
+  * Implements hook_theme_suggestions_HOOK_alter().
+  */
+  function MYTHEME_theme_suggestions_node_alter(array &$suggestions, array $variables) {
+    $logged_in = \Drupal::currentUser()->isAuthenticated();
+    if ($logged_in) {
+      $suggestions[] = 'node__' . 'authenticated';
+    }
+  }
+hook_theme_suggestions_alter: Alter theme hook suggestions
+https://api.drupal.org/api/drupal/core%21lib%21Drupal%21Core%21Render%21theme.api.php/function/hook_theme_suggestions_alter/8.2.x
+---------------------------------------------------
+Twig Fundamentals
+{# ... #} - comment tag - replaces <!-- This is a comment -->
+{{ ... }} - print tag
+{% ... %} -  statement tag
+
+Place inside page.html.twig
+    {# Setting a variable #}
+    {% set name = 'Drupal' %}
+
+    {# Gettting variables #}
+    <pre>{{ dump(name, is_front) }}</pre>
+
+    {# Filter a variable #}
+    {{ name_of_variable|name_of_filter }} 
+    For Example: 
+    <pre>{{ name|upper}} Rocks</pre> 
+    <title>{{ head_title|safe_join(' | ') }}</title>
 
 
+    {# Filter a variable and elements#}
+    {% filter upper %}
+        <p>{{ name }} is the best cms around.</p>
+    {% endfilter %}
+    
+    //Control structures
+
+      {# Conditional logic #}
+      {% set offline = true %}
+      {% if offline == true %}
+          <p>Website is in maintenance mode.</p>
+      {% endif %}
+      
+      {# Declaring Array #}
+      {%
+        set classes = [
+          'block',
+          'block-' ~ configuration.provider|clean_class,
+          'block-' ~ plugin_id|clean_class,
+        ]
+      %}
+
+      {# Looping #}
+      {% if types is not empty %}
+        <dl class="node-type-list">
+          {% for type in types %}
+            <dt>{{ type.add_link }}</dt>
+            <dd>{{ type.description }}</dd>
+          {% endfor %}
+        </dl>
+      {% else %}
+        <p>
+          {% set create_content = path('node.type_add') %}
+          {% trans %}
+            You have not created any content types yet. Go to the <a href="{{ create_content }}">content type creation page</a> to add a new content type.
+          {% endtrans %}
+        </p>
+      {% endif %}
+
+      //Using if conditions in loops
+      <ul class='blog-post__tags field__items'>
+        {% for item in items if item.status %}
+          <li>{{ value.content }}</li>
+        {% endfor %}
+      </ul>
+     
+      //else condition
+        <ul class='blog-post__tags field__items'>
+          {% for item in items %}
+            <li>{{ item.content }}</li>
+          {% else %}
+            <li>This list is empty</li>
+          {% endfor %}
+        </ul>
+
+      {% for i in 0 ..10 %}
+      {{ i }}
+      {% endfor %}
+
+      //list of loop variables
+      loop.index	The current iteration of the loop. (1 indexed)
+      loop.index0	The current iteration of the loop. (0 indexed)
+      loop.revindex	The number of iterations from the end of the loop (1 indexed)
+      loop.revindex0	The number of iterations from the end of the loop (0 indexed)
+      loop.first	True if first iteration
+      loop.last	True if last iteration
+      loop.length	The number of items in the sequence
+      loop.parent	The parent context
+
+
+
+      //Print Values from a Field with a For Loop
+      For example: themes/icecream/templates/field--node--field-tags--blog-post.html.twig
+        <ul class='blog-post__tags field__items'>
+          {% for item in items %}
+            <li{{ item.attributes.addClass('blog-post__tag') }}>{{ item.content }}</li>
+          {% endfor %}
+        </ul>
+      //Add first/last classes
+      <ul class='blog-post__tags field__items'>
+        {% for item in items %}
+          {% if loop.first %}
+            <li{{ item.attributes.addClass(['blog-post__tag', 'first']) }}>{{ item.content }}</li>
+          {% elseif loop.last %}
+            <li{{ item.attributes.addClass(['blog-post__tag', 'last']) }}>{{ item.content }}</li>
+          {% else %}
+            <li{{ item.attributes.addClass('blog-post__tag') }}>{{ item.content }}</li>
+          {% endif %}
+
+        {% endfor %}
+      </ul>
+      //output 
+      <ul class='blog-post__tags field__items'>
+        <li class="blog-post__tag first">drupal</li>
+        <li class="blog-post__tag">weekly updates</li>
+        <li class="blog-post__tag">unicorns</li>
+        <li class="blog-post__tag last">chad</li>
+      </ul>
+
+    //Print out a variable appended with a function
+    <div{{ attributes.addClass('banner') }}>
+    
+    //More information: https://drupalize.me/videos/twig-tricks-and-html-escaping?p=1899
+    
+    Comments and docblocks
+    {#
+      /**
+      * @file
+      * Theme override for page titles.
+      *
+      * Available variables:
+      * - title_attributes: HTML attributes for the page title element.
+      * - title_prefix: Additional output populated by modules, intended to be
+      *   displayed in front of the main title tag that appears in the template.
+      * - title: The page title, for use in the actual content.
+      * - title_suffix: Additional output populated by modules, intended to be
+      *   displayed after the main title tag that appears in the template.
+      */
+    #}
+
+
+Each Twig templage has list of variables written at the top of the file
+It can be displayed as such: {{ variablename }} 
+---------------------------------------------------
+Access Variable attributes
+//using . syntax
+{{ page.sidebar_right }}
+
+---------------------------------------------------
 Creating region templates -- copy from /core/modules/system/templates *.twig a nd place this in your theme and edit
 region--regionname.html.twig
 
