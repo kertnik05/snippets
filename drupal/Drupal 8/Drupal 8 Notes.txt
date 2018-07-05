@@ -28,6 +28,12 @@ inside settings.php
     '^website-test.dd$'
     );
 
+
+If you see error:
+  - https://www.drupal.org/docs/8/configuration-management/changing-the-storage-location-of-the-sync-directory
+  - place this in: $config_directories[CONFIG_SYNC_DIRECTORY] = 'sites/default/sync';  - in settings.php and add the sync folder 
+
+
 set settings.php back to 644
 $ chmod 644 settings.php
 
@@ -43,11 +49,9 @@ $settings['cache']['bins']['dynamic_page_cache'] = 'cache.backend.null';
 
 $settings['extension_discovery_scan_tests'] = TRUE;
 
-If you see error:
-  - https://www.drupal.org/docs/8/configuration-management/changing-the-storage-location-of-the-sync-directory
-  - place this in: $config_directories[CONFIG_SYNC_DIRECTORY] = 'sites/default/sync';  - in settings.php and add the sync folder 
 
 Install 
+https://www.youtube.com/watch?v=J9bjOD3s02o - Install Drupal Console
 https://www.drupal.org/project/webprofiler
 https://www.drupal.org/project/devel
 
