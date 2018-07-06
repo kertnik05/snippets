@@ -1,5 +1,6 @@
 http://docs.aws.amazon.com/cli/latest/userguide/cli-install-macos.html
 https://www.lynda.com/Amazon-Web-Services-tutorials/Installing-AWS-CLI/569343/618779-4.html
+https://www.lynda.com/Amazon-Web-Services-tutorials/Install-configure-AWS-CLI/502654/566959-4.html
 https://docs.aws.amazon.com/cli/latest/userguide/cli-multiple-profiles.html
 Local Computer
     1. Installing Phyton in CLI
