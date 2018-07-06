@@ -326,18 +326,20 @@ $ docker images
 $ docker run repositoryname:tag echo "Download and Installed Completed"
 $ docker run repositoryname:tag ls /
 //i - interactive container t - pseudo TTY that attaches stdin and stadout (This will give you a command line access to server)
-$ docker run -i -t repositoryname:tag    
+$ docker run -i -t repositoryname:tag    - this will give you the command line of your running container (which is running in the foreground)
 $ docker run -d  repositoryname:tag   sleep 1000 //outputs docker container id, -d runs in detachmode
-$ docker ps //display the containers detials
-$docker run --rm repositoryname:tag  sleep 1 //run and remove after 1 seconds
+$ docker ps //display the running containers 
+$ docker run --rm repositoryname:tag  sleep 1 //run and remove after 1 seconds
 $ docker run --name hellow_world repositoryname:tag
-$ docker ps - a //to get the container_id
+$ docker ps - a //to get all the container - you can get the container_id from here
 $ docker run -d  repositoryname:tag   sleep 100
-$ docker inspect containerid // details the ip and macaddress of the container and logpagth
+$ docker inspect containerid // details the ip and macaddress of the container and logpagth and other useful information
+$ docker run -it -d -p host_port:container_port repositoryname:tag 
 $ docker logs containerid
-$ docker history repositoryname:tag 
+$ docker history repositoryname:tag  - to see the image layers of the container
 
-$ docker run --name -it repositoryname:tag
+
+$ docker run --name yourcontainer_name -it repositoryname:tag
     # apt-get update && apt-get install -y git
 
 //Two ways to spun up a copy of a docker image
