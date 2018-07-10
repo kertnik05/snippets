@@ -12,3 +12,19 @@ To run mongo client: Open a separate terminal -> mongo
 > db.<table_name>.update({"fieldName":"value"},  //find the record to change 
     {$set: {"fieldName":"value"}}  //the specific field of the record to update 
 )
+//Update value of an array field 
+> db.<table_name>.update({"fieldName":"value"},  //find the record to change 
+    {$addToSet: {"fieldName":"value"}}  //the specific field of the record to update 
+)
+//Delete 
+> db.<table_name>.remove({"fieldName":"value"})
+//Dropping Collection
+> db.<table_name>.drop()
+
+//Simple Indexing 
+> db.<table_name>.find({"fieldName":"value"}).explain("executionStats") // see totalDocsExamined
+> db.<table_name>.createIndex({fieldName:1})
+
+//Multikey Index 
+> db.<table_name>.find({"fieldName":{$lte:500}, "fieldName":{$lte:3}}).explain("executionStats")
+> db.<table_name>.createIndex({fieldName:1, fieldName:1 })
