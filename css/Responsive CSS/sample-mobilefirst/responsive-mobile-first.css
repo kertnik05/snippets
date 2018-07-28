@@ -79,7 +79,7 @@ body {
 /** This applies from 276px onwards */
 @media screen and (min-width: 276px) {
   body { 
-    background: blue; 
+   
   }
 }
  
@@ -88,7 +88,7 @@ body {
 /** This applies from 294px onwards */
 @media screen and (min-width: 294px) {
   body { 
-    background: yellow; 
+    
   }
 }
 /*********************************** End Mobile  ****************************************/
@@ -136,7 +136,7 @@ body {
 /** This applies from 509px onwards */
 @media screen and (min-width: 509px) {
   body { 
-    background: yellow; 
+
   }
 }
 /*********************************** End Small Tab  ****************************************/
@@ -183,7 +183,7 @@ body {
 /**  This applies from 768px onwards */
 @media screen and (min-width: 768px) {
   body { 
-    background: yellow; 
+   
   }
 }
 /*********************************** End large Tab  ****************************************/
@@ -194,7 +194,7 @@ body {
 /**  This applies from 800px onwards */
 @media screen and (min-width: 800px ) {
   body { 
-    background: blue; 
+    
   }
 }
 
@@ -203,7 +203,7 @@ body {
 /**  This applies from 1024px onwards */
 @media screen and (min-width: 1024px) {
   body { 
-    background: blue; 
+    
   }
 }
 
@@ -211,7 +211,7 @@ body {
 /**  This applies from 1050px onwards */
 @media screen and (min-width: 1050px) {
   body { 
-    background: blue; 
+   
   }
 }
 
@@ -220,7 +220,7 @@ body {
 /**  This applies from 1200px onwards */
 @media screen and (min-width: 1200px) {
   body { 
-    background: blue; 
+
   }
 }
  

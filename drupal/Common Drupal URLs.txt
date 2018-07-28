@@ -27,3 +27,5 @@ admin/structure/views
 
 Composer D7 and D8
 admin/config/system/composer-manager/settings
+
+drush sql-cli < /filepath/db_hprc.sql
