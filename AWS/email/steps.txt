@@ -108,8 +108,7 @@ SPF record - prevent spammers
     - type: text
     - value: v=spf1 a mx ip4:<ipaddress> -all 
 
-
-
-    
-                    
+--------------------------- 
+Debian/Ubuntu 
+apt-get install bind9 bind9utils bind9-doc 
 
