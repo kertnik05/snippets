@@ -1,11 +1,11 @@
 const redux = require('redux');
 const createStore = redux.createStore;
 
+// Reducer
 const initialState = {
     counter: 0
 }
 
-// Reducer
 const rootReducer = (state = initialState, action) => {
     if (action.type === 'INC_COUNTER') {
         return {

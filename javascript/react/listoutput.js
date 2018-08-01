@@ -4,7 +4,7 @@ import Person from './Person/Person';
 
 class App extends Component {
   state = {
-    //1. Create an Object
+    //1. Create an Object //Id, makes the  key warning disappear
     persons: [
       { id: 'asfa1', name: 'Max', age: 28 },
       { id: 'vasdf1', name: 'Manu', age: 29 },
