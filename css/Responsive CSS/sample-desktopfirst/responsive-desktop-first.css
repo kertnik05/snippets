@@ -11,7 +11,9 @@
     Settings you override @media goes to mobile
 */
 /*********************************** Desktop Firstt ****************************************/
-
+body { 
+	background: violet; 
+  }
 
 /*********************************** Laptop Desktop   ****************************************/
 

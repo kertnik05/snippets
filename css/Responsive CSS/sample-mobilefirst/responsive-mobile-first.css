@@ -101,7 +101,7 @@ body {
 /** This applies from 394px onwards */
 @media screen and (min-width: 394px) {
   body { 
-    background: blue; 
+    background: green; 
   }
 }
 
@@ -110,7 +110,7 @@ body {
 /** This applies from 442px onwards */
 @media screen and (min-width: 254px) {
   body { 
-    background: blue; 
+    
   }
 }
 
@@ -118,7 +118,7 @@ body {
 /** This applies from 452px onwards */
 @media screen and (min-width: 452px) {
   body { 
-    background: blue; 
+   
   }
 }
 
@@ -127,7 +127,7 @@ body {
 /** This applies from 480px onwards */
 @media screen and (min-width: 480px) {
   body { 
-    background: blue; 
+   
   }
 }
  
@@ -157,7 +157,7 @@ body {
 /** This applies from 596px onwards */
 @media screen and (min-width: 596px) {
   body { 
-    background: blue; 
+  
   }
 }
 
@@ -165,7 +165,7 @@ body {
 /** This applies from 634px onwards */
 @media screen and (min-width: 634px) {
   body { 
-    background: blue; 
+   
   }
 }
 
@@ -173,7 +173,7 @@ body {
 /** This applies from 647px onwards */
 @media screen and (min-width: 647px) {
   body { 
-    background: blue; 
+  
   }
 }
 
@@ -229,7 +229,7 @@ body {
 /**  This applies from 1536px onwards */
 @media screen and (min-width: 1536px) {
   body { 
-    background: yellow; 
+    background: brown; 
   }
 }
 /*********************************** End Laptop Desktop  ****************************************/
