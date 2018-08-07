@@ -23,3 +23,6 @@ Story Slicing or Splitting
             
 Acceptance Criteria
 Statements are from the user point of view and how they would describe success 
+---------------
+vsts
+work item - Release - Sprint - backlog - task 
