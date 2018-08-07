@@ -30,7 +30,9 @@ admin/config/system/composer-manager/settings
 
 drush sql-cli < /filepath/db_hprc.sql
 
-mysql -u -root -p 
+mysql -u root -p 
 SET GLOBAL innodb_file_format=Barracuda;
 SET GLOBAL innodb_file_per_table=on;
 SET GLOBAL innodb_large_prefix = ON;
+
+drush upwd --password="NewPassword" admin
