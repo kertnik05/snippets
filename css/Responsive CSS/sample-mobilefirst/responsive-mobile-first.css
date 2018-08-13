@@ -84,9 +84,17 @@ body {
 }
  
 
-/** IP 6 Plus Support */
+/** ? Support */
 /** This applies from 294px onwards */
 @media screen and (min-width: 294px) {
+  body { 
+    
+  }
+}
+
+/** IP 6, 7, 8 Support */
+/** This applies from 375px onwards */
+@media screen and (min-width: 375px) {
   body { 
     
   }
@@ -105,10 +113,17 @@ body {
   }
 }
 
+/** IP 6, 7, 8 Plus Support */
+/** This applies from 414px onwards */
+@media screen and (min-width: 414px) {
+  body { 
+    
+  }
+}
 
 /** Galaxy Tab 3 */
 /** This applies from 442px onwards */
-@media screen and (min-width: 254px) {
+@media screen and (min-width: 442px) {
   body { 
     
   }
@@ -145,7 +160,7 @@ body {
 /** Large Tablets: Samsung Galaxy 768, IPad 2 633.6, Acer Icona Tab 646.08, Fire HDX 8.9model 595.2, HTC Nexus 580.8
 
 /** HTC Nexus */
-/** This applies from 581px onwards 
+/** This applies from 581px onwards */
 @media screen and (min-width: 581px) {
   body { 
     background: blue; 
