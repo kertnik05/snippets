@@ -1,4 +1,5 @@
 
+- Install Java if not installed
 - Download and unzip elasticsearch
     - bin - executables
     - config - configuration and can be raname to .json
@@ -18,10 +19,48 @@ Installing Elasticsearch
     - creates a cluster called elasticsearch 
     - creates a master node 
     - individual node is given a random name 
-3. Installing Marvel Dashboard
+    - ctrl + C to stop elasticsearch 
+3. $ curl <url:9200>
+4. Configuring Elastic Search
+    - Network and port of the elastic search server - only in production
+    - https://www.udemy.com/elasticsearch-complete-guide/learn/v4/t/lecture/7429062?start=0
+5. Installing Kibana - port 45601 
+    - Download Kibana 
+    - $ tar -zxf kinbana
+    - $ bin/kibana - to start 
+        - go to your url:45601
+        - ctrl + C to stop 
+4. Configuring kibana - kibana.yml 
+    - https://www.udemy.com/elasticsearch-complete-guide/learn/v4/t/lecture/7429072?start=0
+5. Intro to kibana 
+    - https://www.udemy.com/elasticsearch-complete-guide/learn/v4/t/lecture/7429078?start=0
+6. Creating Index 
+    - PUT /<table_name>?pretty - pretty will make the result easy on the human eyes 
+7. Adding Document to index through console
+    - POST /<table_name>/default {
+        "field_name": "value",
+         "field_name": {
+              "field_name": "value",
+               "field_name": "value",
+         },
+    }   // http ver + endpoint 
+    - PUT /<table_name>/default/<id:num> {
+        "field_name": "value",
+         "field_name": {
+              "field_name": "value",
+               "field_name": "value",
+         },
+    }   // http ver + endpoint 
+    - get /<table_name>/default/<id:num> 
+
+
+
+
+4.Installing Marvel Dashboard
     - bin/plugin -i elasticsearch/marvel/latest
     - localhost:9200/_plugin/marvel/kibana/index.html#/dashboard 
-4. ctrl + C to stop elasticsearch 
+
+
 
 Data Ingestion
 - Indexing Document
