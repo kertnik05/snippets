@@ -14,6 +14,8 @@ elasticsearch.yml
 
 Installing Elasticsearch
 1. Make sure Install Jav 7 or higher 
+    - javac -version
+2. Download Elastic Search https://www.elastic.co/products/elasticsearch
 2. $ bin/elasticsearch 
     - localhost:9200 
     - creates a cluster called elasticsearch 
@@ -24,7 +26,8 @@ Installing Elasticsearch
 4. Configuring Elastic Search
     - Network and port of the elastic search server - only in production
     - https://www.udemy.com/elasticsearch-complete-guide/learn/v4/t/lecture/7429062?start=0
-5. Installing Kibana - port 45601 
+5. Download Kibana - https://www.elastic.co/products/kibana
+    - port 45601 
     - Download Kibana 
     - $ tar -zxf kinbana
     - $ bin/kibana - to start 
@@ -34,9 +37,10 @@ Installing Elasticsearch
     - https://www.udemy.com/elasticsearch-complete-guide/learn/v4/t/lecture/7429072?start=0
 5. Intro to kibana 
     - https://www.udemy.com/elasticsearch-complete-guide/learn/v4/t/lecture/7429078?start=0
+    - $curl -XGET <kibanaconsolegearurl>
 6. Creating Index 
     - PUT /<table_name>?pretty - pretty will make the result easy on the human eyes 
-7. Adding Document to index through console
+7. Adding Document to index through console of kibana
     - POST /<table_name>/default {
         "field_name": "value",
          "field_name": {
@@ -52,6 +56,124 @@ Installing Elasticsearch
          },
     }   // http ver + endpoint 
     - get /<table_name>/default/<id:num> 
+8. Updating Documents - Adding new fields
+    - POST /<table_name>/default/<id:num>/_update
+    {
+        "doc": {
+            "new_field_name": "value",
+            "new_field_name": ["value"],
+            "new_field_name": {
+                    "field_name": "value",
+                    "field_name": "value" }
+        }
+    }
+9. Scripting Update 
+     - POST /<table_name>/default/<id:num>/_update
+     {
+         "script": "ctx._source.<field_name> = newvalue" 
+     } 
+     
+     or
+
+     {
+         "script": "ctx._source.<field_name> += 10" 
+     }
+     - More Example: https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html
+     - https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-scripting.html
+     - GET /<table_name>/default/<id:num>
+10. Upsert - updates the field if it exist, if not, it runs the upsert 
+    - POST /<table_name>/default/<id:num>/_update
+     {
+         "script": "ctx._source.<field_name> += 10" 
+         "upsert":{
+             "price": 100;
+         }
+     } 
+11. 
+    - Deleting single Document 
+        - DELETE /<table_name>/default/<id:num>
+    - Deleting Mutiple Document
+        - POST /<table_name>/_delete_by_query 
+        {
+            "query":{
+                "match": {
+                    "field_name": "value"
+                }
+            }
+        }
+12. Deleting Index
+    - DELETE /<table_name> 
+13. Batch Processing 
+    - POST /<table_name>/default/_bulk
+    {
+        "index": {
+            "_id": "100"
+        }
+    }
+    {  "price": 100 }
+    {
+        "index": {
+            "_id": "101"
+        }
+    }
+    {  "price": 101 }
+    - Batch Updating and Deleting 
+    POST /<table_name>/default/_bulk
+    {
+        "update": {
+            "_id": "100"
+        }
+    }
+    {"doc": {  "price": 1000 }}
+    {"delete": {  "_id": 101 }}
+14. Importing Batch Data using Curl 
+    -$ curl -H "Content-Type: application/json" -XPOST "http://localhost:9200/<table_name>/default/_bulk?pretty" --data-binary "@ptest-data.json" 
+15. Exploring the cluster 
+    - GET /_cat/health?v - https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster.html
+    - GET /_cat/nodes?v - https://www.elastic.co/guide/en/elasticsearch/reference/current/cat-nodes.html
+    - GET /_cat/indices?v 
+    - GET /_cat/allocation?v 
+    - GET /_cat/shards?v 
+
+ Mapping - or schema in mysql
+16. Dynamic Mapping - By Default, when you Post your data elastic search will map the field automatically
+    - Show Mappings
+        - GET /<table_name>/default/_mapping 
+17. Meta Fields 
+    - _index - contains the name of the index to which a document belongs
+    - _id - stores the id of the Documents
+    - _source - contains the original json object used when indexing a document
+    - _field_names - contains the names of every field that contains a non-null value 
+    - _routing - stores the value used to route a document to a shard 
+    - _version - stores the internal version of a document - the value is integer 
+    - _meta - may be used to store custom data that is left untouched by Elastic search 
+
+18. Field Data Types 
+    - Core Data Types
+        - text - "lorem ipsum" - optimal for full text searches 
+        - keyword - tags, categories, email address (used for structrued data) - use for filtering or agrregations
+        - numeric - long, short, integer, byte, float, scaled_float, half_float 
+        - date - string, long, epoc 
+        - boolean - true or false 
+        - binary - base64. Not stored by default 
+        - range - { "gte":10, "lte":20} integer_range, float_range, long_range, double_range, date_range 
+    - Complex Data Types
+        - object - json 
+        - array 
+        - array of objects - 
+        {
+            "persons": [
+                { "name": "Bo Andersen" , "age": 28 },
+                { "name": "Bo Andersen" , "age": 28 }
+            ] 
+        } becomes 
+        {
+            "persons.name": ["Bo Andersen" ,  "Bo Andersen" ],
+            "persons.age": [ 28 , 28 ]
+            
+        } 
+    - Geo Data Types
+    - Specialized Data Types 
 
 
 
