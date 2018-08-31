@@ -97,4 +97,79 @@ Meta Description  - google now shows longer snippets (Sales Pitch)
 
 H1 and H2 Tags 
     - Ideally for SEO one unique h1 per page 
+    - remove duplicating pages
+    - H2 should be in the main content and not in sidebar 
+
+More Meta Tags and Link Depth 
+    - Img Missing Alt Text 
+        - use screaming frog and add alt tags to those missing tags and caption
+    - Site Structure 
+        - Depth Click From start of URL -  tells you how many clicks the user has to take to get to that page 
+    - Response Time - shows you how long the site response 
+    - You can do a bulk exports from screaming frogs 
+
+Directives tab - How I find?
+- word count
+- Response Time
+- Crawl Depth
+- A list of pages with the noindex/Canonical (master copy) - see dropdown 
+
+- Internal tab 
+
+Page By Page Review
+- Browse the site page by page as a search bot would 
+    - Set up a browser to mimic a search bot - Chorme Plugin: User Agent Switcher 
+    - Review the source code 
+    - Feth page as google bot (in Googgle Search Console) or use the cache:command 
+    - Use browseo.net 
+
+Page by Page 
+- What are you looking for?
+    - Text is really Text   
+        - Avoid really thin pages
+    - Missing or Hidden Elements 
+    - Links are not obfuscated, with descriptive anchors
+    - Proper use of tags 
+
+W3C Markup Validation Service 
+- Meta should be at the head 
+- https://www.redclayinteractive.com/what-are-open-graph-tags/
+
+Chrome Extension
+SEO META in 1 Click 
+
+Traffic
+- Google Analytics use to analyze Traffic
+- Diffenent Types of Traffic 
+    - Organic - google analytics 
+        - Tracking conversions
+        - Engagement Metrics
+            - Time on Site, Bounce Rate, Pages per Visit 
+        - Content Performance
+        - Demographics and Interest (If enabled)
+        - % mobile
+        - location
+        - Social Referrals
+        - Is organic traffic rising or falling or flat?
+        - What are the top landing pages?
+        - how is the site performing with users?
+        - how well is the site optimized for speed?
+    - Referral - backlinks
+    - Direct - typein 
+    - Paid 
+
+Site Speed 
+- Conversion
+
+Power Tags and Advanced Tecgbucak SEO 
+- rel canonical - to tell google to point all duplicates to one url - to control indexation 
+    - Point url to /red/red-tennies-shoes - <link rel canonical=https://red/red-tennies-shoes />  and must be in the head 
+    - /red/red-tennies-shoes
+    - /red/red-tennies-shoes?price
+    - /red/red-tennies-shoes?cost
+    - look at the duplicate page title 
+    - Reserve Rel Canonical For pages that are duplicate, almost duplicate or a subset 
     
+- meta robots noindex 
+- rel prev and rel next 
+
