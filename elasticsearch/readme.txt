@@ -1,4 +1,5 @@
 
+- Install Java if not installed
 - Download and unzip elasticsearch
     - bin - executables
     - config - configuration and can be raname to .json
@@ -13,15 +14,414 @@ elasticsearch.yml
 
 Installing Elasticsearch
 1. Make sure Install Jav 7 or higher 
+    - javac -version
+2. Download Elastic Search https://www.elastic.co/products/elasticsearch
 2. $ bin/elasticsearch 
     - localhost:9200 
     - creates a cluster called elasticsearch 
     - creates a master node 
     - individual node is given a random name 
-3. Installing Marvel Dashboard
+    - ctrl + C to stop elasticsearch 
+3. $ curl <url:9200>
+4. Configuring Elastic Search
+    - Network and port of the elastic search server - only in production
+    - https://www.udemy.com/elasticsearch-complete-guide/learn/v4/t/lecture/7429062?start=0
+5. Download Kibana - https://www.elastic.co/products/kibana
+    - port 45601 
+    - Download Kibana 
+    - $ tar -zxf kinbana
+    - $ bin/kibana - to start 
+        - go to your url:45601
+        - ctrl + C to stop 
+4. Configuring kibana - kibana.yml 
+    - https://www.udemy.com/elasticsearch-complete-guide/learn/v4/t/lecture/7429072?start=0
+5. Intro to kibana 
+    - https://www.udemy.com/elasticsearch-complete-guide/learn/v4/t/lecture/7429078?start=0
+    - $curl -XGET <kibanaconsolegearurl>
+6. Creating Index 
+    - PUT /<table_name>?pretty - pretty will make the result easy on the human eyes 
+7. Adding Document to index through console of kibana
+    - POST /<table_name>/default {
+        "field_name": "value",
+         "field_name": {
+              "field_name": "value",
+               "field_name": "value",
+         },
+    }   // http ver + endpoint 
+    - PUT /<table_name>/default/<id:num> {
+        "field_name": "value",
+         "field_name": {
+              "field_name": "value",
+               "field_name": "value",
+         },
+    }   // http ver + endpoint 
+    - get /<table_name>/default/<id:num> 
+8. Updating Documents - Adding new fields
+    - POST /<table_name>/default/<id:num>/_update
+    {
+        "doc": {
+            "new_field_name": "value",
+            "new_field_name": ["value"],
+            "new_field_name": {
+                    "field_name": "value",
+                    "field_name": "value" }
+        }
+    }
+9. Scripting Update 
+     - POST /<table_name>/default/<id:num>/_update
+     {
+         "script": "ctx._source.<field_name> = newvalue" 
+     } 
+     
+     or
+
+     {
+         "script": "ctx._source.<field_name> += 10" 
+     }
+     - More Example: https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html
+     - https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-scripting.html
+     - GET /<table_name>/default/<id:num>
+10. Upsert - updates the field if it exist, if not, it runs the upsert 
+    - POST /<table_name>/default/<id:num>/_update
+     {
+         "script": "ctx._source.<field_name> += 10" 
+         "upsert":{
+             "price": 100;
+         }
+     } 
+11. 
+    - Deleting single Document 
+        - DELETE /<table_name>/default/<id:num>
+    - Deleting Mutiple Document
+        - POST /<table_name>/_delete_by_query 
+        {
+            "query":{
+                "match": {
+                    "field_name": "value"
+                }
+            }
+        }
+12. Deleting Index
+    - DELETE /<table_name> 
+13. Batch Processing 
+    - POST /<table_name>/default/_bulk
+    {
+        "index": {
+            "_id": "100"
+        }
+    }
+    {  "price": 100 }
+    {
+        "index": {
+            "_id": "101"
+        }
+    }
+    {  "price": 101 }
+    - Batch Updating and Deleting 
+    POST /<table_name>/default/_bulk
+    {
+        "update": {
+            "_id": "100"
+        }
+    }
+    {"doc": {  "price": 1000 }}
+    {"delete": {  "_id": 101 }}
+14. Importing Batch Data using Curl 
+    -$ curl -H "Content-Type: application/json" -XPOST "http://localhost:9200/<table_name>/default/_bulk?pretty" --data-binary "@ptest-data.json" 
+15. Exploring the cluster 
+    - GET /_cat/health?v - https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster.html
+    - GET /_cat/nodes?v - https://www.elastic.co/guide/en/elasticsearch/reference/current/cat-nodes.html
+    - GET /_cat/indices?v 
+    - GET /_cat/allocation?v 
+    - GET /_cat/shards?v 
+
+ Mapping - or schema in mysql
+16. Dynamic Mapping - By Default, when you Post your data elastic search will map the field automatically
+    - Show Mappings
+        - GET /<table_name>/default/_mapping 
+17. Meta Fields 
+    - _index - contains the name of the index to which a document belongs
+    - _id - stores the id of the Documents
+    - _source - contains the original json object used when indexing a document
+    - _field_names - contains the names of every field that contains a non-null value 
+    - _routing - stores the value used to route a document to a shard 
+    - _version - stores the internal version of a document - the value is integer 
+    - _meta - may be used to store custom data that is left untouched by Elastic search 
+
+18. Field Data Types 
+    - Core Data Types
+        - text - "lorem ipsum" - optimal for full text searches 
+        - keyword - tags, categories, email address (used for structrued data) - use for filtering or agrregations
+        - numeric - long, short, integer, byte, float, scaled_float, half_float 
+        - date - string, long, epoc 
+        - boolean - true or false 
+        - binary - base64. Not stored by default 
+        - range - { "gte":10, "lte":20} integer_range, float_range, long_range, double_range, date_range 
+    - Complex Data Types
+        - object - json 
+        - array 
+        - array of objects - 
+        {
+            "persons": [
+                { "name": "Bo Andersen" , "age": 28 },
+                { "name": "Bo Andersen" , "age": 28 }
+            ] 
+        } becomes 
+        {
+            "persons.name": ["Bo Andersen" ,  "Bo Andersen" ],
+            "persons.age": [ 28 , 28 ]
+            
+        } 
+        - Nested - specialized version of the object data type. Enables arrays of objects to be querified independently of each other. 
+    - Geo Data Types
+        - longitude and lattitude 
+        {
+            location: {
+                "lat": 33.5206608,
+                "lon": -86.8024900
+            }
+        }
+        {
+            "location": "33.5206608, -86.8024900"
+            
+        }
+        {
+            "location": "[3.5206608, -86.8024900]
+            
+        }
+        {
+            "location": "asdfasdfasd" //geo hashed
+            
+        }
+        - Geo Shape 
+            - geographical shaes such as polygons, circles, point, linestring, multipoint, multilinestring, multipolygon, goemetrycollection, envelope, and circle 
+
+
+    - Specialized Data Types 
+         - For storing IP address IPV or IPV6
+        - Completion 
+            - provide auto completion ("search as yout tyoe") functionality. Optimes for quick lookups
+        - Attachment - Rquires the ingest attachment processor plugin. Used to make text from various document formats searchable (E.g. PPT. PDF, and RTF )
+        Uses Apache Tika interanlly for text recognation 
+        - $ sudo bin/elasticsearch-plugin install -ingest-attachment 
+19. Adding Mappings/schema to Existing indices 
+    - PUT /<table_name>/default/_mapping  //to set mapping
+    {
+        "properties": {
+            "<field_name>": {
+                "type": "<data_type>" 
+            }
+        }
+    }
+    - GET /product/default/_mapping  // to view mapping
+20. Changing Existing Mappings
+    - Note: You can add properties to object and you can add keyword to text without deleting the indexes 
+    - DELETE /<table_name>
+    - PUT /<table_name> //to set mapping
+    {
+        "mappings": {
+            "default": {
+                "dynamic": false,
+                "properties": {
+                    "in_stock": {
+                        "type": "integer"
+                    }, 
+                    "is_active": {
+                        "type": "integer"
+                    }, 
+                    "price": {
+                        "type": "integer"
+                    }, 
+                    "sold": {
+                        "type": "long"
+                    }
+                }
+            }
+        }
+    }
+
+21. Mapping Parameters
+    - coerce - can be used to disable coercion (automatically cleaning up values) - "5" to 5 ""5.0" to 5 
+    - copy_to - Enables you to create custom fields. Copies field values into a given field. Copies values, not terms. 
+    {
+        "first_name:{
+            "type": "text",
+            "copy_to": "full_name",
+        },
+        "last_name:{
+            "type": "text",
+            "copy_to": "full_name",
+        },
+        "full_name:{
+            "type": "text"
+        }
+    }
+    - dynamic - enables or disables adding fields to documents or inner objects dynamically 
+    {
+        "mapping": {
+            "default": {
+                "dynamic": false,
+                "properties": {
+                    "name": {
+                        "dynamic": true,
+                        "properties": {
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+    - properties - contains field mappings, either at the top level of documents or within inner objects 
+    {
+        "mappings": {
+            "default": {
+                "properties": {
+                    "name": {
+                        "properties": {
+                            "first_name": {"type": "text" },
+                            "last_name": {"type": "text" }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    - norms - whether or not to disable storing norms (used for relevance scores) - disable the relevance  - to save disk space 
+    {
+        "properties": {
+            "full_name": {
+                "type": "text",
+                "norms": false 
+            }
+        }
+    }
+    - format - defines format for date fields
+        - "yyyy-MM-dd", "epoc_millis", "epoch_second", etc 
+        - Default:
+            "strict_date_optional_time || epoch_millis" 
+    - null_value 
+        - replaces null values with the specified value 
+        {
+            "properties": {
+                "discount": {
+                    "type": "integer",
+                    "null_value": 0
+                }
+            }
+        }
+    - fields - used to index fields in different ways 
+    - Mapping Parameters - https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-params.html
+    - Custom Date Format - http://www.joda.org/joda-time/apidocs/org/joda/time/format/DateTimeFormat.html
+    - Format - https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-date-format.html#built-in-date-formats
+
+22. Adding Multi-fields Mappings 
+ - PUT /<table_name>/default/_mapping  //to set mapping
+    {
+        "properties": {
+            "description": {
+                "type": "<data_type>" 
+            },
+            "name": {
+                "type": "text",
+                "fields": {
+                    "keyword": {
+                        "type": "keyword"
+                    }
+                }
+            },
+            "tags": {
+                "type": "text",
+                "fields": {
+                    "keyword": {
+                        "type": "keyword"
+                    }
+                }
+            },
+        }
+    }
+    - GET /<table_name>/default/_mapping  // to view mapping
+23. Define Custom Date formats
+    - PUT /<table_name>/default/_mapping
+    //Default
+    {
+        "properties":{
+            "created": {
+                "type": "date",
+                "format": "strict_date_optional_time||epoch_millis" 
+            }
+        }
+    }
+    //Custom
+    {
+        "properties":{
+            "created": {
+                "type": "date",
+                "format": "yyyy/MM/dd HH:mm:ss||yyy/MM/dd" 
+            }
+        }
+    }
+    - curl -H "Content-Type: application/json" -XPOST "http://localhost:9200/product/default/_bulk?pretty" --data-binary "@filename-bulk.json" 
+24. Picking up new fields without dynamic mapping 
+- POST /product/default/2000
+{
+    "description: "test",
+    "discount:: 20
+}
+- PUT /product/default/_mapping
+{
+    "properties": {
+        "discount": {
+            "type": "integer"
+        }
+    }
+}
+
+- GET /product/default/_search
+{
+    "query": {
+        "match": {
+            "description": "test"
+        }
+    }
+}
+
+- GET /product/default/_search
+{
+    "query": {
+        "term": {
+            "discount": 20
+        }
+    }
+}
+//To pick up the discount mapping which was disable by dynamic mapping 
+POST /product/_update_by_query?conflicts=proceed //the product has been re-index 
+DELETE /product/default/2000 
+
+25. Using the Analyze API 
+    - POST _analyze 
+    {
+        "tokenizer": "standard",
+        "text": "I'm in the mood for drinking semi dry red wine!"
+    }
+    - POST _analyze 
+    {
+        "tokenizer": "lowercase",
+        "text": "I'm in the mood for drinking semi dry red wine!"
+    }
+     - POST _analyze 
+    {
+        "analyzer": "standard",
+        "text": "I'm in the mood for drinking semi dry red wine!"
+    }
+
+26. Understanding the inverted index
+
+4.Installing Marvel Dashboard
     - bin/plugin -i elasticsearch/marvel/latest
     - localhost:9200/_plugin/marvel/kibana/index.html#/dashboard 
-4. ctrl + C to stop elasticsearch 
+
+
 
 Data Ingestion
 - Indexing Document

@@ -18,9 +18,7 @@
 /** Size 1536 */
 /** This applies from 1200px to 1536px */
 @media screen and (max-width: 1536px) {
-	body { 
-		background: green; 
-	  }
+
 }
 
 /** Size 1200 */
@@ -57,9 +55,6 @@
 /** Samsung Galaxy  Support */
 /** This applies from 647px to 768px  */
 @media screen and (max-width: 768px) {
-	body { 
-		background: blue; 
-	  }
 
 }
 

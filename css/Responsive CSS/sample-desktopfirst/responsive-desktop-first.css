@@ -110,13 +110,20 @@ body {
 }
 
 /**  Toshiba Excite Go */
-/** This applies from 442px to 452px  */
+/** This applies from 441px to 452px  */
 @media screen and (max-width: 452px) {
 
 }
 
+/**  Support */ 
+/** This applies from 394px to 441px  */ 
+@media screen and (max-width: 441px) {
+	
+ 
+}
+
 /**  Fire HD 6 */
-/** This applies from 294px to 394px  */
+/** This applies from 375px to 394px  */
 @media screen and (max-width: 394px) {
 
 }
@@ -126,7 +133,14 @@ body {
 /* Mobile Phones: IP6 Plus 293.76, Samsung S5 275.9,  Samsung S4 264.5 ,IP 6 253.44,  Samsung S5 mini 245.6px,   Samsung s4 230.5, IP5c 223.68, IP 4-5-5s 221.76 */
 /*********************************** SMall Tab   ****************************************/
 
-/**  IP 6 Plus Support */ 
+/**  Support */ 
+/** This applies from 294px to 375px  */ 
+@media screen and (max-width: 375px) {
+	
+ 
+}
+
+/**  Support */ 
 /** This applies from 276px to 294px  */ 
 @media screen and (max-width: 294px) {
 	
