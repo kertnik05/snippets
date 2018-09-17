@@ -49,3 +49,21 @@ Sites - 755 Recursive
 settings.php - 444 
 Notes: When moving the site to dev desktop set the file and folder settings first and delete settings.php 
 Additional note: Keep an eye for prefix
+
+sudo find /var/www/html/opss-retheme -type d -exec chmod 770 {} \;
+sudo find /jet/app/drupal -type d -exec chmod 770 {} \;
+
+sudo find /var/www/html/opss-retheme/sites -type d -exec chmod 755 {} \;
+sudo find /var/www/html/opss-retheme/sites/default/settings.php -type d -exec chmod 444 {} \;
+sudo find /jet/app/drupal/sites/default/settings.php -type d -exec chmod 444 {} \;
+sudo find /jet/app/drupal/opss_retheme -type d -exec chmod 770 {} \;
+drush dl drupal-7 --drupal-project-rename=<foldername>
+drush si --db-url=mysql://root:<password>@localhost/<foldername>
+drush si --db-url=mysql://root:@localhost/opss_retheme
+
+
+drush sql-drop 
+drush sql-cli < <filepath> //Importing Database
+drush sql-cli > <filepath> //Exporting Database
+
+cp -Prv /jet/app/drupal/opss/sites/default .
