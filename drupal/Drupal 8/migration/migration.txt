@@ -15,6 +15,25 @@ Which content types can be removed?
 -Is this a good time to split a monolithic site into smaller sites? In our example migration we're doing just that: moving the Drupalize.Me blog to its own Drupal installation and upgrading it to Drupal 8 at the same time. This isolates it from the main functionality of our site so it's easier to maintain, and allows us to move things over to Drupal 8 in segments instead of all at once.
 -Are there pieces of functionality on your site that may no longer be important? This is especially important to think about when it comes to custom modules that you're maintaining. If you're not using it, don't bother porting it.
 
+Drupal to Drupal Migration with the UI 
+- Install Migrate modules in Drupal 8 installation 
+    - Enable: Migrate, Migrate Drupal, and Migrate Drupal UI 
+    - Click Upgrade Form
+    - Provide Drupal 7 database and sites files directory 
+//http://drupal-8-6-1-base.dd:8083/upgrade
+
+- Use the UI to Perform a Drupal to Drupal Migration
+- Examine where log data for our migration is stored
+
+
+Use Upgrade Status and Contrib Tracker
+drush dl upgrade_status && drush en upgrade_status --yes
+<site_url>/admin/reports/updates/upgrade
+
+https://www.drupal.org/project/contrib_tracker
+
+
+
 Extract, Transform, Load
 Extract 
     Source plugins extract data from a source - https://drupalize.me/tutorial/source-plugins?p=2578
@@ -158,6 +177,8 @@ Extract
 
     - Drupal Migrate Module migrate source
     - Migrate Source csv
+    - Migrate Source json
+    - Migrate Source xml
     - Migrate Plus
 Transform
     - Process plugins manipulate data during the transform phase of the ETL process - https://drupalize.me/tutorial/process-plugins?p=2578
