@@ -30,6 +30,11 @@ Use Upgrade Status and Contrib Tracker
 drush dl upgrade_status && drush en upgrade_status --yes
 <site_url>/admin/reports/updates/upgrade
 
+
+
+
+http://ec2-54-165-117-126.compute-1.amazonaws.com/users/hprcadmin#overlay=admin/reports/updates/upgrade
+
 https://www.drupal.org/project/contrib_tracker
 
 

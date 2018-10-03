@@ -42,3 +42,5 @@ rsync -avr --delete /var/www/opss/sites/default/files/ /home/username/Repositori
 Then:
 rsync -avr --delete -e ssh remote-stage-drupal-centers:/home/username/Repositories/opss-site/opss/files/ /home/username/Repositories/opss-site/opss/files/
 rsync -avr --delete -e ssh remote-drupal:/home/username/Repositories/opss-site/opss/databases/ /home/username/Repositories/usuhs-site/usuhs/databases/
+
+http://www.jesox.com/blog/how-install-drush-mac
