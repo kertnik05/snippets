@@ -71,6 +71,9 @@ drush dl drupal-7 --drupal-project-rename=<foldername>
 drush si --db-url=mysql://root:<password>@localhost/<foldername>
 drush si --db-url=mysql://root:@localhost/opss_retheme
 
+fda-feeds-export
+fda-feeds-export-csv
+https://www.youtube.com/watch?v=ssOF3nPgcfc&t=132s
 
 drush sql-drop 
 drush sql-cli < <filepath> //Importing Database
