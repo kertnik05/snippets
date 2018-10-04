@@ -83,3 +83,5 @@ mysqladmin -u root -p drop tiag
 mysqladmin -u root -p create tiag
 mysql -u root -p tiag
 source /var/www/html/db_backup/feeds_working.sql
+
+https://www.drupal.org/forum/support/post-installation/2013-09-10/imporexport-data-as-a-csv
