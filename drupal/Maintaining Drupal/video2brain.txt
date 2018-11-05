@@ -51,6 +51,16 @@ Notes: When moving the site to dev desktop set the file and folder settings firs
 Additional note: Keep an eye for prefix
 
 sudo find /var/www/html/opss-retheme -type d -exec chmod 770 {} \;
+
+sudo find /var/www/html -type f -exec chmod 444 {} \;
+sudo find /var/www/html -type d -exec chmod 555 {} \;
+
+sudo find /var/www/html/sites/default -type f -exec chmod 664 {} \;
+sudo find /var/www/html/sites/default/files -type f -exec chmod 775 {} \;
+sudo find /var/www/html/sites/default/files -type d -exec chmod 775 {} \;
+
+
+
 sudo find /jet/app/drupal -type d -exec chmod 770 {} \;
 
 sudo find /var/www/html/opss-retheme/sites -type d -exec chmod 755 {} \;
@@ -61,9 +71,20 @@ drush dl drupal-7 --drupal-project-rename=<foldername>
 drush si --db-url=mysql://root:<password>@localhost/<foldername>
 drush si --db-url=mysql://root:@localhost/opss_retheme
 
+fda-feeds-export
+fda-feeds-export-csv
+https://www.youtube.com/watch?v=ssOF3nPgcfc&t=132s
 
 drush sql-drop 
 drush sql-cli < <filepath> //Importing Database
 drush sql-cli > <filepath> //Exporting Database
 
 cp -Prv /jet/app/drupal/opss/sites/default .
+
+mysqldump -u root -p tiag > /var/www/html/db_backup/staging_10042018.sql
+mysqladmin -u root -p drop tiag
+mysqladmin -u root -p create tiag
+mysql -u root -p tiag
+source /var/www/html/db_backup/feeds_working.sql
+
+https://www.drupal.org/forum/support/post-installation/2013-09-10/imporexport-data-as-a-csv
