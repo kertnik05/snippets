@@ -55,3 +55,47 @@ The final three characters tell us the permissions for all others.
 chmod 777 <filename>
 sudo chown <username> <filename> - change file ownership 
 sudo chgrp <groupname> <filename> - change file group ownsership
+
+getfacl <filename>
+setfacl -m group::rwx <filename> - give group rws which own the file 
+setfacl -m mask::--- <filename> - set the upper boundery 
+set fact -m user:<username>:rwx <filename> add the user 
+set fact -x user:<username>:rwx <filename>  - remove the user 
+
+sudo apt-get install links - ubuntu browser 
+    - ctrl + g 
+    - enter url 
+    - ctrl + z
+    - :q 
+
+
+Cron Jobs
+cd /etc 
+ls 
+-look for cron 
+cd cron.daily 
+ls - list all your daily cron jobs 
+sudo crontab e - edit root cron tab 
+    - m h dom mon dow command - how cron tell you how to specify
+    - * - wildcart 
+    - 0 6 * * 1 service ssh restart  - every monday at 6am ssh will restarted 
+    - 55 17 * * 5 cp <filepath_from> <filepath_to> 
+
+
+ssh status 
+
+sudo apt-get update
+sudo apt-ge install apache2 
+ifconfig
+/var/www/html 
+
+sudo nano <scriptname.sh> 
+    service ssh status
+    service apache2 status 
+    df -h
+    service ssh restart 
+    service apache2 restart 
+- sudo sh <scriptpath/name.sh> - manually running scripts 
+- sudo crontab e 
+    - 22 4 * 1,3,5,7,9,11 0 sh <scriptpath/name.sh>
+    
