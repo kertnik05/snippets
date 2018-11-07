@@ -77,7 +77,7 @@ https://www.youtube.com/watch?v=ssOF3nPgcfc&t=132s
 
 drush sql-drop 
 drush sql-cli < <filepath> //Importing Database
-drush sql-cli > <filepath> //Exporting Database
+drush sql-dump > <filepath> //Exporting Database
 
 cp -Prv /jet/app/drupal/opss/sites/default .
 

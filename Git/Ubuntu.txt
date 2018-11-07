@@ -1,0 +1,57 @@
+sudo adduser <username>
+sudo addgroup <groupname>
+groups - list the current user is apart of
+man groups - to see the manual of groups
+groups <username> 
+cat /etc/group - to see the group
+cat /etc/passwd - list users
+sudo passwd <username> - user password update/reset 
+sudo deluser <username> - delete a user 
+sudo groupdel <groupname> - to delete a group 
+sudo adduser <username> <groupname> - add user to the group 
+sudo deleuser <username> <groupname> - remove the user from the group
+adduser useradd - the same command 
+
+sudo app-get install <program_name> 
+sudo apt-cache search <searchKeyword> - to look for programs
+sudo nano /etc/apt/sources.list - list of repositories that the system utilize 
+- sudo apt-get update - to update ubuntu index program repositories 
+- sudo apt-get upgrade - applies upgrad to your programs 
+sudo do-release-upgrade - to keep the system updated 
+sudo apt-get remove <program_name> 
+
+File Permissions Scheme
+r = READ (View the file/directory)
+w = WRITE (Change/modify the file/directory)
+x = EXECUTE (Run code/program or enter directory) 
+
+rwx = 7
+rw- = 6
+r-x = 5
+r-- = 4
+--- = 0 
+
+777 = rwxrwxrwx
+770 = rwxrwx---
+755 = rwxr-xr-x
+700 = rwx------
+666 = rw-rw-rw644
+= rw-r--r--
+600 = rw------- 
+
+ls -l
+-rwx------ 1 [User] [Group] 111 [Date-Modified] [Filename] 
+d or - - tells directory or a file
+d<userright><grouprights><otherusers> 
+
+
+The first character is either a hyphen or a 'd.' A hyphen denotes a regular file, while a 'd'
+denotes a directory.
+The next three characters tell us the permissions for the user that owns the file.
+The following three characters tell us the permissions for all members of the group
+which owns the file.
+The final three characters tell us the permissions for all others. 
+
+chmod 777 <filename>
+sudo chown <username> <filename> - change file ownership 
+sudo chgrp <groupname> <filename> - change file group ownsership
