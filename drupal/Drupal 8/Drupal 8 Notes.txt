@@ -52,7 +52,7 @@ $settings['extension_discovery_scan_tests'] = TRUE;
 
 Install 
 https://www.youtube.com/watch?v=J9bjOD3s02o - Install Drupal Console
-https://www.drupal.org/project/webprofiler
+https://www.drupal.org/project/webprofiler drupal module:install webprofiler 
 https://www.drupal.org/project/devel
 
 $ composer Install
@@ -713,5 +713,10 @@ settings.php
   Install Web Profiler
     - click configure
 
-
+$('.skip-line', context).on('change', function(){
+            // some code
+            if ( confirm(Drupal.t('Apply to all languages?')) ) {
+              // applying...
+            }
+});
 
