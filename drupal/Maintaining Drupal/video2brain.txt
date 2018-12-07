@@ -82,9 +82,11 @@ drush sql-dump > <filepath> //Exporting Database
 cp -Prv /jet/app/drupal/opss/sites/default .
 
 mysqldump -u root -p tiag > /var/www/html/db_backup/staging_10042018.sql
+mysqldump -u root -p faamap_profile_map > /Users/infinamac6/Sites/devdesktop/faamap-profile-map/dbbackup/11192018_configuration.sql
 mysqladmin -u root -p drop tiag
 mysqladmin -u root -p create tiag
 mysql -u root -p tiag
 source /var/www/html/db_backup/feeds_working.sql
 
 https://www.drupal.org/forum/support/post-installation/2013-09-10/imporexport-data-as-a-csv
+

@@ -1,4 +1,4 @@
-Indexing
+Indexing - Pages the Search Engine can see 
     Search Engine Result Page 
     - how many pages the google indexes in your page 
     - it must be unique
@@ -10,9 +10,9 @@ Indexing
 
     <google.com/search>&filter=0 
 
-    Check For Duplicate Content
+    Check For Duplicate Content - Remove Duplicate
     Check which pages is scrawled 
-    Check all the way down for google message 
+    Check all the way down for google message - Google will not display duplicates 
 
     <google.com/search>&filter=0 
 

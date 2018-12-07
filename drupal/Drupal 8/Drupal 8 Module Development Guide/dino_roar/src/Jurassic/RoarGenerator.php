@@ -2,7 +2,7 @@
 
 namespace Drupal\dino_roar\Jurassic;
 
-use Drupal\Core\KeyValueStore\KeyValueFactoryInterface;
+use Drupal\Core\KeyValueStore\KeyValueFactoryInterface; //1 Using a service inside the service
 
 class RoarGenerator
 {
