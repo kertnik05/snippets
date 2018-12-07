@@ -173,3 +173,10 @@ Power Tags and Advanced Tecgbucak SEO
 - meta robots noindex 
 - rel prev and rel next 
 
+Google Webmaster  - Google Search Console
+- Messages - look for google message 
+- Search Appearance - look at your structured data 
+- Search Traffic - Search analytics 
+- Google Indexing
+- Crawl - reads the sitemap.xml 
+
