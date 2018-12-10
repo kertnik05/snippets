@@ -170,7 +170,14 @@ Power Tags and Advanced Tecgbucak SEO
     - look at the duplicate page title 
     - Reserve Rel Canonical For pages that are duplicate, almost duplicate or a subset 
     
-- meta robots noindex 
+- meta robots noindex  - https://developers.google.com/search/reference/robots_meta_tag
+    - Noindex/index: Tells the search bot whether to index the page 
+    - Follow/nofollow: Tells the search bot wheter to follow the links on the page 
+        - <meta name="robots" content="index, follow" />
+        - <meta name="robots" content="noindex" />
+        - <meta name="robots" content="noindex, follow" />
+        - <meta name="robots" content="noindex, nofollow" />
+        - mainly used for indexation, unlike robots.txt is about crawling 
 - rel prev and rel next 
 
 Google Webmaster  - Google Search Console
@@ -179,4 +186,5 @@ Google Webmaster  - Google Search Console
 - Search Traffic - Search analytics 
 - Google Indexing
 - Crawl - reads the sitemap.xml 
+
 
