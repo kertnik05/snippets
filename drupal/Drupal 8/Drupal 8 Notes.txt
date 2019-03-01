@@ -720,3 +720,15 @@ $('.skip-line', context).on('change', function(){
             }
 });
 
+Updating Drupal 8
+1. Make a backup
+2. Change settings.php 
+  - $settings['update_free_access'] = TRUE; //Tells drupal that you can update the site without logging in  
+  - Disable varnish or memcache 
+3. Turn maintenance mode on 
+4. Download the latest drupal core 
+5. In the old site, remove everything except, modules, sites, themes, .htaccess, .git
+3. Update the code
+4. Perform Database updates
+5. Turn maintenance mode on 
+6. Clear the cache 
