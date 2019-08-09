@@ -16,6 +16,7 @@ function HelloWorld(props) {
 }
 
     //ES6 Version - you can remove () - {name} if there's only one parameter
+    //functional component |  State Mangement in userState https://www.udemy.com/react-the-complete-guide-incl-redux/learn/lecture/13556164#overview
     const HelloWorld = ({key1, key2}) => (
         <div>
             <ul>
@@ -30,7 +31,7 @@ export default HelloWorld;
 
 
 import HelloWorld from './foldername/filename';
-
+//Classbased components
 class NewWorld extends React.Component {
 
     state = {
@@ -224,3 +225,8 @@ store.subscribe(() => {
 $ npm install -g create-react-app
 $ create-react-app my-app
 $ cd my-app
+$ npm start 
+    // See package.json start, build, test, eject
+
+
+//To quit: control + C 
