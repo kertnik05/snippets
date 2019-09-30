@@ -116,3 +116,58 @@ Make an Authenticated Request
  - Retrieve an OAuth authentication token
  - Add an Authorization: Bearer HTTP header to authentication a Request
  - loo at some exmple responses 
+
+http https://example.org/oauth/debug?_format=json 'Authorization:Bearer eyJ0eXAiO...WAJCRiw'
+
+Enable CORS in drupal
+sites/default/default.services.yml
+ # Configure Cross-Site HTTP requests (CORS).
+   # Read https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS
+   # for more information about the topic in general.
+   # Note: By default the configuration is disabled.
+  cors.config:
+    enabled: true
+    # Specify allowed headers, like 'x-allowed-header'.
+    allowedHeaders: ['*']
+    # Specify allowed request methods, specify ['*'] to allow all possible ones.
+    allowedMethods: ['*']
+    # Configure requests allowed from specific origins.
+    allowedOrigins: ['*']
+    # Sets the Access-Control-Expose-Headers header.
+    exposedHeaders: false
+    # Sets the Access-Control-Max-Age header.
+    maxAge: false
+    # Sets the Access-Control-Allow-Credentials header.
+    supportsCredentials: false
+
+
+   post http://<host>/jsonapi/node/article
+   - Content-Type: application/vnd.api+json. This header will tell Drupal that the body that the request contains is structured in JSON:API format. 
+   - Accept: application/vnd.api+json. This will instruct the server to return any responses back to our consumer using JSON:API format. 
+   - Authentication: Bearer eyJ0eXAi...dQOQw. This one contains the authentication token obtained above. This is the proof the server needs to trust that the request was originated from a valid Drupal user through OAuth 2.
+
+   patch http://<host>/jsonapi/node/article
+   - Content-Type: application/vnd.api+json. This header will tell Drupal that the body that the request contains is structured in JSON:API format. 
+   - Accept: application/vnd.api+json. This will instruct the server to return any responses back to our consumer using JSON:API format. 
+   - Authentication: Bearer eyJ0eXAi...dQOQw. This one contains the authentication token obtained above. This is the proof the server needs to trust that the request was originated from a valid Drupal user through OAuth 2.
+   Request body
+   {
+    "data": {
+        "type": "user--user",
+        "id": "ab3b164c-7b08-4a3c-ac82-845628ff2399",
+        "attributes": {
+        "field_bio": {
+            "value": "There are no rivers where I grew up.",
+            "format": "plain_text",
+            "summary": "Only salty water."
+        },
+        "field_contact_info": "Reach me by email at foo@example.com"
+        }
+    }
+    }
+
+    https://example.com/jsonapi/users/{user_uuid}
+
+    http DELETE https://www.example.org/jsonapi/node/article/c0a07ee4-157f-4404-a64f-4f8797703867 'Authorization:Bearer eyJ0eXAi...dQOQw'
+    
+Error objects provide additional information about problems encountered while performing an operation. Error objects MUST be returned as an array keyed by errors in the top level of a JSON:API document.
