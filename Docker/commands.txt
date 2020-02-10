@@ -742,3 +742,5 @@ $
 
 - you can use workbench to connect
 ----------------------------
+
+$ docker version
