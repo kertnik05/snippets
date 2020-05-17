@@ -18,7 +18,8 @@ Building a Docker Image
                 RUN apt-get install -y vim
         :wq!
     - Run a Dockerfile
-    path_of_dockerfile$ docker build -t <reponame> . 
+    path_of_dockerfile$ docker build -t <reponame> . --no-cache=true
+
 
     - CHAIN RUN Instructions - to reduce number of image layers it creates
         $ touch Dockerfile
@@ -80,7 +81,11 @@ Building a Docker Image
     - $ docker login --username=jmariano
     ~ $ docker push <reponame>:<tag>
 
-
+$ docker run -d --name <dbname> <repositoryname>:<tag> - your database
+$ docker run -d -p externalport:dockerport --link <dbname> <repositoryservername>:<tag>
+$ docker exec -it <containerid> bash 
+    $ more /etc/hosts
+$docker inspect <containerid> | grep IP
 
 /* Docker Networking */
 - when container is running it uses bridge(docker 0) to host to internet

@@ -1,0 +1,86 @@
+mvn clean package - to package application to jar
+
+
+application.yml
+    spring:
+        profiles: dev
+    management:
+        security:
+            enabled: false
+    server:
+        port: 8000
+        ssl:
+            key-store: classpath:keystore.jks 
+            key-store-password: <password>
+            key-store-type: JKS 
+            key-alias: <youralias>
+            key-password: <password>
+    ---
+    spring:
+        profiles: stage
+    server:
+        port: 9000
+
+$java -jar -Dspring.properties.active=dev <folderpath>/<filename.jar>
+-----------------------
+Springboot server default:
+Tomcat: you can use Undertow or Jetty
+JSON Marshaller: marshalling and unmarshalling in web flows
+Logging Frameworks: Slf4j default, logback, and JBoss Logging
+Spring Libraries
+    - Spring boot auto configure
+    - Spring libraries include core, AOP, beans, context, expression
+    - Spring Web and Webmvc 
+    - Snake YAML
+    - Validators(javax and hibernate)
+https://mvnrepository.com/
+Configuring Embeded Tomcat
+    - Servlets 
+        - using beans
+        - Property based
+            - https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-application-properties.html#web-properties
+            - https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-application-properties.html#server-properties
+        - keytool -genkey -keyalg RSA alias <youralia> -keystore keystore.jsk -storepass <yourpassword> -validity 4000 -keysize <2048|4096>
+            - you can add this to your application.properties
+                server:
+                port: 8080
+                ssl:
+                    key-store: classpath:keystore.jks 
+                    key-store-password: <password>
+                    key-store-type: JKS 
+                    key-alias: <youralias>
+                    key-password: <password>
+            - http --verify=no https:localhost:8080/api/greeting
+            - http https:localhost:8080/api/rooms Accept:application.xml
+
+    - Filters
+    - Listeners
+
+pom.xml - https://mvnrepository.com/
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-devtools</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-xml</artifactId>
+    </dependency>
+
+Packaging a Springboot application
+    - Default behavior is packaging in jar
+    - Produces a "fat jar"
+    - Executable
+    - Registrable with systemd or init.d
+    - It supports to war files 
+        - Remove tomcat if you use war
+
+https://en.wikipedia.org/wiki/Twelve-Factor_App_methodology
+
+Running a Springboot application
+- java -jar
+- Shell scripts
+- *nic sstemd or init.d
+- Cloud ecosystem (Pivotal Cloud Foundry)
+
+https://www.tutorialspoint.com/spring_boot/spring_boot_runners.htm
+Spring Boot: ApplicationRunner and CommandLineRunner
