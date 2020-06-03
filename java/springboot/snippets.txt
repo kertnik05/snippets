@@ -1,5 +1,5 @@
 mvn clean package - to package application to jar
-
+mvn spring-boot:run 
 
 application.yml
     spring:
@@ -87,3 +87,48 @@ Spring Boot: ApplicationRunner and CommandLineRunner
 
 Version: Neon.3 Release (4.6.3)
 java version "1.8.0_241"
+
+Validation
+
+    model or entity level
+    @NotNull
+    @Sixe(min=3, max=15)
+    @Email
+    @NotNull, @NotEmpty and @NotBlank
+    https://www.youtube.com/watch?v=pjA9Pc7aTic
+    https://www.appsdeveloperblog.com/validate-request-body-in-restful-web-service/
+    https://lmonkiewicz.com/programming/get-noticed-2017/spring-boot-rest-request-validation/
+
+    Controller
+    (@Valid Model modelname, Errors errors) {
+        if(errors.hasErrors()){
+
+        }
+    }
+
+    https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
+    validate - validate the project is correct and all necessary information is available
+    compile - compile the source code of the project
+    test - test the compiled source code using a suitable unit testing framework. These tests should not require the code be packaged or deployed
+    package - take the compiled code and package it in its distributable format, such as a JAR.
+    verify - run any checks on results of integration tests to ensure quality criteria are met
+    install - install the package into the local repository, for use as a dependency in other projects locally
+    deploy - done in the build environment, copies the final package to the remote repository for sharing with other developers and projects.
+
+Database Derby; https://medium.com/ctrl-alt-kaveet/tutorial-installing-apache-derby-4cbf03c4aaba
+Step: Download the same version as your java https://db.apache.org/derby/derby_downloads.html
+Step 2: unzip the folder and put it inside the /Applications and name the folder derby
+Step 3: configure the global path 
+export JAVA_HOME=$(/usr/libexec/java_home)
+export PATH=$PATH:$JAVA_HOME/bin
+export DERBY_HOME=/Applications/derby
+export PATH=$PATH:$DERBY_HOME:$DERBY_HOME/lib/derby.jar:$DERBY_HOME/lib/derbytools.jar:$DERBY_HOME/lib/derbyoptionaltools.jar:$DERBY_HOME/bin
+export M2_HOME=/Applications/apache-maven-3.6.3
+Step 4: Refresh Terminal or source .bash_profile
+Step 5: Try connecting from any terminal- java org.apache.derby.tools.ij
+if it fails, double check the path, refresh terminal, or try again;
+$ java org.apache.derby.tools.ij
+ij > connect 'jdbc:derby:/Users/mariano/Downloads/springboilerplate/database' create 'true' user 'todo' password 'todo' driver 'org.apache.derby.jdbc.EmbeddedDriver';
+ij > run 'pathto.sql';
+ij> select * from tablename;
+
