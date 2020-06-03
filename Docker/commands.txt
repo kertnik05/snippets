@@ -29,6 +29,9 @@ $ docker exec -ti <containerid> bash - best for debugging and database administr
     - $ docker run --cpu-quota <reponame>:<tag> <command> - to controll cpu usaage with hard limit
     - Don't let your containers fetch dependencies when they start 
     - don't leae important thins in unnamed stopped containers
+    - $ docker inspect --format '{{.stat.pid}} <containernamea>
+    - $docker run -it --net=host --privileged=true --name <containernameb> <reponame>:<tag> bash 
+        -b# kill <pid> - this will exit <containernamea>
 Container Networking
 - export ports to let connections in
 - private networks to connect between containers 
@@ -73,6 +76,21 @@ Container Networking
             - b#nc <containernamea> 1234 
                 - send a message
                 - your a#nc should received it
+    - Bridging
+        - $docker run -it --net=host --name <containername> <reponame>:<tag> //not good for production
+            -# apt-get update && apt-get insall bridge-utils 
+            -#brctl show - list the 
+        - docker network create <nameofyournetwork>
+    - Routing - https://www.wynda.com/Docker-tutorials/Networking-namespaces/721901/779063-4.html?autoplay=true
+        - NAT 
+        - sup iptables -n -L -t nat 
+        - $docker run -it --net=host --privileged=true --name <containername> <reponame>:<tag> bash 
+            -# apt-get update 
+            -# apt-get install iptables 
+            -# iptables -n -L -t nat 
+
+
+        
 - Legacy Linking 
     - but only one way
     - a lot hard to orchestrate
@@ -102,6 +120,8 @@ Image management
         - $ docker tag <image_ID> <docker_hub_id/repositoryname>:<tag>
         - $ docker login --username=jmariano
         ~ $ docker push <docker_hub_id/repositoryname>:<tag>
+
+
 Volumes 
     - Persistent 
     - Ephemeral (temporary)
@@ -111,12 +131,66 @@ Volumes
     sharing between docker containers (Ephemeral - data persist and be passed around as long as there is a running containers)
         - $ docker run -ti -v /<containerpatha>/<containersharefolder> --name <containernamea> <reponame>:<tag> bash 
         - $ docker run -ti --volumes-from <containernamea> --name <containernameb> <reponame>:<tag> bash 
+    - Bind mounting
+        - $docker run -it  --privileged=true --name <containernamea> <reponame>:<tag> bash 
+            -a# mkdir <foldername>
+            -a# cd <foldername>
+            -foldername/a# mkdir <anotherafoldernamea>
+            -foldername/a# cd <anotherfoldernamea>
+            -foldername/foldernamea/a# touch a b c d e f
+            - cd ..
+            -foldername/a# mkdir <anotherfoldernameb>
+            -foldername/a# cd <anotherfoldernameb>
+            -foldername/anotherfoldernameb/a# touch a-1 b-1 c-1 d-1 e-1 f-1
+            - cd ..
+            - ls -R 
+            - foldername/a#mount -o bind <anotherfoldernameb> <anotherfoldernamea> //takes whatever contents in b and place it inside a folder 
+            - foldername/a# umount <anotherfoldernamea> //reset it back
+    
+
     
 Dockerfile
     - $ docker build -t <thenameofthetobecreatedcontainer> <path/dockerfile> 
     - $ docker build -ti <thenameofthetobecreatedcontainer> <path/dockerfile> 
     - write the most changebale part of your dockerfile in the end 
     - writing dockerfile documentation - https://docs.docker.com/engine/reference/builder/
+
+Advanced
+$ ls /var/run/docker.sock 
+$ docker run -ti --rm -v /var/run/docker.sock:/var/run/docker.sock docker sh 
+    - lets you create a docker within the docker somewhat. but the trick is that the docker is just sharing socket 
+
+Docker registry 
+- Nexus - for maven
+- python docker registry
+- Create your own local registry | It's like your own dockerhub https://www.lynda.com/Docker-tutorials/Registries-detail/721901/779067-4.html?autoplay=true
+    - $ docker run -d -p 5000:5000 --restart=always --name registry <reponamea>:<tag>
+    - $ docker tag <reponameb>:<tag> localhost:5000/mycompany/my-ubuntu:99 
+    - $ docker push localhost:5000/mycompany/my-ubuntu:99 
+- External Registry options: Docker trusted registry, aws ECR, google container registry, azure container registry 
+Saving and loading containers without registry
+- $docker save -o <myimagesname.tar.gz> <image1name> <image2name> <image3name>
+- $docker load -i <myimagesname.tar.gz>
+
+Docker Compose
+- Single machine coordination
+
+Kubernetes
+Steps:
+Package Java application
+Create and Publish Docker Image
+Create Kubernetes Resource Manifest
+    Create Kubernetes Cluster
+Deploy Kubernetes Resources
+
+Java Base Image
+openjdk - community
+amazoncorretto: maintained by amazon 
+ 
+Buoild context 
+- path or urk of docker image build
+- emptyu directory with relevant artifacts
+- .dockerignore
 
 
 
@@ -203,6 +277,8 @@ Building a Docker Image
         - The Add instruction copies file and allow you to download a file from internet and copy to the container
         - Add also has the ability to autonatically unpack compresed files
         - The rule is: use COPY for the sake for transparency, unless you're absolutely sure you need to ADD
+
+
 
 
 $ docker run -d --name <dbname> <repositoryname>:<tag> - your database
