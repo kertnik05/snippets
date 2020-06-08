@@ -1,0 +1,134 @@
+mvn clean package - to package application to jar
+mvn spring-boot:run 
+
+application.yml
+    spring:
+        profiles: dev
+    management:
+        security:
+            enabled: false
+    server:
+        port: 8000
+        ssl:
+            key-store: classpath:keystore.jks 
+            key-store-password: <password>
+            key-store-type: JKS 
+            key-alias: <youralias>
+            key-password: <password>
+    ---
+    spring:
+        profiles: stage
+    server:
+        port: 9000
+
+$java -jar -Dspring.properties.active=dev <folderpath>/<filename.jar>
+-----------------------
+Springboot server default:
+Tomcat: you can use Undertow or Jetty
+JSON Marshaller: marshalling and unmarshalling in web flows
+Logging Frameworks: Slf4j default, logback, and JBoss Logging
+Spring Libraries
+    - Spring boot auto configure
+    - Spring libraries include core, AOP, beans, context, expression
+    - Spring Web and Webmvc 
+    - Snake YAML
+    - Validators(javax and hibernate)
+https://mvnrepository.com/
+Configuring Embeded Tomcat
+    - Servlets 
+        - using beans
+        - Property based
+            - https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-application-properties.html#web-properties
+            - https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-application-properties.html#server-properties
+        - keytool -genkey -keyalg RSA alias <youralia> -keystore keystore.jsk -storepass <yourpassword> -validity 4000 -keysize <2048|4096>
+            - you can add this to your application.properties
+                server:
+                port: 8080
+                ssl:
+                    key-store: classpath:keystore.jks 
+                    key-store-password: <password>
+                    key-store-type: JKS 
+                    key-alias: <youralias>
+                    key-password: <password>
+            - http --verify=no https:localhost:8080/api/greeting
+            - http https:localhost:8080/api/rooms Accept:application.xml
+
+    - Filters
+    - Listeners
+
+pom.xml - https://mvnrepository.com/
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-devtools</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-xml</artifactId>
+    </dependency>
+
+Packaging a Springboot application
+    - Default behavior is packaging in jar
+    - Produces a "fat jar"
+    - Executable
+    - Registrable with systemd or init.d
+    - It supports to war files 
+        - Remove tomcat if you use war
+
+https://en.wikipedia.org/wiki/Twelve-Factor_App_methodology
+
+Running a Springboot application
+- java -jar
+- Shell scripts
+- *nic sstemd or init.d
+- Cloud ecosystem (Pivotal Cloud Foundry)
+
+https://www.tutorialspoint.com/spring_boot/spring_boot_runners.htm
+Spring Boot: ApplicationRunner and CommandLineRunner
+
+Version: Neon.3 Release (4.6.3)
+java version "1.8.0_241"
+
+Validation
+
+    model or entity level
+    @NotNull
+    @Sixe(min=3, max=15)
+    @Email
+    @NotNull, @NotEmpty and @NotBlank
+    https://www.youtube.com/watch?v=pjA9Pc7aTic
+    https://www.appsdeveloperblog.com/validate-request-body-in-restful-web-service/
+    https://lmonkiewicz.com/programming/get-noticed-2017/spring-boot-rest-request-validation/
+
+    Controller
+    (@Valid Model modelname, Errors errors) {
+        if(errors.hasErrors()){
+
+        }
+    }
+
+    https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
+    validate - validate the project is correct and all necessary information is available
+    compile - compile the source code of the project
+    test - test the compiled source code using a suitable unit testing framework. These tests should not require the code be packaged or deployed
+    package - take the compiled code and package it in its distributable format, such as a JAR.
+    verify - run any checks on results of integration tests to ensure quality criteria are met
+    install - install the package into the local repository, for use as a dependency in other projects locally
+    deploy - done in the build environment, copies the final package to the remote repository for sharing with other developers and projects.
+
+Database Derby; https://medium.com/ctrl-alt-kaveet/tutorial-installing-apache-derby-4cbf03c4aaba
+Step: Download the same version as your java https://db.apache.org/derby/derby_downloads.html
+Step 2: unzip the folder and put it inside the /Applications and name the folder derby
+Step 3: configure the global path 
+export JAVA_HOME=$(/usr/libexec/java_home)
+export PATH=$PATH:$JAVA_HOME/bin
+export DERBY_HOME=/Applications/derby
+export PATH=$PATH:$DERBY_HOME:$DERBY_HOME/lib/derby.jar:$DERBY_HOME/lib/derbytools.jar:$DERBY_HOME/lib/derbyoptionaltools.jar:$DERBY_HOME/bin
+export M2_HOME=/Applications/apache-maven-3.6.3
+Step 4: Refresh Terminal or source .bash_profile
+Step 5: Try connecting from any terminal- java org.apache.derby.tools.ij
+if it fails, double check the path, refresh terminal, or try again;
+$ java org.apache.derby.tools.ij
+ij > connect 'jdbc:derby:/Users/mariano/Downloads/springboilerplate/database' create 'true' user 'todo' password 'todo' driver 'org.apache.derby.jdbc.EmbeddedDriver';
+ij > run 'pathto.sql';
+ij> select * from tablename;
+

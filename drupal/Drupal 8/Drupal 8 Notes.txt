@@ -52,7 +52,7 @@ $settings['extension_discovery_scan_tests'] = TRUE;
 
 Install 
 https://www.youtube.com/watch?v=J9bjOD3s02o - Install Drupal Console
-https://www.drupal.org/project/webprofiler
+https://www.drupal.org/project/webprofiler drupal module:install webprofiler 
 https://www.drupal.org/project/devel
 
 $ composer Install
@@ -713,5 +713,66 @@ settings.php
   Install Web Profiler
     - click configure
 
+$('.skip-line', context).on('change', function(){
+            // some code
+            if ( confirm(Drupal.t('Apply to all languages?')) ) {
+              // applying...
+            }
+});
+
+Updating Drupal 8
+1. Make a backup
+2. Change settings.php 
+  - $settings['update_free_access'] = TRUE; //Tells drupal that you can update the site without logging in  
+  - Disable varnish or memcache 
+3. Turn maintenance mode on  - /admin/config/development/maintenance
+4. Download the latest drupal core 
+5. In the old site, remove everything except, modules, sites, themes, .htaccess, .ht.router.php,  .git
+3. Update the code
+4. drush cr all
+5. /update.php
+5. Turn maintenance mode off
+6. drush cr all
+
+https://www.drupal.org/forum/support/post-installation/2016-09-22/file-and-directory-permissions-lets-finally-get-this
+To start:
+(site-wide all directories) 755 | sudo find sites -type d -exec chmod 775 {} \;
+(site-wide all files) 644 |sudo find sites -type f -exec chmod 664 {} \;
+Then:
+chmod 444 sites/default/settings.php;
+
+/.htaccess- 444 - (chosing something more restrictive and Drupal seems to work OK) (needs read public or site will get 403) Why are user write permissions needed at all?
+/sites/default (directory) - 555 - why are execute permissions needed?
+/sites/default/settings.php - 400 - (chosing something more restrictive and Drupal seems to work OK) Why are group and public read permissions needed?
+/sites/default/files (directories) - 775 | sudo find /var/www/html/sites/default/files -type d -exec chmod 775 {} \;
+/sites/default/files (files) - 664 | sudo find /var/www/html/sites/default -type f -exec chmod 664 {} \;
+
+sudo chmod /sites/default/files 755 -R
 
 
+Drupal 7 File And Folder Structure 
+http://www.elated.com/articles/understanding-permissions/
+Main Folder - 644 Recursive 
+Sites - 755 Recursive
+settings.php - 444 
+Notes: When moving the site to dev desktop set the file and folder settings first and delete settings.php 
+Additional note: Keep an eye for prefix
+
+sudo find /var/www/html/opss-retheme -type d -exec chmod 770 {} \;
+
+sudo find /var/www/html -type f -exec chmod 444 {} \;
+sudo find /var/www/html -type d -exec chmod 555 {} \;
+
+sudo find /var/www/html/sites/default -type f -exec chmod 664 {} \;
+sudo find /var/www/html/sites/default/files -type f -exec chmod 664 {} \;
+sudo find /var/www/html/sites/default/files -type d -exec chmod 775 {} \;
+sudo find /Users/mariano/Sites/devdesktop/drupal-usu/libraries -type d -exec chmod 775 {} \;
+drush webform-libraries-download
+
+
+sudo find /jet/app/drupal -type d -exec chmod 770 {} \;
+
+sudo find /var/www/html/opss-retheme/sites -type d -exec chmod 755 {} \;
+sudo find /var/www/html/opss-retheme/sites/default/settings.php -type d -exec chmod 444 {} \;
+sudo find /jet/app/drupal/sites/default/settings.php -type d -exec chmod 444 {} \;
+sudo find /jet/app/drupal/opss_retheme -type d -exec chmod 770 {} \;

@@ -2,18 +2,18 @@
 
 namespace Drupal\dino_roar\Controller;
 
-use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Controller\ControllerBase; //Required for dependency Injection
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
-use Drupal\dino_roar\Jurassic\RoarGenerator;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\dino_roar\Jurassic\RoarGenerator; 
+use Symfony\Component\DependencyInjection\ContainerInterface; //Required for dependency Injection
 use Symfony\Component\HttpFoundation\Response;
 
-class RoarController extends ControllerBase
+class RoarController extends ControllerBase //1. Step 1 Extend the controllerbase 
 {
     /**
      * @var RoarGenerator
      */
-    private $roarGenerator;
+    private $roarGenerator; //6. you assign the $roarGenerator here 
 
     /**
      * @var LoggerChannelFactoryInterface
@@ -24,15 +24,15 @@ class RoarController extends ControllerBase
      */
     private $loggerFactoryService;
 
-    public function __construct(RoarGenerator $roarGenerator, LoggerChannelFactoryInterface $loggerFactory)
+    public function __construct(RoarGenerator $roarGenerator, LoggerChannelFactoryInterface $loggerFactory) //4. This injects the roar generator 
     {
-        $this->roarGenerator = $roarGenerator;
+        $this->roarGenerator = $roarGenerator; //5. Assign the $roarGenerator 
         $this->loggerFactoryService = $loggerFactory;
     }
 
-    public static function create(ContainerInterface $container)
+    public static function create(ContainerInterface $container) //2. Call the create Container Interface 
     {
-        $roarGenerator = $container->get('dino_roar.roar_generator');
+        $roarGenerator = $container->get('dino_roar.roar_generator'); //3. you can find this services from *.services.yml or  drupal container:debug 
         $loggerFactory = $container->get('logger.factory');
 
         return new static($roarGenerator, $loggerFactory);
@@ -40,7 +40,7 @@ class RoarController extends ControllerBase
     //path: /the/dino/says/{count}
     public function roar($count)
     {
-        $roar = $this->roarGenerator->getRoar($count);
+        $roar = $this->roarGenerator->getRoar($count); //7. Use the roar Generator
         $this->loggerFactoryService->get('default')
             ->debug($roar);
         
@@ -52,3 +52,5 @@ class RoarController extends ControllerBase
         ];
     }
 }
+
+

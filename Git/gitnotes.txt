@@ -1090,3 +1090,19 @@ Rebasing
 - (master) $ git log --graph --all --decorate --oneline - useful for visualizing branches 
 - (master) $ git merge-base master new_feature - shows wheres the common commit id of both master and new_feature 
 
+Cloning From Bitbucket without the project folder
+git init .
+git remote add origin git@github.com:tiagjmariano@bitbucket.org/tiagjmariano/drupal-8-6-1-base.git
+git fetch origin
+git checkout master
+
+git clone https://tiagjmariano@bitbucket.org/tiagjmariano/drupal-8-6-1-base.git .
+
+https://stackoverflow.com/questions/1139762/ignore-files-that-have-already-been-committed-to-a-git-repository
+
+revert to specific commit 
+git push -f origin master
+git reset --hard origin/master
+
+changing author
+https://stackoverflow.com/questions/3042437/how-to-change-the-commit-author-for-one-specific-commit

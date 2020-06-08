@@ -54,7 +54,7 @@ class App extends Component {
         <p>This is really working!</p>
         <button
           style={style}
-          //3. Call the function handler 
+          //3. Call the function handler | events other than onClick https://www.udemy.com/react-the-complete-guide-incl-redux/learn/lecture/8124210#overview
           onClick={this.togglePersonsHandler}>Toggle Persons</button>
         {persons}{/* 5. Display the person*/}
       </div>

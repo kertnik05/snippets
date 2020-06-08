@@ -35,4 +35,13 @@ SET GLOBAL innodb_file_format=Barracuda;
 SET GLOBAL innodb_file_per_table=on;
 SET GLOBAL innodb_large_prefix = ON;
 
-drush upwd --password="NewPassword" admin
+drush upwd --password="SOMEPASSWORD" hprc.admin
+
+drush sql-dump --result-file=/home/username/Repositories/opss-site/databases/opsstage.sql
+rsync -avr --delete /var/www/opss/sites/default/files/ /home/username/Repositories/opss-site/opss/files/
+Then:
+rsync -avr --delete -e ssh remote-stage-drupal-centers:/home/username/Repositories/opss-site/opss/files/ /home/username/Repositories/opss-site/opss/files/
+rsync -avr --delete -e ssh remote-drupal:/home/username/Repositories/opss-site/opss/databases/ /home/username/Repositories/usuhs-site/usuhs/databases/
+
+http://www.jesox.com/blog/how-install-drush-mac
+

@@ -1,3 +1,27 @@
+Elastic Search Basic Concept
+    - Nodes store data that we add to Elastic Search
+    - A Cluster is a collection of nodes
+    - Data is stored as documents which are JSON objects
+    - Documents (record in RDBMS) are grouped together with by type (table) and are grouped within index (database in rdbms)
+    - Index is divided into shard
+    - Shard can be in more or more machine(node)
+        - Cluster a collection of shard
+        - A cluster has a colleciton of replicas which is used as a backup if shard goes down
+        - With each node you create, the shard will be distributed automatically
+        - Clustering - Each node should have the same cluster name
+        - https://www.youtube.com/watch?v=8r_IMTerZSY
+    - Each piece is referred to as a shard
+    - Sharding is done at the index level
+    - The main purpose of sharding is to horizontally scale the data volume
+    - A shard is an independent index kind of
+    - Each shard is an Apache Lucene index
+    - Elastic Search is consist of one or more lucene indices
+    - Mainly to be able to store more documents
+    - To easier fit large indices onto nodes
+    - Improve performance
+        - Parallelization of quieres increases the throughput of an index
+
+
 
 - Install Java if not installed
 - Download and unzip elasticsearch
@@ -35,6 +59,18 @@ Installing Elasticsearch
         - ctrl + C to stop 
 4. Configuring kibana - kibana.yml 
     - https://www.udemy.com/elasticsearch-complete-guide/learn/v4/t/lecture/7429072?start=0
+    - Using Dev Tools
+        - Console (Copy the console as curl):
+            - GET /_cluster/health
+            - GET /_cat/nodes?v
+            - GET /_cat/indices?v
+                - curl -XGET "http://localhost:9200/_cat/indices?v"
+            - GET _search
+            {
+            "query": {
+                "match_all": {}
+            }
+            }
 5. Intro to kibana 
     - https://www.udemy.com/elasticsearch-complete-guide/learn/v4/t/lecture/7429078?start=0
     - $curl -XGET <kibanaconsolegearurl>
