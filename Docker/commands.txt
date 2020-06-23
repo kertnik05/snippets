@@ -646,6 +646,7 @@ RCVR : networking receives the network config of SRC
 
 $ docker run --name=sourcecontainername -d imagename
 $ docker run --name=receivingcontainer --link=sourcecontainername:sourcecontainernamealias -it <imagename> /bin/bash
+$ docker run --name=springboot -p 8080:8080 --link=appsDB:appsDB -it boilerplate:1.0 /bin/bash
 $ docker inspect receivingcontainer
     - you should see link
 $ docker inspect sourcecontainername | grep Links
