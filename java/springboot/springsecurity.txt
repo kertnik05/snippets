@@ -1,0 +1,94 @@
+Dispacher Servelet - Where all request go in, and this delegates to another controller
+
+Filters  
+
+Delagating filter poxy
+
+Filter Chain proxy
+    - One per login type (For example: google or facebook)
+    - Filter Chains: Authentication, Authorization,
+    - Filter Chaings: 
+
+Principal - objects that represent user, device, or application
+    - Authorities - One Pricipal can have multiple authorities called roles
+    - Authentication - populated by princial and authorities 
+    - security context - populated by Authentication
+    - http session - populated by security context
+
+Adding to POM
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+
+The user will be the username and password will be generated in console
+
+Scenario: User login
+SecurityContext Persistence Filter 
+    - security context filter
+    - sc->security context holder
+Logout filter
+Authentication Filter
+    - AuthenticationManager takes Authentication obj 
+        - https://docs.spring.io/spring-security/site/docs/4.2.15.RELEASE/apidocs/org/springframework/security/authentication/AuthenticationManager.html
+        - https://stackoverflow.com/questions/9787409/what-is-the-default-authenticationmanager-in-spring-security-how-does-it-authen
+        - Creates Authentication request
+            - Authenticated: False
+            - username
+            - password
+            - Authorities
+        - Sends this Request to Authentication Provider - does the authentication which delegates (loadbyusername) to userdetail service  and returns the userdetails to authentication provider 
+            - OpenIDAuthenticationProvider
+            - DapAuthenticatinProvider
+            - LDAPAuthenticatinProvider
+        Returns Authenticated Principal
+        - If authentication is succesful,  it populates the security context which is populated with authentication object such as principal and authorities
+
+Remember me Filter
+    - is there a Remember me cookie
+Exception Translation Filter
+Filter Secutity Interceptor 
+Resource
+
+Scenario: User hit a securred resource without logging
+SecurityContext Persistence Filter 
+    - security context filter
+    - sc->security context holder
+Logout filter
+Authentication Filter
+Remember me Filter
+    - is there a Remember me cookie
+Exception Translation Filter - > forward to Authentication Entry point
+Filter Secutity Interceptor - is theses a securred resouce - AuthenticationException 
+Resource
+
+Scenario: User hit a securred resource and is login
+SecurityContext Persistence Filter 
+    - security context filter
+    - sc->security context holder - populate the securitycontext 
+Logout filter
+Authentication Filter
+Remember me Filter
+    - is there a Remember me cookie
+Exception Translation Filter - > translate error
+Filter Secutity Interceptor - is theses a securred resouce - AuthenticationException 
+    - Access Decession manager
+        - Access Denied Exception
+Resource
+
+You can see all the filter 
+DelegatingFilterProxy
+- https://www.marcobehler.com/guides/spring-security#_filterchain_security_configuration_dsl
+You can see these in maven dependency
+org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration,\
+org.springframework.boot.autoconfigure.security.servlet.SecurityRequestMatcherProviderAutoConfiguration,\
+org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration,\
+org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration,\
+org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration,\
+org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration,\
+org.springframework.boot.autoconfigure.sendgrid.SendGridAutoConfiguration,\
+org.springframework.boot.autoconfigure.session.SessionAutoConfiguration,\
+org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration,\
+org.springframework.boot.autoconfigure.security.oauth2.client.reactive.ReactiveOAuth2ClientAutoConfiguration,\
+org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration,\
+org.springframework.boot.autoconfigure.security.oauth2.resource.reactive.ReactiveOAuth2ResourceServerAutoConfiguration,\

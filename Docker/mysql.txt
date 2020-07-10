@@ -1,6 +1,7 @@
 docker exec -t -i container_mysql_name /bin/bash
+docker exec -t -i appsDB /bin/bash
+mysql -u root -p 
 
-mysql -u username -p 
 
 SELECT 
    user 
@@ -10,7 +11,7 @@ FROM
 CREATE DATABASE webupps;
 
 CREATE USER 'webuppsuser'@'%' IDENTIFIED BY 'root';
-GRANT ALL PRIVILEGES ON *.* TO 'webuppsuser'@'%' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON *.* TO '<username>'@'%' WITH GRANT OPTION;
 ALTER USER webuppsuser IDENTIFIED BY 'Yourpassword';
 exit
 docker ps -a
