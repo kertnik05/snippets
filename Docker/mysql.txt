@@ -1,12 +1,7 @@
 docker exec -t -i container_mysql_name /bin/bash
-<<<<<<< HEAD
 docker exec -t -i drupaldb /bin/bash
 mysql -u username -p 
-=======
-docker exec -t -i appsDB /bin/bash
 mysql -u root -p 
-
->>>>>>> b904afc630492f9da8fdb92bdce15d43c7b8abf7
 
 SELECT 
    user 
@@ -15,16 +10,11 @@ FROM
 
 CREATE DATABASE <databasename>;
 
-<<<<<<< HEAD
 CREATE USER '<username>'@'%' IDENTIFIED BY 'root';
 GRANT ALL PRIVILEGES ON *.* TO '<username>'@'%' WITH GRANT OPTION;
 GRANT ALL PRIVILEGES ON *.* TO '<username>'@'%' WITH GRANT OPTION;
 ALTER USER webuppsuser IDENTIFIED BY 'T0psecret!';
-=======
-CREATE USER 'webuppsuser'@'%' IDENTIFIED BY 'root';
-GRANT ALL PRIVILEGES ON *.* TO '<username>'@'%' WITH GRANT OPTION;
-ALTER USER webuppsuser IDENTIFIED BY 'Yourpassword';
->>>>>>> b904afc630492f9da8fdb92bdce15d43c7b8abf7
+
 exit
 docker ps -a
 
