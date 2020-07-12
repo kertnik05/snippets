@@ -1,1 +1,2 @@
 stripe/vendor
+Docker/phpmysql/data/*

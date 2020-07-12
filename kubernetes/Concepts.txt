@@ -1,0 +1,30 @@
+Pods - Pods are the smallest deployable units in Kubernetes. A pod consists of one or more Docker containers that
+together perform a single task.
+
+Cluster Concepts
+Control Plane 
+    - Actions
+        - Cluster Management
+        - Scheduler
+    - Master Node
+        - responsible for maintaining the desired state for your cluster
+        - using the kubectl command-line interface, you're communicating with your cluster's Kubernetes master
+        - refers to a collection of processes managing the cluster state
+        - master can also be replicated for availability and redundancy
+        - Components
+            - API Server - Rest operation and front end where user interact
+            - Controller Management - Application Controller, endpoint Controller and namespace Controller
+            - Scheduler - Policy and Topology aware and schedule containers 
+            - Etcd
+                - etcd is a consistent and highly-available key value store used as Kubernetes' backing store for all cluster data.
+            - Cloud Controller 
+            - Addons - extends functionality of Kubernetes like DNS
+        - $ kubectl create -f pod.yaml
+    - Worker
+        - Kubelet - primary node communicates with master api server, creates Pods, reports status of each pods to api server
+        - Kube-proxy - communicates with master api server and network proxy on each node, filtering and traffic redirection using ip tables
+    
+CNI network - Common network for weavenet, calico, etc.
+Data Plane
+    - Run containers and applications
+    - Rare user interaction
