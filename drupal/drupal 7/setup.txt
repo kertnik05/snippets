@@ -2,7 +2,10 @@
 - https://www.drupal.org/project/bootstrap/releases/7.x-3.15
 - https://www.drupal.org/docs/7/administering-drupal-7-site/working-with-the-overlay
 http://codekarate.com/daily-dose-of-drupal/drupal-7-administration-menu-module
+
 https://www.youtube.com/watch?v=xt7nfsiMZh8
+https://drupalize.me/videos/introduction-devel-module?p=1163
+https://drupalize.me/videos/using-theme-developer-tool?p=1161
 
 After you Install and enable these modules (Devel, Devel_themer, and simplehtmldom), you can use krumo. 
 
