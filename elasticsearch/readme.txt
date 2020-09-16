@@ -49,6 +49,8 @@ Installing Elasticsearch
 3. $ curl <url:9200>
 4. Configuring Elastic Search
     - Network and port of the elastic search server - only in production
+    - To add a node to a cluster: 
+        - cluster.name in /Users/user/Documents/elasticsearch/config/elasticsearch.yml where you add a cluster name
     - https://www.udemy.com/elasticsearch-complete-guide/learn/v4/t/lecture/7429062?start=0
 5. Download Kibana - https://www.elastic.co/products/kibana
     - port 45601 
@@ -74,26 +76,205 @@ Installing Elasticsearch
 5. Intro to kibana 
     - https://www.udemy.com/elasticsearch-complete-guide/learn/v4/t/lecture/7429078?start=0
     - $curl -XGET <kibanaconsolegearurl>
+    - In Kibana Console
+        GET /_cluster/health
+        GET /_cat/nodes?v
+        GET /_cat/indices?v
+        GET /_cat/shards?v
+
+    Creating Node:
+        Step 1:
+            Duplicate a default elastic search folder
+        Step 2: configure elasticsearch.yml
+            - Make sure they have the same clustername 
+            - node.name: node-1 in one folder, node.name: node-2 in another folder
+        Start 3: Start Elasticsearch (if the same computer it will automatically add the node)
+    Development way only of creating node: bin/elasticsearch -Enode.name=node-3 -Epath.data=.node-3/data Epath.logs=.node-3/logs
 6. Creating Index 
-    - PUT /<table_name>?pretty - pretty will make the result easy on the human eyes 
+    - PUT /<database_name>?pretty - pretty will make the result easy on the human eyes 
+    https://www.elastic.co/guide/en/elasticsearch/reference/current/removal-of-types.html
+    PUT twitter
+    {
+        "mappings": {
+            "_doc": {
+            "properties": {
+                "type": { "type": "keyword" }, 
+                "name": { "type": "text" },
+                "user_name": { "type": "keyword" },
+                "email": { "type": "keyword" },
+                "content": { "type": "text" },
+                "tweeted_at": { "type": "date" }
+            }
+            }
+        }
+    }
+
+    PUT twitter/_doc/user-kimchy
+    {
+        "type": "user", 
+        "name": "Shay Banon",
+        "user_name": "kimchy",
+        "email": "shay@kimchy.com"
+    }
+
+    PUT twitter/_doc/tweet-1
+    {
+        "type": "tweet", 
+        "user_name": "kimchy",
+        "tweeted_at": "2017-10-24T09:00:00Z",
+        "content": "Types are going away"
+    }
+
+    GET twitter/_search
+    {
+        "query": {
+            "bool": {
+            "must": {
+                "match": {
+                "user_name": "kimchy"
+                }
+            },
+            "filter": {
+                "match": {
+                "type": "tweet" 
+                }
+            }
+            }
+        }
+    }
+
+    //Migrating multiple indices to a single type
+    PUT users
+        {
+            "settings": {
+                "index.mapping.single_type": true
+            },
+            "mappings": {
+                "_doc": {
+                "properties": {
+                    "name": {
+                    "type": "text"
+                    },
+                    "user_name": {
+                    "type": "keyword"
+                    },
+                    "email": {
+                    "type": "keyword"
+                    }
+                }
+                }
+            }
+        }
+
+    PUT tweets
+        {
+            "settings": {
+                "index.mapping.single_type": true
+            },
+            "mappings": {
+                "_doc": {
+                "properties": {
+                    "content": {
+                    "type": "text"
+                    },
+                    "user_name": {
+                    "type": "keyword"
+                    },
+                    "tweeted_at": {
+                    "type": "date"
+                    }
+                }
+                }
+            }
+        }
+
+    POST _reindex
+        {
+            "source": {
+                "index": "twitter",
+                "type": "user"
+            },
+            "dest": {
+                "index": "users",
+                "type": "_doc"
+            }
+        }
+
+    POST _reindex
+        {
+            "source": {
+                "index": "twitter",
+                "type": "tweet"
+            },
+            "dest": {
+                "index": "tweets",
+                "type": "_doc"
+            }
+        }
+    PUT new_twitter
+    {
+        "mappings": {
+            "_doc": {
+            "properties": {
+                "type": {
+                "type": "keyword"
+                },
+                "name": {
+                "type": "text"
+                },
+                "user_name": {
+                "type": "keyword"
+                },
+                "email": {
+                "type": "keyword"
+                },
+                "content": {
+                "type": "text"
+                },
+                "tweeted_at": {
+                "type": "date"
+                }
+            }
+            }
+        }
+    }
+
+
+    POST _reindex
+    {
+        "source": {
+            "index": "twitter"
+        },
+        "dest": {
+            "index": "new_twitter"
+        },
+        "script": {
+            "source": """
+            ctx._source.type = ctx._type;
+            ctx._id = ctx._type + '-' + ctx._id;
+            ctx._type = '_doc';
+            """
+        }
+    }
+
 7. Adding Document to index through console of kibana
-    - POST /<table_name>/default {
+    - POST /<database_name>/default {
         "field_name": "value",
          "field_name": {
               "field_name": "value",
                "field_name": "value",
          },
     }   // http ver + endpoint 
-    - PUT /<table_name>/default/<id:num> {
+    - PUT /<database_name>/default/<id:num> {
         "field_name": "value",
          "field_name": {
               "field_name": "value",
                "field_name": "value",
          },
     }   // http ver + endpoint 
-    - get /<table_name>/default/<id:num> 
+    - get /<database_name>/default/<id:num> 
 8. Updating Documents - Adding new fields
-    - POST /<table_name>/default/<id:num>/_update
+    - POST /<database_name>/default/<id:num>/_update
     {
         "doc": {
             "new_field_name": "value",
@@ -104,7 +285,7 @@ Installing Elasticsearch
         }
     }
 9. Scripting Update 
-     - POST /<table_name>/default/<id:num>/_update
+     - POST /<database_name>/default/<id:num>/_update
      {
          "script": "ctx._source.<field_name> = newvalue" 
      } 
@@ -116,9 +297,9 @@ Installing Elasticsearch
      }
      - More Example: https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html
      - https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-scripting.html
-     - GET /<table_name>/default/<id:num>
+     - GET /<database_name>/default/<id:num>
 10. Upsert - updates the field if it exist, if not, it runs the upsert 
-    - POST /<table_name>/default/<id:num>/_update
+    - POST /<database_name>/default/<id:num>/_update
      {
          "script": "ctx._source.<field_name> += 10" 
          "upsert":{
@@ -127,9 +308,9 @@ Installing Elasticsearch
      } 
 11. 
     - Deleting single Document 
-        - DELETE /<table_name>/default/<id:num>
+        - DELETE /<database_name>/default/<id:num>
     - Deleting Mutiple Document
-        - POST /<table_name>/_delete_by_query 
+        - POST /<database_name>/_delete_by_query 
         {
             "query":{
                 "match": {
@@ -138,9 +319,9 @@ Installing Elasticsearch
             }
         }
 12. Deleting Index
-    - DELETE /<table_name> 
+    - DELETE /<database_name> 
 13. Batch Processing 
-    - POST /<table_name>/default/_bulk
+    - POST /<database_name>/default/_bulk
     {
         "index": {
             "_id": "100"
@@ -154,7 +335,7 @@ Installing Elasticsearch
     }
     {  "price": 101 }
     - Batch Updating and Deleting 
-    POST /<table_name>/default/_bulk
+    POST /<database_name>/default/_bulk
     {
         "update": {
             "_id": "100"
@@ -163,7 +344,7 @@ Installing Elasticsearch
     {"doc": {  "price": 1000 }}
     {"delete": {  "_id": 101 }}
 14. Importing Batch Data using Curl 
-    -$ curl -H "Content-Type: application/json" -XPOST "http://localhost:9200/<table_name>/default/_bulk?pretty" --data-binary "@ptest-data.json" 
+    -$ curl -H "Content-Type: application/json" -XPOST "http://localhost:9200/<database_name>/default/_bulk?pretty" --data-binary "@ptest-data.json" 
 15. Exploring the cluster 
     - GET /_cat/health?v - https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster.html
     - GET /_cat/nodes?v - https://www.elastic.co/guide/en/elasticsearch/reference/current/cat-nodes.html
@@ -174,7 +355,7 @@ Installing Elasticsearch
  Mapping - or schema in mysql
 16. Dynamic Mapping - By Default, when you Post your data elastic search will map the field automatically
     - Show Mappings
-        - GET /<table_name>/default/_mapping 
+        - GET /<database_name>/default/_mapping 
 17. Meta Fields 
     - _index - contains the name of the index to which a document belongs
     - _id - stores the id of the Documents
@@ -241,7 +422,7 @@ Installing Elasticsearch
         Uses Apache Tika interanlly for text recognation 
         - $ sudo bin/elasticsearch-plugin install -ingest-attachment 
 19. Adding Mappings/schema to Existing indices 
-    - PUT /<table_name>/default/_mapping  //to set mapping
+    - PUT /<database_name>/default/_mapping  //to set mapping
     {
         "properties": {
             "<field_name>": {
@@ -252,8 +433,8 @@ Installing Elasticsearch
     - GET /product/default/_mapping  // to view mapping
 20. Changing Existing Mappings
     - Note: You can add properties to object and you can add keyword to text without deleting the indexes 
-    - DELETE /<table_name>
-    - PUT /<table_name> //to set mapping
+    - DELETE /<database_name>
+    - PUT /<database_name> //to set mapping
     {
         "mappings": {
             "default": {
@@ -352,7 +533,7 @@ Installing Elasticsearch
     - Format - https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-date-format.html#built-in-date-formats
 
 22. Adding Multi-fields Mappings 
- - PUT /<table_name>/default/_mapping  //to set mapping
+ - PUT /<database_name>/default/_mapping  //to set mapping
     {
         "properties": {
             "description": {
@@ -376,9 +557,9 @@ Installing Elasticsearch
             },
         }
     }
-    - GET /<table_name>/default/_mapping  // to view mapping
+    - GET /<database_name>/default/_mapping  // to view mapping
 23. Define Custom Date formats
-    - PUT /<table_name>/default/_mapping
+    - PUT /<database_name>/default/_mapping
     //Default
     {
         "properties":{
