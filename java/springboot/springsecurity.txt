@@ -275,7 +275,8 @@ Client will decrypt using the session key
         - Property based
             - https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-application-properties.html#web-properties
             - https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-application-properties.html#server-properties
-        - keytool -genkey -keyalg RSA alias <youralia> -keystore keystore.jsk -storepass <yourpassword> -validity 4000 -keysize <2048|4096>
+        - keytool -genkey -keyalg RSA alias <youralia> -keystore keystore.jks -storepass <yourpassword> -validity 4000 -keysize <2048|4096>
+            - add the generated keystore.jks  into your resources folder
             - you can add this to your application.properties
                 server:
                 port: 8080
@@ -447,4 +448,284 @@ If you decode this base 64: <username>:expirationtime:md5Hex(username:expiration
 
 This cookie will be red by the server. It will automatically unhashed and check if the hashed has the same username and password from database 
 
+******************************************************************************
+Logging in With Google OAUTH2
+******************************************************************************
+Step 1: Add this in pom.xml
+<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-oauth2-client -->
+<dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-oauth2-client</artifactId>
+    <version>5.3.3.RELEASE</version>
+</dependency>
 
+Step 2: visit https://console.developers.google.com/
+Click on Credentials link in the left menu
+Click on Create credentials ,select “Oauth Client Id”
+
+Select Application type as “Web Application”
+
+Give Some Name ,  and redirect uri as https://localhost:8443/myapp/login/oauth2/code/google and create.
+
+Note down the client-id and client-secret shown
+
+Step 3: Now configure following in application.yml
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          <google>:
+            client-id: <<client-id>>
+            client-secret: <<client-secret>> 
+            scope: openid,profile,email
+            client-name: <<client-name>>
+
+
+Step 4: 
+
+@Configuration
+public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+	@Qualifier("oauth2authSuccessHandler")
+	private AuthenticationSuccessHandler oauth2authSuccessHandler;
+
+    protected void configure(HttpSecurity http) throws Exception {		
+		/*http
+		.authorizeRequests()
+			.anyRequest().authenticated()
+			.and()
+			.httpBasic();    */
+		
+		http
+		.authorizeRequests()
+		.antMatchers("/register","/login","/h2-console/**","/mylogin","/verify/**").permitAll()
+			.anyRequest().authenticated()
+			.and()			
+			.formLogin().loginPage("/login")		
+			.and().csrf().disable().rememberMe().key("myremembermekey")			
+			.and().logout().logoutUrl("/logout").logoutSuccessUrl("/login").deleteCookies("remember-me")
+			//oauth2Login and a handler 
+			.and().oauth2Login().loginPage("/login").successHandler(oauth2authSuccessHandler);
+		
+		http.headers().frameOptions().disable();
+	}
+}
+
+
+Step 5: Create a login link
+<a class="btn btn-primary" href="oauth2/authorization/<google>">Login with Google</a><br><br>
+
+Google Login flow see Oauth2google1.png and Oauth2google2.png
+1. User click the link sign in to google 
+2. OAuth2AuthorizationRequestRedirectFilter - what this do is create a redirect link to google: ?client_id=<client_id>&redirect_uri=<REDIRECT_URI>&scope=openid&response_type=code&state=<STATE_TOKEN>
+3. User login to google. Google redirects the user to /login/oauth2/code/<google>?code=AUTH_CODE&state=STATE_TOKEN (you can see this in your google app  https://console.developers.google.com/)
+4. OAuth2LoginAuthenticationFilter uses the AUTH_CODE and then delegates the work to AuthenticationManager.
+5. AuthenticationManager authenticate and delegates to Authentication Provider
+5. AuthenticationProvider
+- OidcAuthorizationCodeAuthenticationProvider -> sends authorization code to Identityprovider 
+- OAuth2LoginAuthenticationProvider <- Gets token from identity provider
+6. AuthenticationManager will return authentication object with the token to  OAuth2LoginAuthenticationToken
+7. OAuth2LoginAuthenticationToken will secure the token to SecurityContextHolder and store the token to OAuth2AuthorizedClientRepository using saveAuthorizedClient
+
+
+******************************************************************************
+Logging in With Springcloud OAUTH2
+******************************************************************************
+Step 1: pom.xml
+<!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-oauth2 -->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-oauth2</artifactId>
+    <version>2.2.2.RELEASE</version>
+</dependency>
+
+Step 2: AuthorizationServerConfiguration.java
+See springcloudoauth2/AuthorizationServerConfiguration.java
+
+By Enabling: @EnableAuthorizationServer this imports:
+@Import({AuthorizationServerEndpointsConfiguration.class, AuthorizationServerSecurityConfiguration.class})
+- AuthorizationServerEndpointsConfiguration imports a lot of Beans 
+- AuthorizationServerSecurityConfiguration extens from WebSecurityConfigurerAdapter - this secures the endpoints, /oauth/token,/oauth/token_key,/oauth/check_token  
+- To customize these default security: public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter 
+- configure client details: Configure Client Details 
+
+Step 3: In application.yml
+server:
+  port: 8081
+  servlet:
+    context-path: /auth
+    session:
+      cookie:
+        path: /auth
+
+
+
+Step 4: Test with Postman
+POST: localhost:8080/auth/oauth/token
+Header: Authorization - with base64clientid
+Body: x-www-form-urlencoded: grant_type - client_credentials
+Authorization: BasicAuth: username: <microclient>, password: <secret>
+
+Step 5:  see WebSecurityConfiguration - to allow password credentials 
+
+Step 6: See springcloudoauth2/AuthorizationServerConfiguration.java - to allow password credentials 
+
+@Autowired
+	private AuthenticationManager authenticationManager;
+	
+@Override
+public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+    endpoints.authenticationManager(authenticationManager)
+    
+    // TODO-7 uncomment the below to inject tokenstore() and accessTokenConverter() into AuthorizationServerEndpointsConfigurer
+    
+        .tokenStore(tokenStore()).accessTokenConverter(accessTokenConverter());
+    ;
+}
+
+Step 7:
+POST: localhost:8080/auth/oauth/token
+Header: Authorization - with base64clientid
+Body: x-www-form-urlencoded: grant_type - password, username - siva, password - secret
+Authorization: BasicAuth: username: <wy2learnappclientid>, password: <secret>
+
+Step 8: See springcloudoauth2/AuthorizationServerConfiguration.java 
+//The code below check if user is authenticated and if access is good
+@Override
+    public void configure(AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
+       
+		oauthServer.tokenKeyAccess("isAuthenticated()");
+        
+}
+
+Step 9:
+Get: localhost:8080/auth/oauth/check_token?token=<tokenvalue>
+Authorization: BasicAuth: username: <microclient>, password: <secret>
+
+You will get an authorization header value
+
+
+******************************************************************************
+JWT - Jason Web Token
+******************************************************************************
+//Encoded Json
+Header(algorithm) - Payload - Signature
+
+Client Server request a token from Auth Server
+
+Auth server return -> //Encoded Json (Header(algorithm) - Payload - ClientPrivateKeySignature -> Client Server
+
+Client Server Sends Request -> //Encoded Json (Header(algorithm) - Payload - ClientPrivateKeySignature -> to Resource Server 
+
+Resource Server Recieves - //Encoded Json (Header(algorithm) - Payload - ClientPrivateKeySignature
+unlocks using publicAkey
+
+Step 1:
+- keytool -genkey -keyalg RSA alias <youralia> -keystore keystore.jks -storepass <yourpassword> -validity 4000 -keysize <2048|4096>
+            - add the generated keystore.jks  into your resources folder
+            - you can add this to your application.properties
+                server:
+                port: 8080
+                ssl:
+                    key-store: classpath:keystore.jks 
+                    key-store-password: <password>
+                    key-store-type: JKS 
+                    key-alias: <tomcat>
+                    key-password: <password>
+
+Step 2:  See springcloudoauth2/AuthorizationServerConfiguration.java
+
+        @Bean
+	    public TokenStore tokenStore() {
+	        return new JwtTokenStore(accessTokenConverter());
+	    }
+
+	    @Bean
+	    public JwtAccessTokenConverter accessTokenConverter() {
+	        final JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
+	        //converter.setSigningKey("123");
+	        final KeyStoreKeyFactory keyStoreKeyFactory = new KeyStoreKeyFactory(
+	        		new ClassPathResource("mykeystore.jks"), "password".toCharArray());
+	         converter.setKeyPair(keyStoreKeyFactory.getKeyPair("tomcat"));
+	        return converter;
+	    }
+
+Step 3: See springcloudoauth2/AuthorizationServerConfiguration.java
+@Override
+public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+    endpoints.authenticationManager(authenticationManager)
+    
+    // TODO-7 uncomment the below to inject tokenstore() and accessTokenConverter() into AuthorizationServerEndpointsConfigurer
+    
+        .tokenStore(tokenStore()).accessTokenConverter(accessTokenConverter());
+    ;
+}
+
+Step 4:
+POST: localhost:8080/auth/oauth/token
+Header: Authorization - with base64clientid
+Body: x-www-form-urlencoded: grant_type - password, username - siva, password - secret
+Authorization: BasicAuth: username: <wy2learnappclientid>, password: <secret>
+
+You should get the encoded json web token 
+
+Step 5: Copy the token from 4 and do the postman request and you can also try to use the jwt.io decoder
+Get: localhost:8080/auth/oauth/check_token?token=<tokenvalue>
+Authorization: BasicAuth: username: <microclient>, password: <secret>
+
+******************************************************************************
+Auth Code Grant
+******************************************************************************
+
+Client -> /oauth/autorize to Auth Server 
+Auth server sends back Auth code
+Client uses the Auth code to get the token from Auth Server 
+Client uses the token to the userinfo from auth server - see springboot/springcloudoauth2/UserInfoController.java
+See springcloudoauth2/MyResourceServerConfiguration.java -  @EnableResourceServer to enable all filters required for a resource server 
+
+In Application.yml
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: <ClientID>
+            client-secret: <client-secret>
+            scope: openid,profile,email
+            client-name: <client-name>
+          way2learnclient:
+            client-id: <ClientID>
+            client-secret: <client-secret>
+            client-name: <client-name>
+            scope: user_info
+            redirect-uri: https://localhost:8443/myapp/login/oauth2/code/way2learnappclient
+            client-authentication-method: basic
+            authorization-grant-type: authorization_code
+            provider: way2learn-authserver-provider
+        provider:
+            way2learn-authserver-provider:
+              token-uri: http://localhost:8081/auth/oauth/token
+              authorization-uri: http://localhost:8081/auth/oauth/authorize
+              user-info-uri: http://localhost:8081/auth/userinfo
+              user-name-attribute: username
+******************************************************************************
+Create Resource Server 
+******************************************************************************
+Step 1: Resource server will hit Auth server to get the public key key-uri: http://localhost:1234/auth/oauth/token_key
+server:
+  port: 8084
+  
+security:
+  oauth2:
+    client:
+      clientId: microclient
+      clientSecret: secret
+    resource:
+#      tokenInfoUri: http://localhost:8081/auth/oauth/check_token
+#      user-info-uri:  http://localhost:8081/auth/userinfo
+      jwt:
+        key-uri: http://localhost:1234/auth/oauth/token_key
+     

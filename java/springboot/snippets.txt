@@ -78,6 +78,7 @@ https://en.wikipedia.org/wiki/Twelve-Factor_App_methodology
 
 Running a Springboot application
 - java -jar
+- java -jar app.jar  --file.upload-dir=<folderpath>
 - Shell scripts
 - *nic sstemd or init.d
 - Cloud ecosystem (Pivotal Cloud Foundry)
@@ -119,6 +120,8 @@ Database Derby; https://medium.com/ctrl-alt-kaveet/tutorial-installing-apache-de
 Step: Download the same version as your java https://db.apache.org/derby/derby_downloads.html
 Step 2: unzip the folder and put it inside the /Applications and name the folder derby
 Step 3: configure the global path 
+cat ~/.bash_profile
+vi ~/.bash_profile
 export JAVA_HOME=$(/usr/libexec/java_home)
 export PATH=$PATH:$JAVA_HOME/bin
 export DERBY_HOME=/Applications/derby
@@ -132,6 +135,9 @@ ASO3UJG5HMAC:bin mariano$ source setEmbeddedCP
 ASO3UJG5HMAC:bin mariano$ java org.apache.derby.tools.ij
 $ java org.apache.derby.tools.ij
 ij > connect 'jdbc:derby:/Users/mariano/Downloads/springboilerplate/database' create 'true' user 'todo' password 'todo' driver 'org.apache.derby.jdbc.EmbeddedDriver';
+ij > connect 'jdbc:derby:/Users/family/Documents/maven/springscorm/app/database' create 'true' user 'todo' password 'todo' driver 'org.apache.derby.jdbc.EmbeddedDriver';
+ij > connect 'jdbc:derby:/Users/family/Downloads/springbootboilerplate/database' create 'true' user 'todo' password 'todo' driver 'org.apache.derby.jdbc.EmbeddedDriver';
+
 ij > run 'pathto.sql';
 ij> select * from tablename;
 
